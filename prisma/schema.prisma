@@ -6,9 +6,148 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  role   String? @default("STUDENT")
+  status String? @default("ACTIVE")
+   tutorProfile TutorProfile?   
+  bookingsAsStudent Booking[] @relation("StudentBookings")
+  reviews Review[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+model TutorProfile {
+  id           String @id @default(uuid())
+  userId       String @unique
+  bio          String
+  experience   Int
+  pricePerHour Float
+  user         User @relation(fields: [userId], references: [id])
+  categories   TutorCategory[]
+  availability Availability[]
+  bookings     Booking[]
+  reviews      Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String @id @default(uuid())
+  name      String @unique
+  tutors    TutorCategory[]
+  createdAt DateTime @default(now())
+}
+
+model TutorCategory {
+  tutorId    String
+  categoryId String
+  tutor      TutorProfile @relation(fields: [tutorId], references: [id])
+  category   Category     @relation(fields: [categoryId], references: [id])
+  @@id([tutorId, categoryId])
+}
+model Availability {
+  id        String   @id @default(uuid())
+  tutorId   String
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id])
+  booking   Booking?
+  createdAt DateTime @default(now())
+}
+model Booking {
+  id             String @id @default(uuid())
+  studentId      String
+  tutorId        String
+  availabilityId String @unique
+  meetingLink String?
+  status      BookingStatus @default(CONFIRMED)
+  student      User         @relation("StudentBookings", fields: [studentId], references: [id])
+  tutor        TutorProfile @relation(fields: [tutorId], references: [id])
+  availability Availability @relation(fields: [availabilityId], references: [id])
+  review       Review?
+  createdAt DateTime @default(now())
+}
+model Review {
+  id        String @id @default(uuid())
+  bookingId String @unique
+  studentId String
+  tutorId   String
+  rating  Int
+  comment String?
+  booking Booking      @relation(fields: [bookingId], references: [id])
+  student User         @relation(fields: [studentId], references: [id])
+  tutor   TutorProfile @relation(fields: [tutorId], references: [id])
+  createdAt DateTime @default(now())
 }
