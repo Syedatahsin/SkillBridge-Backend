@@ -5,15 +5,24 @@ import {
   getTutorProfileByIdController,
   getAllTutorProfilesController,
   updateTutorProfileController,
-  deleteTutorProfileController
-} from "../tutors/tutors.controller";
+  deleteTutorProfileController,
+  updateTutorFeatureController
+} from "./tutors.controller";
+import auth, { UserRole } from "../middlewares/auth";
 
 const router = Router();
 
-router.post("/", createTutorProfileController);        // Create profile
-router.get("/", getAllTutorProfilesController);        // Get all profiles
-router.get("/:id", getTutorProfileByIdController);     // Get profile by ID
-router.put("/:id", updateTutorProfileController);      // Update profile
-router.delete("/:id", deleteTutorProfileController);   // Delete profile
+router.post("/", createTutorProfileController);        
+router.get("/", getAllTutorProfilesController);        
+router.get("/:id", getTutorProfileByIdController);    
+router.put("/:id", updateTutorProfileController);      
+router.delete("/:id", deleteTutorProfileController);  
+// ADMIN
+router.patch(
+  "admin/users/:id",
+  auth(UserRole.ADMIN),
+  updateTutorFeatureController
+);
 
 export default router;
+

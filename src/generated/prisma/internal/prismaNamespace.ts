@@ -1258,6 +1258,7 @@ export const TutorProfileScalarFieldEnum = {
   bio: 'bio',
   experience: 'experience',
   pricePerHour: 'pricePerHour',
+  isFeatured: 'isFeatured',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

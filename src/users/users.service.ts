@@ -11,7 +11,35 @@ const createUser = async (data: any) => {
   return result;
 };
 
-// Get user by ID (including relations)
+
+export const updateUserStatusService = async (
+  userId: string,
+  status: "ACTIVE" | "BANNED"
+) => {
+  // check user exists
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // update status
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { status },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+    },
+  });
+
+  return updatedUser;
+};
 const getUserById = async (id: string) => {
   const user = await prisma.user.findUnique({
     where: { id },

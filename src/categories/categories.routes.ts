@@ -7,13 +7,16 @@ import {
   updateCategoryController,
   deleteCategoryController
 } from "../categories/categories.controller";
+import  auth  from "../middlewares/auth";
+import { UserRole } from "../middlewares/auth";
 
 const router = Router();
 
-router.post("/", createCategoryController);        // Create category
 router.get("/", getAllCategoriesController);      // Get all categories
 router.get("/:id", getCategoryByIdController);    // Get category by ID
-router.put("/:id", updateCategoryController);     // Update category
 router.delete("/:id", deleteCategoryController);  // Delete category
+// ADMIN
+router.post("/admin/categories",auth(UserRole.ADMIN), createCategoryController);        // Create category
+router.put("/admin/categories/:id",auth(UserRole.ADMIN), updateCategoryController);     // Update category
 
 export default router;
