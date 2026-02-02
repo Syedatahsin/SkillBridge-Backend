@@ -12,10 +12,13 @@ import auth, { UserRole } from "../middlewares/auth";
 const router = Router();
 
 router.post("/", createBookingController);        // Create
-router.get("/:id", getBookingByIdController);    // Get by ID
-router.put("/:id", updateBookingController);     // Update
 router.delete("/:id", deleteBookingController);  // Delete
 // ADMIN
 router.get("/admin/bookings",auth(UserRole.ADMIN), getAllBookingsController);       // Get all
+// STUDENT
+router.get("/:id", getBookingByIdController);    
+router.post("/", createBookingController);  
+router.put("/:id", updateBookingController);     // Update
+      // Create
 
 export default router;
