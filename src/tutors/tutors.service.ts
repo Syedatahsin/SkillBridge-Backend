@@ -1,4 +1,6 @@
 // services/tutorProfileService.ts
+import { get } from "node:http";
+import { TutorProfileWhereInput } from "../generated/prisma/models";
 import { prisma } from "../lib/prisma";
 
 // Create TutorProfile
@@ -63,7 +65,7 @@ export const getAllTutorProfiles = async () => {
 // Update TutorProfile
 export const updateTutorFeatureService = async (
   userId: string,
-  isFeatured: boolean
+  isFeatured:boolean
 ) => {
   const tutorProfile = await prisma.tutorProfile.findUnique({
     where: { userId },
@@ -127,10 +129,115 @@ export const deleteTutorProfile = async (id: string) => {
   });
 };
 
+export const getAllsearchTutors = async ({
+  search,
+  categories,
+  minPrice,
+  maxPrice,
+  minRating,
+}: {
+  search: string | undefined;
+  categories: string[] | [];
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  minRating: number | undefined;
+}) => {
+  const andConditions: TutorProfileWhereInput[] = [];
+
+  // 🔍 Search (bio or user name)
+  if (search) {
+    andConditions.push({
+      OR: [
+        {
+          bio: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          user: {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  // 📚 Subject / Categories
+  if (categories.length > 0) {
+    andConditions.push({
+      categories: {
+        some: {
+          category: {
+            name: {
+              in: categories as string[],
+            },
+          },
+        },
+      },
+    });
+  }
+  if (minPrice && maxPrice && minPrice > maxPrice) {
+  throw new Error("minPrice cannot be greater than maxPrice");
+}
+
+
+if (typeof minPrice === "number") {
+  andConditions.push({
+    pricePerHour: {
+      gte: minPrice,
+    },
+  });
+}
+
+if (typeof maxPrice === "number") {
+  andConditions.push({
+    pricePerHour: {
+      lte: maxPrice,
+    },
+  });
+}
+
+  const tutors = await prisma.tutorProfile.findMany({
+    where: {
+      AND: andConditions,
+    },
+    include: {
+      user: true,
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      reviews: true,
+    },
+  });
+
+  if (typeof minRating === "number") {
+    return tutors.filter((tutor) => {
+      const avgRating =
+        tutor.reviews.reduce((sum, r) => sum + r.rating, 0) /
+        (tutor.reviews.length || 1);
+
+      return avgRating >= minRating;
+    });
+  }
+
+  return tutors;
+};
+
+
+
+
+
+
 export const tutorProfileService = {
   createTutorProfile,
   getTutorProfileById,
   getAllTutorProfiles,
   updateTutorProfile,
-  deleteTutorProfile,updateTutorFeatureService
+  deleteTutorProfile,updateTutorFeatureService,getAllsearchTutors
 };
