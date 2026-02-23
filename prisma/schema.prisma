@@ -112,6 +112,7 @@ model TutorProfile {
 model Category {
   id        String          @id @default(uuid())
   name      String          @unique
+  description String?
   tutors    TutorCategory[]
   createdAt DateTime        @default(now())
 }

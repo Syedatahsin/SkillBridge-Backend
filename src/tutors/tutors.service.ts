@@ -48,6 +48,22 @@ export const getTutorProfileById = async (id: string) => {
     }
   });
 };
+export const getFeaturedTutors = async () => {
+  return prisma.tutorProfile.findMany({
+    where: {
+      isFeatured: true,
+    },
+    include: {
+      user: true,
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      reviews: true,
+    },
+  });
+}
 
 // Get all TutorProfiles
 export const getAllTutorProfiles = async () => {

@@ -1,16 +1,7 @@
 import { Request, Response } from "express";
 import { updateUserStatusService, userService } from "../users/users.service";
 
-export const createUserController = async (req: Request, res: Response) => {
-  try {
-    const userData = req.body; // coming from auth provider
-    const user = await userService.createUser(userData);
-    res.status(201).json(user);
-  } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
-};
+
 
 export const updateUserStatusController = async (
   req: Request,

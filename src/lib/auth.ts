@@ -24,13 +24,14 @@ export const auth = betterAuth({
   additionalFields: {
     role: {
       type: "string",
-      required: true,
+      required: false,
       validator: { input: z.enum(["STUDENT", "TUTOR", "ADMIN"]) },
       input: true,
     },
     status: {
       type: "string",
-      required: true,
+      required: false,
+        defaultValue: "ACTIVE",
       validator: { input: z.enum(["ACTIVE", "BANNED"]) },
       input: true,
     }
@@ -59,155 +60,180 @@ export const auth = betterAuth({
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Verification</title>
-
+  <title>SkillBridge Verification</title>
   <style>
+    /* Reset styles for email clients */
     body {
       margin: 0;
       padding: 0;
-      background-color: #0b0b0b;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #e5e5e5;
+      width: 100% !important;
+      background-color: #050505;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #050505;
+      padding-bottom: 40px;
     }
 
     .container {
-      max-width: 620px;
-      margin: 50px auto;
-      background-color: #ffffff;
-      color: #111111;
-      border-radius: 12px;
+      max-width: 600px;
+      background-color: #0A0A0B;
+      margin: 40px auto;
+      border-radius: 32px;
+      border: 1px solid #1f1f23;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
 
-    /* Header */
+    /* Header with SkillBridge Branding */
     .header {
-      background-color: #000000;
-      color: #ffffff;
-      padding: 28px 20px;
+      padding: 40px 20px;
       text-align: center;
-      border-bottom: 4px solid #dc2626;
+      background: linear-gradient(to bottom, #0A0A0B, #0f0f11);
     }
 
-    .header h1 {
+    .logo-text {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      font-style: italic;
+      color: #ffffff;
       margin: 0;
-      font-size: 24px;
-      letter-spacing: 0.5px;
     }
 
-    /* Content */
+    .logo-accent {
+      color: #a855f7; /* Purple accent */
+    }
+
+    /* Content Area */
     .content {
-      padding: 36px;
-      line-height: 1.7;
-      font-size: 15px;
+      padding: 0 40px 40px 40px;
+      text-align: center;
+      color: #e5e7eb;
     }
 
     .content h2 {
-      margin-top: 0;
-      font-size: 22px;
-      color: #000000;
-      margin-bottom: 16px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
     }
 
     .content p {
-      margin: 14px 0;
-      color: #333333;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #9ca3af;
+      margin: 20px 0;
     }
 
-    /* Button */
-    .button-wrapper {
-      text-align: center;
-      margin: 34px 0;
+    .user-name {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* Enthusiastic Button */
+    .btn-container {
+      margin: 35px 0;
     }
 
     .verify-button {
-      background-color: #dc2626;
+      background: linear-gradient(to right, #9333ea, #2563eb);
       color: #ffffff !important;
-      padding: 15px 34px;
+      padding: 18px 45px;
       text-decoration: none;
-      font-weight: bold;
-      border-radius: 8px;
+      font-weight: 900;
+      border-radius: 14px;
       display: inline-block;
-      font-size: 15px;
-      letter-spacing: 0.4px;
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    .verify-button:hover {
-      background-color: #b91c1c;
+    /* Fallback Link */
+    .fallback-box {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid #1f1f23;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 30px;
     }
 
-    /* Link */
-    .link {
+    .fallback-link {
       word-break: break-all;
-      font-size: 13px;
-      color: #dc2626;
-      background: #f9fafb;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px dashed #e5e7eb;
+      font-size: 12px;
+      color: #a855f7;
+      text-decoration: none;
     }
 
     /* Footer */
     .footer {
-      background-color: #000000;
-      color: #9ca3af;
-      padding: 22px;
+      padding: 30px;
       text-align: center;
       font-size: 12px;
-      border-top: 1px solid #1f2937;
+      color: #4b5563;
+      border-top: 1px solid #1f1f23;
+    }
+
+    .footer p {
+      margin: 5px 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .container {
+        margin: 10px;
+        border-radius: 20px;
+      }
+      .content {
+        padding: 0 20px 30px 20px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-
-    <!-- Header -->
-    <div class="header">
-      <h1>Prisma Blog</h1>
-    </div>
-
-    <!-- Content -->
-    <div class="content">
-      <h2>Verify Your Email Address</h2>
-
-      <p>
-        Hello ${user.name} <br /><br />
-        Thank you for registering on <strong>Prisma Blog</strong>.
-        Please confirm your email address to activate your account.
-      </p>
-
-      <div class="button-wrapper">
-        <a href="${verificationUrl}" class="verify-button">
-          Verify Email
-        </a>
+  <div class="wrapper">
+    <div class="container">
+      
+      <div class="header">
+        <h1 class="logo-text">SKILL<span class="logo-accent">BRIDGE</span></h1>
+        <p style="color: #6b7280; font-size: 10px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-top: 5px;">
+          Learners & Teachers Hub
+        </p>
       </div>
 
-      <p>
-        If the button doesn’t work, copy and paste the link below into your browser:
-      </p>
+      <div class="content">
+        <h2>Verify your terminal</h2>
+        <p>
+          Hello <span class="user-name">${user.name}</span>,<br>
+          Welcome to the SkillBridge ecosystem. To finalize your access and begin your journey, please verify your email address.
+        </p>
 
-      <p class="link">
-        ${url}
-      </p>
+        <div class="btn-container">
+          <a href="${verificationUrl}" class="verify-button">Verify Identity</a>
+            </div>
 
-      <p>
-        This verification link will expire soon for security reasons.
-        If you did not create an account, you can safely ignore this email.
-      </p>
+        <p style="font-size: 13px;">
+          If the button above does not initialize, copy and paste this link into your browser:
+        </p>
+        
+        <div class="fallback-box">
+          <a href="${url}" class="fallback-link">${url}</a>
+        </div>
+      </div>
 
-      <p>
-        Regards, <br />
-        <strong>Prisma Blog Team</strong>
-      </p>
+      <div class="footer">
+        <p>© 2026 SKILLBRIDGE ECOSYSTEM</p>
+        <p style="font-size: 10px;">If you did not request this, please disregard.</p>
+      </div>
+
     </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      © 2025 Prisma Blog. All rights reserved.
-    </div>
-
   </div>
 </body>
 </html>

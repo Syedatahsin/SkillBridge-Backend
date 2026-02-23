@@ -1,6 +1,6 @@
 // controllers/tutorProfileController.ts
 import { Request, Response } from "express";
-import { tutorProfileService } from "./tutors.service";
+import { getFeaturedTutors, tutorProfileService } from "./tutors.service";
 
 // Create TutorProfile
 export const createTutorProfileController = async (req: Request, res: Response) => {
@@ -42,6 +42,48 @@ export const updateTutorFeatureController = async (
     });
   }
 };
+
+
+
+export const getAllsearchTutors = async (req: Request, res: Response) => {
+  try {
+    const search =
+      typeof req.query.search === "string" ? req.query.search : undefined;
+
+    const categories = req.query.categories
+      ? (req.query.categories as string).split(",")
+      : [];
+
+    const minPrice = req.query.minPrice
+      ? Number(req.query.minPrice)
+      : undefined;
+
+    const maxPrice = req.query.maxPrice
+      ? Number(req.query.maxPrice)
+      : undefined;
+
+    const minRating = req.query.minRating
+      ? Number(req.query.minRating)
+      : undefined;
+
+  
+
+    const result = await tutorProfileService.getAllsearchTutors({
+      search,
+      categories,
+      minPrice,
+      maxPrice,
+      minRating
+    });
+
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(400).json({
+      error: "Failed to fetch tutors",
+      details: e,
+    });
+  }
+};
 // Get TutorProfile by ID
 export const getTutorProfileByIdController = async (req: Request, res: Response) => {
   try {
@@ -57,6 +99,21 @@ export const getTutorProfileByIdController = async (req: Request, res: Response)
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: error.message });
+  }
+};
+export const getFeaturedTutorsController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const result = await getFeaturedTutors();
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to fetch featured tutors",
+      error,
+    });
   }
 };
 

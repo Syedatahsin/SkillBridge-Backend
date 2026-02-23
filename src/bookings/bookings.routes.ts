@@ -20,5 +20,7 @@ router.get("/:id", getBookingByIdController);
 router.post("/", createBookingController);  
 router.put("/:id", updateBookingController);     // Update
       // Create
+// TUTOR
+router.get("/:id", getBookingByIdController);    
 
 export default router;
