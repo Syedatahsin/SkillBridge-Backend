@@ -117,11 +117,18 @@ export const getFeaturedTutorsController = async (
   }
 };
 
-// Get all TutorProfiles
-export const getAllTutorProfilesController = async (_req: Request, res: Response) => {
+// controllers/tutorController.ts
+export const getAllTutorProfilesController = async (req: Request, res: Response) => {
   try {
-    const profiles = await tutorProfileService.getAllTutorProfiles();
-    res.json(profiles);
+    // Extract query params, defaulting to page 1 and limit 10
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    // Call the service with pagination arguments
+    const result = await tutorProfileService.getAllTutorProfiles(page, limit);
+    
+    // Result now contains { data, meta }
+    res.json(result);
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: error.message });

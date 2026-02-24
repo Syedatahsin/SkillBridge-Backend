@@ -10,13 +10,13 @@ import {
 import  auth  from "../middlewares/auth";
 import { UserRole } from "../middlewares/auth";
 
-const router = Router();
+const categoryrouter = Router();
 
-router.get("/", getAllCategoriesController);      // Get all categories
-router.get("/:id", getCategoryByIdController);    // Get category by ID
-router.delete("/:id", deleteCategoryController);  // Delete category
+categoryrouter.get("/", getAllCategoriesController);      // Get all categories
+categoryrouter.get("/:id", getCategoryByIdController);    // Get category by ID
+categoryrouter.delete("/:id", deleteCategoryController);  // Delete category
 // ADMIN
-router.post("/admin/categories",auth(UserRole.ADMIN), createCategoryController);        // Create category
-router.put("/admin/categories/:id",auth(UserRole.ADMIN), updateCategoryController);     // Update category
+categoryrouter.post("/admin/categories", createCategoryController);        // Create category
+categoryrouter.put("/admin/categories/:id",auth(UserRole.ADMIN), updateCategoryController);     // Update category
 
-export default router;
+export default categoryrouter;

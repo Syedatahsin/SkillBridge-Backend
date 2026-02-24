@@ -15,7 +15,7 @@ import { getAllsearchTutors } from "./tutors.service";
 const router = Router();
 
 router.post("/", createTutorProfileController);        
-router.get("/", getAllTutorProfilesController);        
+router.get("/tutor", getAllTutorProfilesController);        
 router.put("/:id", updateTutorProfileController);      
 router.delete("/:id", deleteTutorProfileController);  
 // ADMIN
@@ -26,10 +26,10 @@ router.patch(
 );
 // PUBLIC
 router.get("/api/public/getSEARCHtutors", getAllsearchTutors);
-router.get("/api/public/:id", getTutorProfileByIdController);    
+router.get("/public/:id", getTutorProfileByIdController);    
 router.get("/api/public/featured", getFeaturedTutorsController);
 // TUTOR
-router.post("/", createTutorProfileController);  
+router.post("/teacher/createprofile", createTutorProfileController);  
 router.put("/:id", updateTutorProfileController);      
 
 

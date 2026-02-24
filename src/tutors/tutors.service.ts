@@ -65,17 +65,37 @@ export const getFeaturedTutors = async () => {
   });
 }
 
-// Get all TutorProfiles
-export const getAllTutorProfiles = async () => {
-  return prisma.tutorProfile.findMany({
-    include: {
-      user: true,
-      categories: { include: { category: true } },
-      availability: true,
-      bookings: true,
-      reviews: true
-    }
-  });
+export const getAllTutorProfiles = async (page: number, limit: number) => {
+  // Calculate how many items to bypass
+  const skip = (page - 1) * limit;
+
+  // We fetch data and total count at the same time
+  const [data, totalCount] = await Promise.all([
+    prisma.tutorProfile.findMany({
+      take: limit,
+      skip: skip,
+      include: {
+        user: true,
+        categories: { include: { category: true } },
+        availability: true,
+        reviews: true,
+      },
+      orderBy: {
+        createdAt: 'desc', // Ensures consistent ordering
+      },
+    }),
+    prisma.tutorProfile.count(),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page: page,
+      limit: limit,
+      lastPage: Math.ceil(totalCount / limit),
+    },
+  };
 };
 
 // Update TutorProfile

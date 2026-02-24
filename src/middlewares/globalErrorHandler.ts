@@ -9,7 +9,15 @@ function errorHandler(
 ) {
     let statusCode = 500;
     let errorMessage = "Something went wrong on our end. Please try again later.";
-    let errorDetails = process.env.NODE_ENV === "development" ? err : {};
+    
+    // FIX: Instead of passing the whole 'err' object (which crashes JSON.stringify),
+    // we manually build a safe object for development mode.
+    let errorDetails = process.env.NODE_ENV === "development" ? {
+        message: err.message,
+        stack: err.stack,
+        path: req.originalUrl,
+        ...err // This spreads only serializable properties
+    } : {};
 
     // 1. Prisma Validation Errors
     if (err instanceof Prisma.PrismaClientValidationError) {
@@ -21,15 +29,15 @@ function errorHandler(
     else if (err instanceof Prisma.PrismaClientKnownRequestError) {
         switch (err.code) {
             case "P2002":
-                statusCode = 409; // Conflict is often better for duplicates
-                errorMessage = `A record with this ${err.meta?.target} already exists.`;
+                statusCode = 409; 
+                errorMessage = `A record with this ${err.meta?.target || "unique field"} already exists.`;
                 break;
             case "P2003":
                 statusCode = 400;
                 errorMessage = "Foreign key constraint failed. The related record does not exist.";
                 break;
             case "P2025":
-                statusCode = 404; // Not Found is more standard for missing records
+                statusCode = 404; 
                 errorMessage = "The requested record was not found.";
                 break;
             case "P2014":
@@ -44,7 +52,7 @@ function errorHandler(
 
     // 3. Prisma Initialization / Connection Errors
     else if (err instanceof Prisma.PrismaClientInitializationError) {
-        statusCode = 503; // Service Unavailable
+        statusCode = 503; 
         if (err.errorCode === "P1001") {
             errorMessage = "Database server is unreachable. Check your network or database status.";
         } else if (err.errorCode === "P1017") {
@@ -62,14 +70,22 @@ function errorHandler(
 
     // 5. Standard JavaScript/Express Errors
     else if (err instanceof Error) {
-        // If it's a generic JS error, use its message if it's safe
         errorMessage = err.message;
-        
-        // Handle specific status codes if you throw custom errors elsewhere
         if ('status' in err) {
             statusCode = (err as any).status;
+        } else if ('statusCode' in err) {
+            statusCode = (err as any).statusCode;
         }
     }
+
+    // --- FINAL PROTECTION ---
+    // If headers are already sent, don't try to send another response
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    // Always log the error to your terminal for debugging
+    console.error(`[Error] ${req.method} ${req.url}:`, errorMessage);
 
     res.status(statusCode).json({
         success: false,

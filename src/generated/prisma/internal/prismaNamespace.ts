@@ -1269,6 +1269,7 @@ export type TutorProfileScalarFieldEnum = (typeof TutorProfileScalarFieldEnum)[k
 export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  description: 'description',
   createdAt: 'createdAt'
 } as const
 

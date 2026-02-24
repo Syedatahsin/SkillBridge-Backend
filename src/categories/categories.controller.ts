@@ -3,15 +3,15 @@ import { Request, Response } from "express";
 import { categoryService } from "../categories/categories.service";
 
 // Create Category
-export const createCategoryController = async (req: Request, res: Response) => {
+export const createCategoryController = async (req: Request, res: Response, next: any) => {
   try {
     const data = req.body;
     const category = await categoryService.createCategory(data);
     res.status(201).json(category);
-  } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
+  } catch (e) {
+    next(e);
+       
+    }
 };
 
 // Get Category by ID
