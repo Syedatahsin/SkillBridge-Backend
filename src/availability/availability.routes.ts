@@ -8,12 +8,12 @@ import {
   deleteAvailabilityController
 } from "../availability/availability.controller";
 
-const router = Router();
-router.get("/", getAllAvailabilitiesController);      // Get all
-router.get("/:id", getAvailabilityByIdController);    // Get by ID
-router.put("/:id", updateAvailabilityController);     // Update
-router.delete("/:id", deleteAvailabilityController);  // Delete
+const availabilityrouter = Router();
+availabilityrouter.get("/", getAllAvailabilitiesController);      // Get all
+availabilityrouter.get("/:id", getAvailabilityByIdController);    // Get by ID
+availabilityrouter.put("/:id", updateAvailabilityController);     // Update
+availabilityrouter.delete("/:id", deleteAvailabilityController);  // Delete
 // TUTOR
-router.post("/", createAvailabilityController);        // Create
+availabilityrouter.post("/create", createAvailabilityController);        // Create
 
-export default router;
+export default availabilityrouter;

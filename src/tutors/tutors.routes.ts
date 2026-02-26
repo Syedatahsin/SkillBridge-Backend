@@ -7,10 +7,10 @@ import {
   updateTutorProfileController,
   deleteTutorProfileController,
   updateTutorFeatureController,
-  getFeaturedTutorsController
+  getFeaturedTutorsController,getTutorIdHandler
 } from "./tutors.controller";
 import auth, { UserRole } from "../middlewares/auth";
-import { getAllsearchTutors } from "./tutors.service";
+import { getAllsearchTutors } from "./tutors.controller";
 
 const router = Router();
 
@@ -25,9 +25,12 @@ router.patch(
   updateTutorFeatureController
 );
 // PUBLIC
-router.get("/api/public/getSEARCHtutors", getAllsearchTutors);
+router.get("/public/getSEARCHtutors", getAllsearchTutors);
+router.get("/public/featured", getFeaturedTutorsController);
+
+router.get("/tutorid/:userId", getTutorIdHandler);        
+
 router.get("/public/:id", getTutorProfileByIdController);    
-router.get("/api/public/featured", getFeaturedTutorsController);
 // TUTOR
 router.post("/teacher/createprofile", createTutorProfileController);  
 router.put("/:id", updateTutorProfileController);      

@@ -3,17 +3,38 @@ import { Request, Response } from "express";
 import { bookingService } from "../bookings/bookings.service";
 
 // Create Booking
-export const createBookingController = async (req: Request, res: Response) => {
+export const createBookingController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const data = req.body;
-    const booking = await bookingService.createBooking(data);
-    res.status(201).json(booking);
+    const {studentId, tutorId, availabilityId, meetingLink } = req.body;
+
+    if (!studentId) {
+      return res.status(401).json({
+        message: "Unauthorized. Please log in.",
+      });
+    }
+
+    const booking = await bookingService.createBookingService(
+      studentId,
+      tutorId,
+      availabilityId,
+      meetingLink
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: booking,
+    });
+
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Booking failed",
+    });
   }
 };
-
 // Get Booking by ID
 export const getBookingByIdController = async (req: Request, res: Response) => {
   try {

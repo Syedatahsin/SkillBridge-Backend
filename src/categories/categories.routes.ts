@@ -12,7 +12,7 @@ import { UserRole } from "../middlewares/auth";
 
 const categoryrouter = Router();
 
-categoryrouter.get("/", getAllCategoriesController);      // Get all categories
+categoryrouter.get("/get", getAllCategoriesController);      // Get all categories
 categoryrouter.get("/:id", getCategoryByIdController);    // Get category by ID
 categoryrouter.delete("/:id", deleteCategoryController);  // Delete category
 // ADMIN

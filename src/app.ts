@@ -8,6 +8,9 @@ import { notFound } from './middlewares/notFound';
 import categoryrouters from './categories/categories.routes';
 import emailrouter from './lib/supportemail';
 import router from './tutors/tutors.routes';
+import availabilityrouter from './availability/availability.routes';
+import bookingrouter from './bookings/bookings.routes';
+import   reviewrouter from './reviews/reviews.routes';
 
 dotenv.config();
 
@@ -24,6 +27,9 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/categories", categoryrouters);
 app.use("/api/tutor", router);
 app.use("/api/support",emailrouter);
+app.use("/api/availability", availabilityrouter);
+app.use("/api/bookings", bookingrouter);
+app.use("/api/reviews", reviewrouter);
 
 
 

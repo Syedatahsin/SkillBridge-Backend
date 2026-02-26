@@ -9,18 +9,17 @@ import {
 } from "../bookings/bookings.controller";
 import auth, { UserRole } from "../middlewares/auth";
 
-const router = Router();
+const bookingrouter = Router();
 
-router.post("/", createBookingController);        // Create
-router.delete("/:id", deleteBookingController);  // Delete
+bookingrouter.post("/", createBookingController);  
+bookingrouter.delete("/:id", deleteBookingController);  // Delete
 // ADMIN
-router.get("/admin/bookings",auth(UserRole.ADMIN), getAllBookingsController);       // Get all
+bookingrouter.get("/admin/bookings",auth(UserRole.ADMIN), getAllBookingsController);       // Get all
 // STUDENT
-router.get("/:id", getBookingByIdController);    
-router.post("/", createBookingController);  
-router.put("/:id", updateBookingController);     // Update
+bookingrouter.get("/:id", getBookingByIdController);    
+bookingrouter.put("/:id", updateBookingController);     // Update
       // Create
 // TUTOR
-router.get("/:id", getBookingByIdController);    
+bookingrouter.get("/:id", getBookingByIdController);    
 
-export default router;
+export default bookingrouter;

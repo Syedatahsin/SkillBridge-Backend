@@ -22,14 +22,16 @@ export const getCategoryById = async (id: string) => {
 
 // Get all Categories
 export const getAllCategories = async () => {
-  const categories = await prisma.category.findMany({
+  return await prisma.category.findMany({
     include: {
-      tutors: true
+      _count: {
+        select: { 
+          tutors: true 
+        }
+      }
     }
   });
-  return categories;
 };
-
 // Update Category
 export const updateCategory = async (id: string, data: Partial<{ name: string }>) => {
   const updated = await prisma.category.update({
