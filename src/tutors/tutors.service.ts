@@ -31,10 +31,18 @@ export const getTutorProfileById = async (id: string) => {
       categories: { include: { category: true } },
       availability: true,
       bookings: true,
-      reviews: true
+      reviews: {            // 1st Level: Get the reviews for this tutor
+        include: {
+          student: true,    // 2nd Level: Get the student details for EACH review
+        }
+
+
+
+
     }
-  });
+  }});
 };
+
 export const findTutorIdByUserId = async (userId: string) => {
   // We only select the 'id' field (the tutorId) for performance
   const profile = await prisma.tutorProfile.findUnique({
@@ -44,6 +52,9 @@ export const findTutorIdByUserId = async (userId: string) => {
 
   return profile;
 };
+
+
+
 export const getFeaturedTutors = async () => {
   // findMany always returns an array (empty [] or full)
   return await prisma.tutorProfile.findMany({
@@ -65,24 +76,28 @@ export const getFeaturedTutors = async () => {
 
 
 export const getAllTutorProfiles = async (page: number, limit: number) => {
-  // Calculate how many items to bypass
-  const skip = (page - 1) * limit;
+  // Use a dynamic query object
+  const queryOptions: any = {
+    include: {
+      user: true,
+      categories: { include: { category: true } },
+      availability: true,
+      reviews: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  };
 
-  // We fetch data and total count at the same time
+  // ONLY add pagination if limit is greater than 0
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+
+  // Execute queries
   const [data, totalCount] = await Promise.all([
-    prisma.tutorProfile.findMany({
-      take: limit,
-      skip: skip,
-      include: {
-        user: true,
-        categories: { include: { category: true } },
-        availability: true,
-        reviews: true,
-      },
-      orderBy: {
-        createdAt: 'desc', // Ensures consistent ordering
-      },
-    }),
+    prisma.tutorProfile.findMany(queryOptions),
     prisma.tutorProfile.count(),
   ]);
 
@@ -92,7 +107,7 @@ export const getAllTutorProfiles = async (page: number, limit: number) => {
       total: totalCount,
       page: page,
       limit: limit,
-      lastPage: Math.ceil(totalCount / limit),
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1,
     },
   };
 };

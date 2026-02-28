@@ -34,7 +34,8 @@ export const auth = betterAuth({
         defaultValue: "ACTIVE",
       validator: { input: z.enum(["ACTIVE", "BANNED"]) },
       input: true,
-    }
+    },
+    
   }
 }
 ,

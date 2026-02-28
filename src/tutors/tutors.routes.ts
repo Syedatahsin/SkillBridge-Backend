@@ -3,7 +3,6 @@ import { Router } from "express";
 import {
   createTutorProfileController,
   getTutorProfileByIdController,
-  getAllTutorProfilesController,
   updateTutorProfileController,
   deleteTutorProfileController,
   updateTutorFeatureController,
@@ -11,11 +10,12 @@ import {
 } from "./tutors.controller";
 import auth, { UserRole } from "../middlewares/auth";
 import { getAllsearchTutors } from "./tutors.controller";
+import { getAllTutorsController } from "./tutors.controller";
 
 const router = Router();
 
 router.post("/", createTutorProfileController);        
-router.get("/tutor", getAllTutorProfilesController);        
+router.get("/alltutor", getAllTutorsController);        
 router.put("/:id", updateTutorProfileController);      
 router.delete("/:id", deleteTutorProfileController);  
 // ADMIN
@@ -33,8 +33,7 @@ router.get("/tutorid/:userId", getTutorIdHandler);
 router.get("/public/:id", getTutorProfileByIdController);    
 // TUTOR
 router.post("/teacher/createprofile", createTutorProfileController);  
-router.put("/:id", updateTutorProfileController);      
-
+router.patch("/update/:id", updateTutorProfileController);
 
 export default router;
 

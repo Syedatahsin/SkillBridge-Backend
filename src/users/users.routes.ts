@@ -7,21 +7,25 @@ import {
   updateUserStatusController
 } from "../users/users.controller";
 import auth, { UserRole } from "../middlewares/auth";
-const router = Router();
+import { toggleTutorBanStatus } from "../users/users.controller";
+import { updateUser } from "./users.controller";
 
-// Routes
-router.get("/", getAllUsersController);       // Get all users
-router.get("/:id", getUserByIdController);    // Get user by ID
-router.delete("/:id", deleteUserController);  // Delete user
-// ADMIN
-router.get("/admin/users", getAllUsersController);       // Get all users
+const userrouter = Router();
 
-router.patch(
-  "admin/users/:id",
-  auth(UserRole.ADMIN),
-  updateUserStatusController
-);
-// STUDENT
-router.patch("/:id", updateUserController);   // Partially update user
+// 1. STATIC ROUTES (No parameters like :id)
+userrouter.get("/", getAllUsersController);
+userrouter.post("/update-status", toggleTutorBanStatus); 
 
-export default router;
+// 2. SPECIFIC DYNAMIC ROUTES (Must be ABOVE the generic /:id)
+// This ensures "update" isn't treated as a user "id"
+userrouter.patch('/update/:id', updateUser); 
+
+// 3. GENERIC PARAMETER ROUTES (The "Catch-alls")
+userrouter.get("/:id", getUserByIdController);
+userrouter.delete("/:id", deleteUserController);
+
+// NOTE: You have updateUserController twice. 
+// Use the generic one only for internal/admin updates if needed.
+userrouter.patch("/:id", updateUserController); 
+
+export default userrouter;

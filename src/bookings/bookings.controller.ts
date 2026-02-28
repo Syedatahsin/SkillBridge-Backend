@@ -2,7 +2,75 @@
 import { Request, Response } from "express";
 import { bookingService } from "../bookings/bookings.service";
 
-// Create Booking
+import { BookingService } from "../bookings/bookings.service";
+import { studentBookingService } from "../bookings/bookings.service";
+
+export const studentBookingController = {
+  // GET: Fetch sessions where the logged-in user is the student
+  async getStudentBookings(req: Request, res: Response) {
+    try {
+      const { userId } = req.query;
+
+      if (!userId || typeof userId !== "string") {
+        return res.status(400).json({ message: "Valid Student User ID is required" });
+      }
+
+      const bookings = await studentBookingService.fetchStudentSchedule(userId);
+      return res.status(200).json(bookings);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch student bookings" });
+    }
+  },
+
+  // PATCH: Cancel a booking
+  async cancelByStudent(req: Request, res: Response) {
+    try {
+      const { id } = req.params; // Booking ID
+
+      if (!id) {
+        return res.status(400).json({ message: "Booking ID is required" });
+      }
+
+      const cancelledBooking = await studentBookingService.cancelBooking(id as any);
+
+      return res.status(200).json({
+        success: true,
+        message: "Booking has been cancelled",
+        data: cancelledBooking
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Error processing cancellation" });
+    }
+  }
+};
+export const BookingController = {
+  async getMyBookings(req: Request, res: Response) {
+    try {
+      const { userId } = req.query;
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // We only call the teacher-specific service logic
+      const bookings = await BookingService.getTeacherBookings(String(userId));
+
+      return res.status(200).json(bookings);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch student bookings" });
+    }
+  },
+
+  async completeBooking(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await BookingService.markAsCompleted(id as any);
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: "Update failed" });
+    }
+  }
+};
 export const createBookingController = async (
   req: Request,
   res: Response
@@ -49,17 +117,28 @@ export const getBookingByIdController = async (req: Request, res: Response) => {
   }
 };
 
-// Get all Bookings
-export const getAllBookingsController = async (_req: Request, res: Response) => {
+export const getAllBookingsController = async (req: Request, res: Response) => {
   try {
-    const bookings = await bookingService.getAllBookings();
-    res.json(bookings);
+    // 1. Extract limit (default 0 for all) and page
+    const limit = Number(req.query.limit) || 0;
+    const page = Number(req.query.page) || 1;
+
+    // 2. Call the service
+    const result = await bookingService.getAllBookings(page, limit);
+
+    // 3. Structured response
+    res.status(200).json({
+      success: true,
+      ...result, // Spreads data and meta
+    });
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error("Error in getAllBookingsController:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "Internal Server Error" 
+    });
   }
 };
-
 // Update Booking
 export const updateBookingController = async (req: Request, res: Response) => {
   try {

@@ -5,19 +5,20 @@ import {
   getReviewByIdController,
   getAllReviewsController,
   updateReviewController,
-  deleteReviewController
+  deleteReviewController,
+  getReviewStats
 } from "../reviews/reviews.controller";
 
 const router = Router();
 
 router.get("/", getAllReviewsController);        // Get all
+router.post("/", createReviewController);      // Create
 router.get("/:id", getReviewByIdController);     // Get by ID
 router.put("/:id", updateReviewController);      // Update
 router.delete("/:id", deleteReviewController);   // Delete
 // STUDENT
-router.post("/", createReviewController);    
     // Create
 // TUTOR
 router.get("/:id", getReviewByIdController);     // Get by ID
-
+router.get("/stats/:tutorId", getReviewStats);
 export default router;

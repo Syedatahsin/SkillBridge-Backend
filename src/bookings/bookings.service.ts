@@ -6,6 +6,64 @@ export type BookingStatus = "CONFIRMED" | "COMPLETED" | "CANCELLED";
 
 // Create a new booking
 import { Request, Response } from "express";
+export const studentBookingService = {
+  // Logic to get the student's classes + Teacher's User Name
+  async fetchStudentSchedule(studentUserId: string) {
+    return await prisma.booking.findMany({
+      where: {
+        studentId: studentUserId,
+      },
+      include: {
+        availability: true, // For dates and times
+        tutor: {
+          include: {
+            user: {
+              select: {
+                name: true, // This allows {session.tutor?.user?.name} in your UI
+                image: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+  },
+
+  // Logic to change status to CANCELLED
+  async cancelBooking(bookingId: string) {
+    return await prisma.booking.update({
+      where: {
+        id: bookingId
+      },
+      data: {
+        status: "CANCELLED"
+      }
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const createBookingService = async (
   studentId: string,
@@ -42,6 +100,88 @@ export const createBookingService = async (
 
   return newBooking;
 };
+export const BookingService = {
+  /**
+   * Fetches all bookings for a teacher.
+   * Handles both the User ID (auth) or the TutorProfile ID.
+   */
+  async getTeacherBookings(identifier: string) {
+    // 1. Find the profile first by checking both ID columns
+    const profile = await prisma.tutorProfile.findFirst({
+      where: {
+        OR: [
+          { id: identifier },      // e.g., "a26404ee-..."
+          { userId: identifier }   // e.g., "apWRppI6..."
+        ]
+      }
+    });
+
+    // Logging for your terminal debugging
+    if (!profile) {
+      console.log(`[Service] No TutorProfile found for: ${identifier}`);
+      return []; 
+    }
+
+    console.log(`[Service] Fetching bookings for TutorProfile: ${profile.id}`);
+
+    // 2. Fetch all bookings linked to this specific TutorProfile
+    return await prisma.booking.findMany({
+      where: {
+        tutorId: profile.id
+      },
+      include: {
+        // Direct relation to User model in your schema
+        student: {
+          select: {
+            name: true,
+            image: true,
+            email: true
+          }
+        },
+        // Link to the specific time slot
+        availability: {
+          select: {
+            startTime: true,
+            endTime: true
+          }
+        }
+      },
+      orderBy: {
+        availability: {
+          startTime: "asc"
+        }
+      }
+    });
+  },
+
+  /**
+   * Updates a specific booking status to COMPLETED
+   */
+  async markAsCompleted(bookingId: string) {
+    // Check if it exists before trying to update to avoid Prisma errors
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId }
+    });
+
+    if (!booking) {
+      throw new Error("Booking record not found in database");
+    }
+
+    return await prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        status: "COMPLETED" // Must match your Enum exactly
+      }
+    });
+  },
+
+  /**
+   * Optional: Cancel a booking and release the availability slot
+   */
+  
+};
+
+
 // Get a booking by ID
 export const getBookingById = async (id: string) => {
   return prisma.booking.findUnique({
@@ -55,18 +195,47 @@ export const getBookingById = async (id: string) => {
   });
 };
 
-// Get all bookings
-export const getAllBookings = async () => {
-  return prisma.booking.findMany({
+
+export const getAllBookings = async (page: number, limit: number) => {
+  // Use a dynamic query object exactly like your sample
+  const queryOptions: any = {
     include: {
-      student: true,
-      tutor: true,
+      student: {
+        select: { name: true, image: true, email: true }
+      },
+      tutor: {
+        include: { user: { select: { name: true } } }
+      },
       availability: true,
       review: true,
     },
-  });
-};
+    orderBy: {
+      createdAt: 'desc',
+    },
+  };
 
+  // ONLY add pagination if limit is greater than 0
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+
+  // Execute queries in parallel using Promise.all
+  const [data, totalCount] = await Promise.all([
+    prisma.booking.findMany(queryOptions),
+    prisma.booking.count(),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page: page,
+      limit: limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1,
+    },
+  };
+};
 // Update a booking
 export const updateBooking = async (
   id: string,

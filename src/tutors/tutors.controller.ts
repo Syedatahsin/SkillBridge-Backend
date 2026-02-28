@@ -134,25 +134,28 @@ export const getFeaturedTutorsController = async (req: Request, res: Response) =
   }
 };
 
-// controllers/tutorController.ts
-export const getAllTutorProfilesController = async (req: Request, res: Response) => {
-  try {
-    // Extract query params, defaulting to page 1 and limit 10
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
 
-    // Call the service with pagination arguments
+export const getAllTutorsController = async (req: Request, res: Response) => {
+  try {
+    // 1. Extract from query: e.g., /api/tutors?page=1&limit=10
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 0;
+
+    // 2. Call the service
     const result = await tutorProfileService.getAllTutorProfiles(page, limit);
-    
-    // Result now contains { data, meta }
-    res.json(result);
+
+    // 3. Send structured response
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
   }
 };
-
-// Update TutorProfile
 export const updateTutorProfileController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

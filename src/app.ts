@@ -11,6 +11,7 @@ import router from './tutors/tutors.routes';
 import availabilityrouter from './availability/availability.routes';
 import bookingrouter from './bookings/bookings.routes';
 import   reviewrouter from './reviews/reviews.routes';
+import userrouter from './users/users.routes';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ app.use("/api/support",emailrouter);
 app.use("/api/availability", availabilityrouter);
 app.use("/api/bookings", bookingrouter);
 app.use("/api/reviews", reviewrouter);
-
+app.use("/api/users", userrouter); // Import user routes
 
 
 
