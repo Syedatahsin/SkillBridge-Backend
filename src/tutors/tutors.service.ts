@@ -171,6 +171,14 @@ export const updateTutorProfile = async (
     }
   });
 };
+export const updateFeaturedStatus = async (id: string, isFeatured: boolean) => {
+  return await prisma.tutorProfile.update({
+    where: { id: id },
+    data: {
+      isFeatured: isFeatured,
+    },
+  });
+};
 
 // Delete TutorProfile
 export const deleteTutorProfile = async (id: string) => {

@@ -45,6 +45,17 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true
   },
+  advanced: {
+        // Crucial for Render deployments
+        useSecureCookies: true, 
+    },
+    cookie: {
+        // This allows the cookie to be sent from your-backend.onrender.com 
+        // to your-frontend.onrender.com
+        sameSite: "none", 
+        secure: true,     // Must be true for HTTPS
+        httpOnly: true,   // Security best practice
+    },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
@@ -53,7 +64,7 @@ export const auth = betterAuth({
         console.log(process.env.APP_USER, process.env.APP_PASS);
         const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`
         const info = await transporter.sendMail({
-          from: '"SkillBridge" <anikasyeda82@gmail.com>',
+          from: `"SkillBridge" <${process.env.APP_USER}>`,
           to: user.email,
           subject: "Please verify your email!",
           html: `<!DOCTYPE html>

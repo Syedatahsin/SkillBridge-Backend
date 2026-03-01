@@ -14,9 +14,9 @@ const categoryrouter = Router();
 
 categoryrouter.get("/get", getAllCategoriesController);      // Get all categories
 categoryrouter.get("/:id", getCategoryByIdController);    // Get category by ID
-categoryrouter.delete("/:id", auth(UserRole.ADMIN), deleteCategoryController);  // Delete category
+categoryrouter.delete("/:id",deleteCategoryController);  // Delete category
 // ADMIN
-categoryrouter.post("/admin/categories", auth(UserRole.ADMIN), createCategoryController);        // Create category
-categoryrouter.put("/admin/categories/:id",auth(UserRole.ADMIN), updateCategoryController);     // Update category
+categoryrouter.post("/admin/categories",  createCategoryController);        // Create category
+categoryrouter.put("/admin/categories/:id",updateCategoryController);     // Update category
 
 export default categoryrouter;

@@ -1,6 +1,7 @@
 // controllers/tutorProfileController.ts
 import { Request, Response, NextFunction } from "express";
 import { getFeaturedTutors, tutorProfileService } from "./tutors.service";
+import * as tutorService from "./tutors.service";
 
 export const getTutorIdHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -23,7 +24,39 @@ export const getTutorIdHandler = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+export const toggleFeaturedTutor = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params; // TS sees this as string | string[] | undefined
+    const { isFeatured } = req.body;
 
+    // 1. Fix the TS Error by validating the id
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "A valid Tutor ID string is required" 
+      });
+    }
+
+    if (typeof isFeatured !== "boolean") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "isFeatured must be a boolean" 
+      });
+    }
+
+    // Now 'id' is guaranteed to be a string here
+    const updatedTutor = await tutorService.updateFeaturedStatus(id, isFeatured);
+
+    return res.status(200).json({
+      success: true,
+      message: `Tutor ${isFeatured ? "featured" : "unfeatured"} successfully`,
+      data: updatedTutor,
+    });
+  } catch (error: any) {
+    console.error("Error in toggleFeaturedTutor:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 export const createTutorProfileController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = req.body;

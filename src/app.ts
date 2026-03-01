@@ -19,12 +19,16 @@ dotenv.config();
 const app: Application = express();
 app.use(express.json());
 
+// In app.ts (Backend)
 app.use(cors({
     origin: process.env.APP_URL || "http://localhost:3000", 
     credentials: true
-}))
+}));
 
 app.all("/api/auth/*splat", toNodeHandler(auth)); 
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
 app.use("/api/categories", categoryrouters);
 app.use("/api/tutor", router);
 app.use("/api/support",emailrouter);

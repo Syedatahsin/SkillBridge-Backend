@@ -1,5 +1,6 @@
 // routes/tutorProfileRoutes.ts
 import { Router } from "express";
+import { toggleFeaturedTutor } from "./tutors.controller";
 import {
   createTutorProfileController,
   getTutorProfileByIdController,
@@ -21,18 +22,18 @@ router.delete("/:id", deleteTutorProfileController);
 // ADMIN
 router.patch(
   "admin/users/:id",
-  auth(UserRole.ADMIN),
+  
   updateTutorFeatureController
 );
 // PUBLIC
 router.get("/public/getSEARCHtutors", getAllsearchTutors);
 router.get("/public/featured", getFeaturedTutorsController);
-
+router.patch("/feature/:id", toggleFeaturedTutor);
 router.get("/tutorid/:userId", getTutorIdHandler);        
 
 router.get("/public/:id", getTutorProfileByIdController);    
 // TUTOR
-router.post("/teacher/createprofile", createTutorProfileController);  
+router.post("/teacher/createprofile",createTutorProfileController);  
 router.patch("/update/:id", updateTutorProfileController);
 
 export default router;

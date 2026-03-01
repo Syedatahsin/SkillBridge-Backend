@@ -22,7 +22,6 @@ userrouter.patch('/update/:id', updateUser);
 
 // 3. GENERIC PARAMETER ROUTES (The "Catch-alls")
 userrouter.get("/:id", getUserByIdController);
-userrouter.delete("/:id", deleteUserController);
 
 // NOTE: You have updateUserController twice. 
 // Use the generic one only for internal/admin updates if needed.
