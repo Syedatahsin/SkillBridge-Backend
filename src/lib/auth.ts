@@ -6,11 +6,11 @@ import { z } from "zod";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  port: 465,         // Changed from 587
+  secure: true,      // Changed from false (465 requires secure: true)
   auth: {
     user: process.env.APP_USER,
-    pass: process.env.APP_PASS,
+    pass: process.env.APP_PASS, // Ensure this is your 16-character App Password
   },
 });
 
