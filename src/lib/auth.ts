@@ -1,31 +1,22 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
-import nodemailer from "nodemailer";
+import { Resend } from "resend"; // Changed from nodemailer
 import { z } from "zod";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,         // Changed from 587
-  secure: true,      // Changed from false (465 requires secure: true)
-  auth: {
-    user: process.env.APP_USER,
-    pass: process.env.APP_PASS, // Ensure this is your 16-character App Password
-  },
-});
+// Initialize Resend (Make sure RESEND_API_KEY is in Render Env)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
 
-  // FIX: Clean the URL and add explicit frontend origin to stop CORS errors
   trustedOrigins: [
     process.env.APP_URL?.replace(/\/$/, "") || "", 
     "https://skillbridge-frontend-6qu0.onrender.com"
   ],
 
-  // Better-Auth needs its own URL to handle internal redirects
   baseURL: process.env.BETTER_AUTH_URL,
 
   user: {
@@ -53,12 +44,10 @@ export const auth = betterAuth({
   },
 
   advanced: {
-    // Required for Render's HTTPS environment
     useSecureCookies: true,
   },
 
   cookie: {
-    // Allows cookies to work between frontend and backend on different URLs
     sameSite: "none",
     secure: true,
     httpOnly: true,
@@ -69,12 +58,12 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        // Clean URL for verification link
         const cleanBaseUrl = process.env.APP_URL?.replace(/\/$/, "");
         const verificationUrl = `${cleanBaseUrl}/verify-email?token=${token}`;
 
-        const info = await transporter.sendMail({
-          from: `"SkillBridge" <${process.env.APP_USER}>`,
+        // Using Resend API instead of SMTP to bypass Render's firewall
+        const { data, error } = await resend.emails.send({
+          from: "SkillBridge <onboarding@resend.dev>", // Use this for testing
           to: user.email,
           subject: "Please verify your email!",
           html: `<!DOCTYPE html>
@@ -118,7 +107,12 @@ export const auth = betterAuth({
 </html>`,
         });
 
-        console.log("Verification email sent:", info.messageId);
+        if (error) {
+          console.error("Resend error:", error);
+          throw error;
+        }
+
+        console.log("Verification email sent via Resend:", data?.id);
       } catch (err) {
         console.error("Email error:", err);
         throw err;
