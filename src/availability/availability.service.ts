@@ -1,22 +1,32 @@
 // services/availabilityService.ts
 import { prisma } from "../lib/prisma";
-
-// Create Availability
-// BACKEND: availability.service.ts
-// availability.service.ts
 export const createAvailability = async (data: { 
   tutorId: string; 
   startTime: string; 
   endTime: string; 
 }) => {
-  const cleanId = data.tutorId.trim();
+  const cleanId = data.tutorId.replace(/[^a-zA-Z0-9-]/g, '');
   const start = new Date(data.startTime);
   const end = new Date(data.endTime);
 
-  // 1. Check for any overlapping slot for this tutor
-  const overlap = await prisma.availability.findFirst({
+  // 1. Basic Validation
+  if (start >= end) {
+    throw new Error("End time must be after start time.");
+  }
+
+  // 2. Find the profile
+  const profile = await prisma.tutorProfile.findFirst({
     where: {
-      tutorId: cleanId,
+      OR: [{ id: cleanId }, { userId: cleanId }]
+    }
+  });
+
+  if (!profile) throw new Error(`Tutor profile not found.`);
+
+  // 3. Check for Overlapping Slots
+  const existingOverlap = await prisma.availability.findFirst({
+    where: {
+      tutorId: profile.id,
       OR: [
         {
           // New slot starts during an existing slot
@@ -29,33 +39,28 @@ export const createAvailability = async (data: {
           endTime: { gte: end },
         },
         {
-          // New slot completely wraps around an existing slot
+          // New slot completely covers an existing slot
           startTime: { gte: start },
           endTime: { lte: end },
-        }
+        },
       ],
     },
   });
 
-  // 2. If overlap found, stop here and throw an error
-  if (overlap) {
+  if (existingOverlap) {
     throw new Error("This time slot overlaps with an existing availability.");
   }
 
-  // 3. If clear, proceed with your working create logic
+  // 4. Create the record if no overlap is found
   return await prisma.availability.create({
     data: {
       startTime: start,
       endTime: end,
       isBooked: false,
-      tutor: {
-        connect: { id: cleanId }
-      }
+      tutorId: profile.id
     }
   });
 };
-
-// Get Availability by ID
 export const getAvailabilityById = async (id: string) => {
   return prisma.availability.findUnique({
     where: { id },

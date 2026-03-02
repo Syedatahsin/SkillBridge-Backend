@@ -1,6 +1,7 @@
 // controllers/reviewController.ts
 import { Request, Response, NextFunction } from "express";
 import { ReviewServicee, reviewService } from "../reviews/reviews.service";
+import { getReviewById } from "../reviews/reviews.service";
 
 // Get Review Stats
 export const getReviewStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -24,23 +25,19 @@ export const createReviewController = async (req: Request, res: Response, next: 
   }
 };
 
-// Get Review by ID
-export const getReviewByIdController = async (req: Request, res: Response, next: NextFunction) => {
+export const getReviewStatsHandler = async (req, res) => {
+  const { id } = req.params; // The tutorId
+  
   try {
-    const { id } = req.params;
-    if (!id || Array.isArray(id)) {
-      return res.status(400).json({ message: "Invalid ID" });
-    }
-    const review = await reviewService.getReviewById(id);
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-    res.json(review);
+    // Call your service which returns only the array
+    const reviews = await getReviewById(id);
+
+    // Return ONLY the reviews array
+    return res.status(200).json(reviews);
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 // Get all Reviews
 export const getAllReviewsController = async (_req: Request, res: Response, next: NextFunction) => {
   try {

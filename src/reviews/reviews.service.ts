@@ -15,16 +15,30 @@ export const createReview = async (data: {
   return review;
 };
 
-// Get Review by ID
-export const getReviewById = async (id: string) => {
-  return prisma.review.findUnique({
-    where: { id },
-    include: {
-      student: true,
-      tutor: true,
-      booking: true
-    }
-  });
+export const getReviewById = async (tutorId: string) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { 
+        tutorId: tutorId 
+      },
+      orderBy: { 
+        createdAt: "desc" 
+      },
+      include: {
+        student: {
+          select: { 
+            name: true, 
+            image: true 
+          }
+        }
+      }
+    });
+
+    return reviews; // Returns the full array of review objects
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    throw new Error("Could not fetch reviews");
+  }
 };
 
 export const ReviewServicee = {
@@ -87,7 +101,6 @@ export const deleteReview = async (id: string) => {
 
 export const reviewService = {
   createReview,
-  getReviewById,
   getAllReviews,
   updateReview,
   deleteReview

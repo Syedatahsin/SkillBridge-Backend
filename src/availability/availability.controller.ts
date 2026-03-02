@@ -2,14 +2,27 @@
 import { Request, Response, NextFunction } from "express";
 import { availabilityService } from "../availability/availability.service";
 
-// Create Availability
-export const createAvailabilityController = async (req: Request, res: Response, next: NextFunction) => {
+export const createAvailabilityController = async (req: Request, res: Response) => {
   try {
     const data = req.body;
+    
+    // Log the data to see what the backend is actually receiving
+    console.log("Backend receiving:", data);
+
     const availability = await availabilityService.createAvailability(data);
-    res.status(201).json(availability);
-  } catch (error) {
-    next(error);
+    
+    return res.status(201).json({
+      success: true,
+      data: availability
+    });
+  } catch (error: any) {
+    console.error("PRISMA CRASH:", error);
+    
+    // FORCE JSON RESPONSE
+    return res.status(400).json({ 
+      success: false, 
+      message: error.message || "Database operation failed" 
+    });
   }
 };
 
