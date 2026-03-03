@@ -10,37 +10,63 @@ import emailrouter from './lib/supportemail';
 import router from './tutors/tutors.routes';
 import availabilityrouter from './availability/availability.routes';
 import bookingrouter from './bookings/bookings.routes';
-import   reviewrouter from './reviews/reviews.routes';
+import reviewrouter from './reviews/reviews.routes';
 import userrouter from './users/users.routes';
 
 dotenv.config();
 
-
 const app: Application = express();
-app.use(express.json());
 
-// In app.ts (Backend)
+// 1. Configure allowed origins for local and production
+const allowedOrigins = [
+  process.env.APP_URL, // Your main Frontend URL
+  "http://localhost:3000",
+  "http://localhost:5000",
+].filter(Boolean) as string[];
+
+// 2. Enhanced CORS for Vercel Deployment
 app.use(cors({
-    origin: process.env.APP_URL || "http://localhost:3000", 
-    credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like Postman or mobile)
+    if (!origin) return callback(null, true);
+
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin); // Regex to allow all Vercel previews
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["Set-Cookie"],
 }));
 
+app.use(express.json());
+
+// Better Auth Handler
 app.all("/api/auth/*splat", toNodeHandler(auth)); 
+
+// Health Check
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("SkillBridge API is running...");
 });
+
+// Routes
 app.use("/api/categories", categoryrouters);
 app.use("/api/tutor", router);
-app.use("/api/support",emailrouter);
+app.use("/api/support", emailrouter);
 app.use("/api/availability", availabilityrouter);
 app.use("/api/bookings", bookingrouter);
 app.use("/api/reviews", reviewrouter);
-app.use("/api/users", userrouter); // Import user routes
+app.use("/api/users", userrouter); 
 
+// Error Handling
+app.use(notFound);
+app.use(errorHandler); // Uncommented to ensure production doesn't crash silently
 
-
-
-
-app.use(notFound)
-// app.use(errorHandler)
 export default app;

@@ -25,12 +25,12 @@ export const createReviewController = async (req: Request, res: Response, next: 
   }
 };
 
-export const getReviewStatsHandler = async (req, res) => {
+export const getReviewStatsHandler = async (req: Request, res: Response) => {
   const { id } = req.params; // The tutorId
   
   try {
     // Call your service which returns only the array
-    const reviews = await getReviewById(id);
+    const reviews = await getReviewById(id as any);
 
     // Return ONLY the reviews array
     return res.status(200).json(reviews);

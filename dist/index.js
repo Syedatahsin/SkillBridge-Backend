@@ -1,3 +1,9 @@
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
 // src/app.ts
 import cors from "cors";
 import express from "express";
@@ -32,8 +38,8 @@ var config = {
 };
 config.runtimeDataModel = JSON.parse('{"models":{"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"image","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"sessions","kind":"object","type":"Session","relationName":"SessionToUser"},{"name":"accounts","kind":"object","type":"Account","relationName":"AccountToUser"},{"name":"tutorProfile","kind":"object","type":"TutorProfile","relationName":"TutorProfileToUser"},{"name":"bookingsAsStudent","kind":"object","type":"Booking","relationName":"StudentBookings"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToUser"},{"name":"role","kind":"scalar","type":"String"},{"name":"status","kind":"scalar","type":"String"}],"dbName":"user"},"Session":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"token","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"ipAddress","kind":"scalar","type":"String"},{"name":"userAgent","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"SessionToUser"}],"dbName":"session"},"Account":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"accountId","kind":"scalar","type":"String"},{"name":"providerId","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"AccountToUser"},{"name":"accessToken","kind":"scalar","type":"String"},{"name":"refreshToken","kind":"scalar","type":"String"},{"name":"idToken","kind":"scalar","type":"String"},{"name":"accessTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"refreshTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"scope","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"account"},"Verification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"identifier","kind":"scalar","type":"String"},{"name":"value","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"verification"},"TutorProfile":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"pricePerHour","kind":"scalar","type":"Float"},{"name":"isFeatured","kind":"scalar","type":"Boolean"},{"name":"user","kind":"object","type":"User","relationName":"TutorProfileToUser"},{"name":"categories","kind":"object","type":"TutorCategory","relationName":"TutorCategoryToTutorProfile"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToTutorProfile"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToTutorProfile"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToTutorProfile"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":null},"Category":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"tutors","kind":"object","type":"TutorCategory","relationName":"CategoryToTutorCategory"},{"name":"createdAt","kind":"scalar","type":"DateTime"}],"dbName":null},"TutorCategory":{"fields":[{"name":"tutorId","kind":"scalar","type":"String"},{"name":"categoryId","kind":"scalar","type":"String"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"TutorCategoryToTutorProfile"},{"name":"category","kind":"object","type":"Category","relationName":"CategoryToTutorCategory"}],"dbName":null},"Availability":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"isBooked","kind":"scalar","type":"Boolean"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"AvailabilityToTutorProfile"},{"name":"booking","kind":"object","type":"Booking","relationName":"AvailabilityToBooking"},{"name":"createdAt","kind":"scalar","type":"DateTime"}],"dbName":null},"Booking":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"availabilityId","kind":"scalar","type":"String"},{"name":"meetingLink","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"BookingStatus"},{"name":"student","kind":"object","type":"User","relationName":"StudentBookings"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"BookingToTutorProfile"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToBooking"},{"name":"review","kind":"object","type":"Review","relationName":"BookingToReview"},{"name":"createdAt","kind":"scalar","type":"DateTime"}],"dbName":null},"Review":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"rating","kind":"scalar","type":"Int"},{"name":"comment","kind":"scalar","type":"String"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToReview"},{"name":"student","kind":"object","type":"User","relationName":"ReviewToUser"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"ReviewToTutorProfile"},{"name":"createdAt","kind":"scalar","type":"DateTime"}],"dbName":null}},"enums":{},"types":{}}');
 async function decodeBase64AsWasm(wasmBase64) {
-  const { Buffer } = await import("buffer");
-  const wasmArray = Buffer.from(wasmBase64, "base64");
+  const { Buffer: Buffer2 } = await import("buffer");
+  const wasmArray = Buffer2.from(wasmBase64, "base64");
   return new WebAssembly.Module(wasmArray);
 }
 config.compilerWasm = {
@@ -49,12 +55,78 @@ function getPrismaClientClass() {
 }
 
 // src/generated/prisma/internal/prismaNamespace.ts
+var prismaNamespace_exports = {};
+__export(prismaNamespace_exports, {
+  AccountScalarFieldEnum: () => AccountScalarFieldEnum,
+  AnyNull: () => AnyNull2,
+  AvailabilityScalarFieldEnum: () => AvailabilityScalarFieldEnum,
+  BookingScalarFieldEnum: () => BookingScalarFieldEnum,
+  CategoryScalarFieldEnum: () => CategoryScalarFieldEnum,
+  DbNull: () => DbNull2,
+  Decimal: () => Decimal2,
+  JsonNull: () => JsonNull2,
+  ModelName: () => ModelName,
+  NullTypes: () => NullTypes2,
+  NullsOrder: () => NullsOrder,
+  PrismaClientInitializationError: () => PrismaClientInitializationError2,
+  PrismaClientKnownRequestError: () => PrismaClientKnownRequestError2,
+  PrismaClientRustPanicError: () => PrismaClientRustPanicError2,
+  PrismaClientUnknownRequestError: () => PrismaClientUnknownRequestError2,
+  PrismaClientValidationError: () => PrismaClientValidationError2,
+  QueryMode: () => QueryMode,
+  ReviewScalarFieldEnum: () => ReviewScalarFieldEnum,
+  SessionScalarFieldEnum: () => SessionScalarFieldEnum,
+  SortOrder: () => SortOrder,
+  Sql: () => Sql2,
+  TransactionIsolationLevel: () => TransactionIsolationLevel,
+  TutorCategoryScalarFieldEnum: () => TutorCategoryScalarFieldEnum,
+  TutorProfileScalarFieldEnum: () => TutorProfileScalarFieldEnum,
+  UserScalarFieldEnum: () => UserScalarFieldEnum,
+  VerificationScalarFieldEnum: () => VerificationScalarFieldEnum,
+  defineExtension: () => defineExtension,
+  empty: () => empty2,
+  getExtensionContext: () => getExtensionContext,
+  join: () => join2,
+  prismaVersion: () => prismaVersion,
+  raw: () => raw2,
+  sql: () => sql
+});
 import * as runtime2 from "@prisma/client/runtime/client";
+var PrismaClientKnownRequestError2 = runtime2.PrismaClientKnownRequestError;
+var PrismaClientUnknownRequestError2 = runtime2.PrismaClientUnknownRequestError;
+var PrismaClientRustPanicError2 = runtime2.PrismaClientRustPanicError;
+var PrismaClientInitializationError2 = runtime2.PrismaClientInitializationError;
+var PrismaClientValidationError2 = runtime2.PrismaClientValidationError;
+var sql = runtime2.sqltag;
+var empty2 = runtime2.empty;
+var join2 = runtime2.join;
+var raw2 = runtime2.raw;
+var Sql2 = runtime2.Sql;
+var Decimal2 = runtime2.Decimal;
 var getExtensionContext = runtime2.Extensions.getExtensionContext;
+var prismaVersion = {
+  client: "7.3.0",
+  engine: "9d6ad21cbbceab97458517b147a6a09ff43aa735"
+};
 var NullTypes2 = {
   DbNull: runtime2.NullTypes.DbNull,
   JsonNull: runtime2.NullTypes.JsonNull,
   AnyNull: runtime2.NullTypes.AnyNull
+};
+var DbNull2 = runtime2.DbNull;
+var JsonNull2 = runtime2.JsonNull;
+var AnyNull2 = runtime2.AnyNull;
+var ModelName = {
+  User: "User",
+  Session: "Session",
+  Account: "Account",
+  Verification: "Verification",
+  TutorProfile: "TutorProfile",
+  Category: "Category",
+  TutorCategory: "TutorCategory",
+  Availability: "Availability",
+  Booking: "Booking",
+  Review: "Review"
 };
 var TransactionIsolationLevel = runtime2.makeStrictEnum({
   ReadUncommitted: "ReadUncommitted",
@@ -62,6 +134,108 @@ var TransactionIsolationLevel = runtime2.makeStrictEnum({
   RepeatableRead: "RepeatableRead",
   Serializable: "Serializable"
 });
+var UserScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  email: "email",
+  emailVerified: "emailVerified",
+  image: "image",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+  role: "role",
+  status: "status"
+};
+var SessionScalarFieldEnum = {
+  id: "id",
+  expiresAt: "expiresAt",
+  token: "token",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+  ipAddress: "ipAddress",
+  userAgent: "userAgent",
+  userId: "userId"
+};
+var AccountScalarFieldEnum = {
+  id: "id",
+  accountId: "accountId",
+  providerId: "providerId",
+  userId: "userId",
+  accessToken: "accessToken",
+  refreshToken: "refreshToken",
+  idToken: "idToken",
+  accessTokenExpiresAt: "accessTokenExpiresAt",
+  refreshTokenExpiresAt: "refreshTokenExpiresAt",
+  scope: "scope",
+  password: "password",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt"
+};
+var VerificationScalarFieldEnum = {
+  id: "id",
+  identifier: "identifier",
+  value: "value",
+  expiresAt: "expiresAt",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt"
+};
+var TutorProfileScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  bio: "bio",
+  experience: "experience",
+  pricePerHour: "pricePerHour",
+  isFeatured: "isFeatured",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt"
+};
+var CategoryScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  description: "description",
+  createdAt: "createdAt"
+};
+var TutorCategoryScalarFieldEnum = {
+  tutorId: "tutorId",
+  categoryId: "categoryId"
+};
+var AvailabilityScalarFieldEnum = {
+  id: "id",
+  tutorId: "tutorId",
+  startTime: "startTime",
+  endTime: "endTime",
+  isBooked: "isBooked",
+  createdAt: "createdAt"
+};
+var BookingScalarFieldEnum = {
+  id: "id",
+  studentId: "studentId",
+  tutorId: "tutorId",
+  availabilityId: "availabilityId",
+  meetingLink: "meetingLink",
+  status: "status",
+  createdAt: "createdAt"
+};
+var ReviewScalarFieldEnum = {
+  id: "id",
+  bookingId: "bookingId",
+  studentId: "studentId",
+  tutorId: "tutorId",
+  rating: "rating",
+  comment: "comment",
+  createdAt: "createdAt"
+};
+var SortOrder = {
+  asc: "asc",
+  desc: "desc"
+};
+var QueryMode = {
+  default: "default",
+  insensitive: "insensitive"
+};
+var NullsOrder = {
+  first: "first",
+  last: "last"
+};
 var defineExtension = runtime2.Extensions.defineExtension;
 
 // src/generated/prisma/client.ts
@@ -86,11 +260,25 @@ var transporter = nodemailer.createTransport({
   }
 });
 var auth = betterAuth({
+  // 1. ADDED: Tell Better Auth the Backend URL for redirects
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
   database: prismaAdapter(prisma, {
     provider: "postgresql"
-    // or "mysql", "postgresql", ...etc
   }),
-  trustedOrigins: [process.env.APP_URL],
+  // 2. MODIFIED: Dynamic origins to allow Vercel previews and local dev
+  trustedOrigins: async (request) => {
+    const origin = request?.headers.get("origin");
+    const allowedOrigins2 = [
+      process.env.APP_URL,
+      process.env.BETTER_AUTH_URL,
+      "http://localhost:3000",
+      "http://localhost:5000"
+    ].filter(Boolean);
+    if (!origin || allowedOrigins2.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
+      return [origin];
+    }
+    return [];
+  },
   user: {
     additionalFields: {
       role: {
@@ -113,28 +301,14 @@ var auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true
   },
-  advanced: {
-    // Crucial for Render deployments
-    useSecureCookies: true
-  },
-  cookie: {
-    // This allows the cookie to be sent from your-backend.onrender.com 
-    // to your-frontend.onrender.com
-    sameSite: "none",
-    secure: true,
-    // Must be true for HTTPS
-    httpOnly: true
-    // Security best practice
-  },
   emailVerification: {
     sendOnSignUp: true,
-    autoSignInAfterVerification: true,
+    autoSignInAfterVerification: false,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        console.log(process.env.APP_USER, process.env.APP_PASS);
         const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
         const info = await transporter.sendMail({
-          from: `"SkillBridge" <${process.env.APP_USER}>`,
+          from: '"SkillBridge" <anikasyeda82@gmail.com>',
           to: user.email,
           subject: "Please verify your email!",
           html: `<!DOCTYPE html>
@@ -144,182 +318,34 @@ var auth = betterAuth({
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SkillBridge Verification</title>
   <style>
-    /* Reset styles for email clients */
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100% !important;
-      background-color: #050505;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .wrapper {
-      width: 100%;
-      table-layout: fixed;
-      background-color: #050505;
-      padding-bottom: 40px;
-    }
-
-    .container {
-      max-width: 600px;
-      background-color: #0A0A0B;
-      margin: 40px auto;
-      border-radius: 32px;
-      border: 1px solid #1f1f23;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Header with SkillBridge Branding */
-    .header {
-      padding: 40px 20px;
-      text-align: center;
-      background: linear-gradient(to bottom, #0A0A0B, #0f0f11);
-    }
-
-    .logo-text {
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      text-transform: uppercase;
-      font-style: italic;
-      color: #ffffff;
-      margin: 0;
-    }
-
-    .logo-accent {
-      color: #a855f7; /* Purple accent */
-    }
-
-    /* Content Area */
-    .content {
-      padding: 0 40px 40px 40px;
-      text-align: center;
-      color: #e5e7eb;
-    }
-
-    .content h2 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 10px;
-    }
-
-    .content p {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #9ca3af;
-      margin: 20px 0;
-    }
-
-    .user-name {
-      color: #ffffff;
-      font-weight: bold;
-    }
-
-    /* Enthusiastic Button */
-    .btn-container {
-      margin: 35px 0;
-    }
-
-    .verify-button {
-      background: linear-gradient(to right, #9333ea, #2563eb);
-      color: #ffffff !important;
-      padding: 18px 45px;
-      text-decoration: none;
-      font-weight: 900;
-      border-radius: 14px;
-      display: inline-block;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    /* Fallback Link */
-    .fallback-box {
-      background-color: rgba(255, 255, 255, 0.03);
-      border: 1px solid #1f1f23;
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 30px;
-    }
-
-    .fallback-link {
-      word-break: break-all;
-      font-size: 12px;
-      color: #a855f7;
-      text-decoration: none;
-    }
-
-    /* Footer */
-    .footer {
-      padding: 30px;
-      text-align: center;
-      font-size: 12px;
-      color: #4b5563;
-      border-top: 1px solid #1f1f23;
-    }
-
-    .footer p {
-      margin: 5px 0;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    @media only screen and (max-width: 600px) {
-      .container {
-        margin: 10px;
-        border-radius: 20px;
-      }
-      .content {
-        padding: 0 20px 30px 20px;
-      }
-    }
+    body { margin: 0; padding: 0; width: 100% !important; background-color: #050505; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .wrapper { width: 100%; table-layout: fixed; background-color: #050505; padding-bottom: 40px; }
+    .container { max-width: 600px; background-color: #0A0A0B; margin: 40px auto; border-radius: 32px; border: 1px solid #1f1f23; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); overflow: hidden; }
+    .header { padding: 40px 20px; text-align: center; }
+    .logo-text { font-size: 32px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; font-style: italic; color: #ffffff; margin: 0; }
+    .logo-accent { color: #a855f7; }
+    .content { padding: 0 40px 40px 40px; text-align: center; color: #e5e7eb; }
+    .verify-button { background: linear-gradient(to right, #9333ea, #2563eb); color: #ffffff !important; padding: 18px 45px; text-decoration: none; font-weight: 900; border-radius: 14px; display: inline-block; text-transform: uppercase; letter-spacing: 2px; }
+    .footer { padding: 30px; text-align: center; font-size: 12px; color: #4b5563; border-top: 1px solid #1f1f23; }
   </style>
 </head>
-
 <body>
   <div class="wrapper">
     <div class="container">
-      
       <div class="header">
         <h1 class="logo-text">SKILL<span class="logo-accent">BRIDGE</span></h1>
-        <p style="color: #6b7280; font-size: 10px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-top: 5px;">
-          Learners & Teachers Hub
-        </p>
       </div>
-
       <div class="content">
         <h2>Verify your terminal</h2>
-        <p>
-          Hello <span class="user-name">${user.name}</span>,<br>
-          Welcome to the SkillBridge ecosystem. To finalize your access and begin your journey, please verify your email address.
-        </p>
-
-        <div class="btn-container">
-          <a href="${verificationUrl}" class="verify-button">Verify Identity</a>
-            </div>
-
-        <p style="font-size: 13px;">
-          If the button above does not initialize, copy and paste this link into your browser:
-        </p>
-        
-        <div class="fallback-box">
-          <a href="${url}" class="fallback-link">${url}</a>
-        </div>
+        <p>Hello <span class="user-name">${user.name}</span>, welcome to SkillBridge.</p>
+        <div class="btn-container"><a href="${verificationUrl}" class="verify-button">Verify Identity</a></div>
+        <div class="fallback-box"><a href="${url}" style="color:#a855f7; font-size:12px;">${url}</a></div>
       </div>
-
-      <div class="footer">
-        <p>\xA9 2026 SKILLBRIDGE ECOSYSTEM</p>
-        <p style="font-size: 10px;">If you did not request this, please disregard.</p>
-      </div>
-
+      <div class="footer"><p>\xA9 2026 SKILLBRIDGE ECOSYSTEM</p></div>
     </div>
   </div>
 </body>
-</html>
-`
+</html>`
         });
         console.log("Message sent:", info.messageId);
       } catch (err) {
@@ -327,8 +353,90 @@ var auth = betterAuth({
         throw err;
       }
     }
+  },
+  // 3. ADDED: Advanced settings for Production Cookies
+  advanced: {
+    cookiePrefix: "skillbridge-auth",
+    useSecureCookies: process.env.NODE_ENV === "production",
+    // Essential for cross-domain frontend/backend
+    sameSiteCookie: "none"
+  },
+  // 4. ADDED: Performance caching for sessions
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60
+    }
   }
 });
+
+// src/middlewares/globalErrorHandler.ts
+function errorHandler(err, req, res, next) {
+  let statusCode = 500;
+  let errorMessage = "Something went wrong on our end. Please try again later.";
+  let errorDetails = process.env.NODE_ENV === "development" ? {
+    message: err.message,
+    stack: err.stack,
+    path: req.originalUrl,
+    ...err
+    // This spreads only serializable properties
+  } : {};
+  if (err instanceof prismaNamespace_exports.PrismaClientValidationError) {
+    statusCode = 400;
+    errorMessage = "Invalid data provided. Please check your field types and required fields.";
+  } else if (err instanceof prismaNamespace_exports.PrismaClientKnownRequestError) {
+    switch (err.code) {
+      case "P2002":
+        statusCode = 409;
+        errorMessage = `A record with this ${err.meta?.target || "unique field"} already exists.`;
+        break;
+      case "P2003":
+        statusCode = 400;
+        errorMessage = "Foreign key constraint failed. The related record does not exist.";
+        break;
+      case "P2025":
+        statusCode = 404;
+        errorMessage = "The requested record was not found.";
+        break;
+      case "P2014":
+        statusCode = 400;
+        errorMessage = "The change you are trying to make would violate a required relation.";
+        break;
+      default:
+        statusCode = 400;
+        errorMessage = `Database error: ${err.message}`;
+    }
+  } else if (err instanceof prismaNamespace_exports.PrismaClientInitializationError) {
+    statusCode = 503;
+    if (err.errorCode === "P1001") {
+      errorMessage = "Database server is unreachable. Check your network or database status.";
+    } else if (err.errorCode === "P1017") {
+      errorMessage = "Server has lost connection to the database.";
+    } else {
+      errorMessage = "Failed to initialize database connection.";
+    }
+  } else if (err instanceof prismaNamespace_exports.PrismaClientUnknownRequestError || err instanceof prismaNamespace_exports.PrismaClientRustPanicError) {
+    statusCode = 500;
+    errorMessage = "An unexpected database engine error occurred.";
+  } else if (err instanceof Error) {
+    errorMessage = err.message;
+    if ("status" in err) {
+      statusCode = err.status;
+    } else if ("statusCode" in err) {
+      statusCode = err.statusCode;
+    }
+  }
+  if (res.headersSent) {
+    return next(err);
+  }
+  console.error(`[Error] ${req.method} ${req.url}:`, errorMessage);
+  res.status(statusCode).json({
+    success: false,
+    message: errorMessage,
+    error: errorDetails
+  });
+}
+var globalErrorHandler_default = errorHandler;
 
 // src/middlewares/notFound.ts
 function notFound(req, res) {
@@ -874,12 +982,21 @@ import { Router as Router4 } from "express";
 
 // src/availability/availability.service.ts
 var createAvailability = async (data) => {
-  const cleanId = data.tutorId.trim();
+  const cleanId = data.tutorId.replace(/[^a-zA-Z0-9-]/g, "");
   const start = new Date(data.startTime);
   const end = new Date(data.endTime);
-  const overlap = await prisma.availability.findFirst({
+  if (start >= end) {
+    throw new Error("End time must be after start time.");
+  }
+  const profile = await prisma.tutorProfile.findFirst({
     where: {
-      tutorId: cleanId,
+      OR: [{ id: cleanId }, { userId: cleanId }]
+    }
+  });
+  if (!profile) throw new Error(`Tutor profile not found.`);
+  const existingOverlap = await prisma.availability.findFirst({
+    where: {
+      tutorId: profile.id,
       OR: [
         {
           // New slot starts during an existing slot
@@ -892,14 +1009,14 @@ var createAvailability = async (data) => {
           endTime: { gte: end }
         },
         {
-          // New slot completely wraps around an existing slot
+          // New slot completely covers an existing slot
           startTime: { gte: start },
           endTime: { lte: end }
         }
       ]
     }
   });
-  if (overlap) {
+  if (existingOverlap) {
     throw new Error("This time slot overlaps with an existing availability.");
   }
   return await prisma.availability.create({
@@ -907,9 +1024,7 @@ var createAvailability = async (data) => {
       startTime: start,
       endTime: end,
       isBooked: false,
-      tutor: {
-        connect: { id: cleanId }
-      }
+      tutorId: profile.id
     }
   });
 };
@@ -944,13 +1059,21 @@ var availabilityService = {
 };
 
 // src/availability/availability.controller.ts
-var createAvailabilityController = async (req, res, next) => {
+var createAvailabilityController = async (req, res) => {
   try {
     const data = req.body;
+    console.log("Backend receiving:", data);
     const availability = await availabilityService.createAvailability(data);
-    res.status(201).json(availability);
+    return res.status(201).json({
+      success: true,
+      data: availability
+    });
   } catch (error) {
-    next(error);
+    console.error("PRISMA CRASH:", error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Database operation failed"
+    });
   }
 };
 var getAvailabilityByIdController = async (req, res, next) => {
@@ -996,11 +1119,11 @@ var deleteAvailabilityController = async (req, res, next) => {
 
 // src/availability/availability.routes.ts
 var availabilityrouter = Router4();
+availabilityrouter.post("/create", createAvailabilityController);
 availabilityrouter.get("/", getAllAvailabilitiesController);
 availabilityrouter.get("/:id", getAvailabilityByIdController);
 availabilityrouter.put("/:id", updateAvailabilityController);
 availabilityrouter.delete("/:id", deleteAvailabilityController);
-availabilityrouter.post("/create", createAvailabilityController);
 var availability_routes_default = availabilityrouter;
 
 // src/bookings/bookings.routes.ts
@@ -1360,15 +1483,29 @@ var createReview = async (data) => {
   });
   return review;
 };
-var getReviewById = async (id) => {
-  return prisma.review.findUnique({
-    where: { id },
-    include: {
-      student: true,
-      tutor: true,
-      booking: true
-    }
-  });
+var getReviewById = async (tutorId) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        tutorId
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      include: {
+        student: {
+          select: {
+            name: true,
+            image: true
+          }
+        }
+      }
+    });
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    throw new Error("Could not fetch reviews");
+  }
 };
 var ReviewServicee = {
   async getTutorReviewStats(tutorId) {
@@ -1416,7 +1553,6 @@ var deleteReview = async (id) => {
 };
 var reviewService = {
   createReview,
-  getReviewById,
   getAllReviews,
   updateReview,
   deleteReview
@@ -1441,19 +1577,13 @@ var createReviewController = async (req, res, next) => {
     next(error);
   }
 };
-var getReviewByIdController = async (req, res, next) => {
+var getReviewStatsHandler = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    if (!id || Array.isArray(id)) {
-      return res.status(400).json({ message: "Invalid ID" });
-    }
-    const review = await reviewService.getReviewById(id);
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-    res.json(review);
+    const reviews = await getReviewById(id);
+    return res.status(200).json(reviews);
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 var getAllReviewsController = async (_req, res, next) => {
@@ -1494,10 +1624,9 @@ var deleteReviewController = async (req, res, next) => {
 var router2 = Router6();
 router2.get("/", getAllReviewsController);
 router2.post("/", createReviewController);
-router2.get("/:id", getReviewByIdController);
 router2.put("/:id", updateReviewController);
 router2.delete("/:id", deleteReviewController);
-router2.get("/:id", getReviewByIdController);
+router2.get("/:id", getReviewStatsHandler);
 router2.get("/stats/:tutorId", getReviewStats);
 var reviews_routes_default = router2;
 
@@ -1674,14 +1803,31 @@ var users_routes_default = userrouter;
 // src/app.ts
 dotenv.config();
 var app = express();
-app.use(express.json());
+var allowedOrigins = [
+  process.env.APP_URL,
+  // Your main Frontend URL
+  "http://localhost:3000",
+  "http://localhost:5000"
+].filter(Boolean);
 app.use(cors({
-  origin: process.env.APP_URL || "http://localhost:3000",
-  credentials: true
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const isAllowed = allowedOrigins.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin);
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["Set-Cookie"]
 }));
+app.use(express.json());
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("SkillBridge API is running...");
 });
 app.use("/api/categories", categories_routes_default);
 app.use("/api/tutor", tutors_routes_default);
@@ -1691,21 +1837,16 @@ app.use("/api/bookings", bookings_routes_default);
 app.use("/api/reviews", reviews_routes_default);
 app.use("/api/users", users_routes_default);
 app.use(notFound);
+app.use(globalErrorHandler_default);
 var app_default = app;
 
 // src/index.ts
-var PORT = process.env.PORT || 5e3;
-async function main() {
-  try {
-    await prisma.$connect();
-    console.log("Connected to the database successfully.");
-    app_default.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    console.error("An error occurred:", error);
-    await prisma.$disconnect();
-    process.exit(1);
-  }
-}
-main();
+prisma.$connect().then(() => {
+  console.log("Database connected successfully.");
+}).catch((err) => {
+  console.error("Database connection failed:", err);
+});
+var index_default = app_default;
+export {
+  index_default as default
+};
