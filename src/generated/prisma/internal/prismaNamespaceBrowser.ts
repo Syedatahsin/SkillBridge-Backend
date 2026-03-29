@@ -60,6 +60,7 @@ export const ModelName = {
   TutorCategory: 'TutorCategory',
   Availability: 'Availability',
   Booking: 'Booking',
+  Payment: 'Payment',
   Review: 'Review'
 } as const
 
@@ -194,6 +195,19 @@ export const BookingScalarFieldEnum = {
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  stripeSessionId: 'stripeSessionId',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ReviewScalarFieldEnum = {

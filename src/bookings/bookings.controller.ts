@@ -1,6 +1,8 @@
 // controllers/bookingController.ts
 import { Request, Response, NextFunction } from "express";
 import { bookingService, BookingService, studentBookingService } from "../bookings/bookings.service";
+import { prisma } from "../lib/prisma";
+import { stripe } from "../lib/stripe";
 
 export const studentBookingController = {
   // GET: Fetch sessions where the logged-in user is the student
@@ -67,7 +69,6 @@ export const BookingController = {
     }
   }
 };
-
 export const createBookingController = async (
   req: Request,
   res: Response,
@@ -77,11 +78,11 @@ export const createBookingController = async (
     const { studentId, tutorId, availabilityId, meetingLink } = req.body;
 
     if (!studentId) {
-      return res.status(401).json({
-        message: "Unauthorized. Please log in.",
-      });
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
     }
 
+    // 1. DATABASE STEP: Create the PENDING booking first
+    // This uses your existing service we modified to default to "PENDING"
     const booking = await bookingService.createBookingService(
       studentId,
       tutorId,
@@ -89,9 +90,44 @@ export const createBookingController = async (
       meetingLink
     );
 
+    // 2. FETCH TUTOR STEP: We need the price from the DB (don't trust frontend price!)
+    const tutor = await prisma.tutorProfile.findUnique({
+      where: { id: tutorId },
+      include: { user: true } // to get the teacher's name for the Stripe UI
+    });
+
+    if (!tutor) throw new Error("Tutor not found");
+
+    // 3. STRIPE STEP: Ask Stripe for a Checkout URL
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: { 
+            name: `Session with ${tutor.user?.name || 'Tutor'}`,
+            description: `Booking ID: ${booking.id}` 
+          },
+          unit_amount: Math.round(tutor.pricePerHour * 100), // Convert to cents
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      // Where to send the user after they finish
+      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/tutors/${tutorId}`,
+      // IMPORTANT: Hide the booking ID in metadata so the Webhook can find it later
+      metadata: {
+        bookingId: booking.id,
+      },
+    });
+
+    // 4. RESPONSE STEP: Send the Stripe URL to the frontend
+    // The frontend will use this to redirect the student
     return res.status(201).json({
       success: true,
-      data: booking,
+      url: session.url, // <--- This is the golden ticket!
+      bookingId: booking.id,
     });
 
   } catch (error) {
