@@ -5,6 +5,8 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from './lib/auth';
 import errorHandler from './middlewares/globalErrorHandler';
 import { notFound } from './middlewares/notFound';
+
+// Import your route handlers
 import categoryrouters from './categories/categories.routes';
 import emailrouter from './lib/supportemail';
 import router from './tutors/tutors.routes';
@@ -13,26 +15,26 @@ import bookingrouter from './bookings/bookings.routes';
 import reviewrouter from './reviews/reviews.routes';
 import userrouter from './users/users.routes';
 
+// Load environment variables
 dotenv.config();
 
 const app: Application = express();
 
-// 1. Configure allowed origins for local and production
+// --- 1. CORS CONFIGURATION ---
+// Must stay at the top to handle Preflight (OPTIONS) requests
 const allowedOrigins = [
-  process.env.APP_URL, // Your main Frontend URL
+  process.env.APP_URL, 
   "http://localhost:3000",
   "http://localhost:5000",
 ].filter(Boolean) as string[];
 
-// 2. Enhanced CORS for Vercel Deployment
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like Postman or mobile)
     if (!origin) return callback(null, true);
 
     const isAllowed =
       allowedOrigins.includes(origin) ||
-      /^https:\/\/.*\.vercel\.app$/.test(origin); // Regex to allow all Vercel previews
+      /^https:\/\/.*\.vercel\.app$/.test(origin); 
 
     if (isAllowed) {
       callback(null, true);
@@ -46,17 +48,21 @@ app.use(cors({
   exposedHeaders: ["Set-Cookie"],
 }));
 
+// --- 2. BETTER AUTH HANDLER ---
+// CRITICAL: This MUST be placed BEFORE express.json() 
+// We use the standard "*" wildcard to ensure all auth paths are captured correctly.
+app.all("/api/auth/*splat", toNodeHandler(auth));
+// --- 3. BODY PARSERS ---
+// Only runs for routes defined below this line
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Better Auth Handler
-app.all("/api/auth/*splat", toNodeHandler(auth)); 
-
-// Health Check
+// --- 4. PUBLIC & SYSTEM ROUTES ---
 app.get("/", (req, res) => {
   res.send("SkillBridge API is running...");
 });
 
-// Routes
+// --- 5. APPLICATION ROUTES ---
 app.use("/api/categories", categoryrouters);
 app.use("/api/tutor", router);
 app.use("/api/support", emailrouter);
@@ -65,8 +71,8 @@ app.use("/api/bookings", bookingrouter);
 app.use("/api/reviews", reviewrouter);
 app.use("/api/users", userrouter); 
 
-// Error Handling
+// --- 6. ERROR HANDLING ---
 app.use(notFound);
-app.use(errorHandler); // Uncommented to ensure production doesn't crash silently
+app.use(errorHandler); 
 
 export default app;

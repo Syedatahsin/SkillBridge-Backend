@@ -51,20 +51,6 @@ export const studentBookingService = {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const createBookingService = async (
   studentId: string,
   tutorId: string,
@@ -87,13 +73,17 @@ export const createBookingService = async (
     throw new Error("This slot has already been taken.");
   }
 
+  // 🛠️ EDIT: Create a unique fallback link if meetingLink is missing
+  const generatedLink = `https://meet.jit.si/skillbridge-${availabilityId.slice(0, 8)}`;
+
   // 3️⃣ Create the booking
   const newBooking = await prisma.booking.create({
     data: {
       studentId,
       tutorId,
       availabilityId,
-      meetingLink: meetingLink || null,
+      // Use the provided link, otherwise use our generated unique link
+      meetingLink: meetingLink || generatedLink, 
       status: "CONFIRMED",
     },
   });

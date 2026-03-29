@@ -1183,12 +1183,14 @@ var createBookingService = async (studentId, tutorId, availabilityId, meetingLin
   if (updatedSlot.count === 0) {
     throw new Error("This slot has already been taken.");
   }
+  const generatedLink = `https://meet.jit.si/skillbridge-${availabilityId.slice(0, 8)}`;
   const newBooking = await prisma.booking.create({
     data: {
       studentId,
       tutorId,
       availabilityId,
-      meetingLink: meetingLink || null,
+      // Use the provided link, otherwise use our generated unique link
+      meetingLink: meetingLink || generatedLink,
       status: "CONFIRMED"
     }
   });
@@ -1805,7 +1807,6 @@ dotenv.config();
 var app = express();
 var allowedOrigins = [
   process.env.APP_URL,
-  // Your main Frontend URL
   "http://localhost:3000",
   "http://localhost:5000"
 ].filter(Boolean);
@@ -1824,8 +1825,9 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposedHeaders: ["Set-Cookie"]
 }));
-app.use(express.json());
 app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("SkillBridge API is running...");
 });
