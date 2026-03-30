@@ -1893,10 +1893,13 @@ router3.post(
         await prisma.booking.update({
           where: { id: bookingId },
           data: {
-            status: "CONFIRMED"
-            // Ensure these fields exist in your Booking model if you deleted the Payment table
-            // totalPrice: paidAmount, 
-            // stripeSessionId: stripeSessionId 
+            status: "CONFIRMED",
+            // This is the fix: it updates the related availability slot to true
+            availability: {
+              update: {
+                isBooked: true
+              }
+            }
           }
         });
         await prisma.payment.create({
@@ -1907,7 +1910,7 @@ router3.post(
             status: "PAID"
           }
         }).catch(() => console.log("Payment record already exists or table deleted."));
-        console.log(`\u2705 Database synced for Booking ${bookingId}`);
+        console.log(`\u2705 Database synced for Booking ${bookingId} and Slot marked as Booked`);
       } catch (error) {
         console.error("\u274C Database update failed:", error);
         return res.status(500).json({ error: "Database update failed" });

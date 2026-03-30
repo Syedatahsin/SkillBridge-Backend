@@ -101,36 +101,29 @@ export const createBookingService = async (
   });
 };
 export const BookingService = {
-  /**
-   * Fetches all bookings for a teacher.
-   * Handles both the User ID (auth) or the TutorProfile ID.
-   */
+  
   async getTeacherBookings(identifier: string) {
-    // 1. Find the profile first by checking both ID columns
+    // 1. Find the profile first
     const profile = await prisma.tutorProfile.findFirst({
       where: {
         OR: [
-          { id: identifier },      // e.g., "a26404ee-..."
-          { userId: identifier }   // e.g., "apWRppI6..."
+          { id: identifier },
+          { userId: identifier }
         ]
       }
     });
 
-    // Logging for your terminal debugging
     if (!profile) {
       console.log(`[Service] No TutorProfile found for: ${identifier}`);
-      return []; 
+      return { bookings: [], totalEarnings: 0 }; 
     }
 
-    console.log(`[Service] Fetching bookings for TutorProfile: ${profile.id}`);
-
-    // 2. Fetch all bookings linked to this specific TutorProfile
-    return await prisma.booking.findMany({
+    // 2. Fetch all bookings with ALL payment fields
+    const bookings = await prisma.booking.findMany({
       where: {
         tutorId: profile.id
       },
       include: {
-        // Direct relation to User model in your schema
         student: {
           select: {
             name: true,
@@ -138,13 +131,14 @@ export const BookingService = {
             email: true
           }
         },
-        // Link to the specific time slot
         availability: {
           select: {
             startTime: true,
             endTime: true
           }
-        }
+        },
+        // CHANGED: Include the entire payment record without specifying fields
+        payment: true 
       },
       orderBy: {
         availability: {
@@ -152,6 +146,21 @@ export const BookingService = {
         }
       }
     });
+
+    // 3. Calculate total balance
+    const totalEarnings = bookings.reduce((sum, booking) => {
+      // Check if payment exists and status is successful/completed
+      // Note: Use the exact status string your DB uses (e.g., "COMPLETED", "PAID", or "SUCCESS")
+      if (booking.payment && (booking.payment.status === "COMPLETED" || booking.payment.status === "PAID")) {
+        return sum + (booking.payment.amount || 0);
+      }
+      return sum;
+    }, 0);
+
+    return {
+      bookings,
+      totalEarnings
+    };
   },
 
   /**
