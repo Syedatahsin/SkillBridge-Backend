@@ -1335,7 +1335,8 @@ export const TutorProfileScalarFieldEnum = {
   pricePerHour: 'pricePerHour',
   isFeatured: 'isFeatured',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  bankAccountNumber: 'bankAccountNumber'
 } as const
 
 export type TutorProfileScalarFieldEnum = (typeof TutorProfileScalarFieldEnum)[keyof typeof TutorProfileScalarFieldEnum]

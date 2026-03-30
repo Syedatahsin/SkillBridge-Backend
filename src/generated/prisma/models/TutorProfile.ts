@@ -45,6 +45,7 @@ export type TutorProfileMinAggregateOutputType = {
   isFeatured: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  bankAccountNumber: string | null
 }
 
 export type TutorProfileMaxAggregateOutputType = {
@@ -56,6 +57,7 @@ export type TutorProfileMaxAggregateOutputType = {
   isFeatured: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  bankAccountNumber: string | null
 }
 
 export type TutorProfileCountAggregateOutputType = {
@@ -67,6 +69,7 @@ export type TutorProfileCountAggregateOutputType = {
   isFeatured: number
   createdAt: number
   updatedAt: number
+  bankAccountNumber: number
   _all: number
 }
 
@@ -90,6 +93,7 @@ export type TutorProfileMinAggregateInputType = {
   isFeatured?: true
   createdAt?: true
   updatedAt?: true
+  bankAccountNumber?: true
 }
 
 export type TutorProfileMaxAggregateInputType = {
@@ -101,6 +105,7 @@ export type TutorProfileMaxAggregateInputType = {
   isFeatured?: true
   createdAt?: true
   updatedAt?: true
+  bankAccountNumber?: true
 }
 
 export type TutorProfileCountAggregateInputType = {
@@ -112,6 +117,7 @@ export type TutorProfileCountAggregateInputType = {
   isFeatured?: true
   createdAt?: true
   updatedAt?: true
+  bankAccountNumber?: true
   _all?: true
 }
 
@@ -210,6 +216,7 @@ export type TutorProfileGroupByOutputType = {
   isFeatured: boolean
   createdAt: Date
   updatedAt: Date
+  bankAccountNumber: string | null
   _count: TutorProfileCountAggregateOutputType | null
   _avg: TutorProfileAvgAggregateOutputType | null
   _sum: TutorProfileSumAggregateOutputType | null
@@ -244,6 +251,7 @@ export type TutorProfileWhereInput = {
   isFeatured?: Prisma.BoolFilter<"TutorProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
+  bankAccountNumber?: Prisma.StringNullableFilter<"TutorProfile"> | string | null
   availability?: Prisma.AvailabilityListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
@@ -260,6 +268,7 @@ export type TutorProfileOrderByWithRelationInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bankAccountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   availability?: Prisma.AvailabilityOrderByRelationAggregateInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
@@ -279,6 +288,7 @@ export type TutorProfileWhereUniqueInput = Prisma.AtLeast<{
   isFeatured?: Prisma.BoolFilter<"TutorProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
+  bankAccountNumber?: Prisma.StringNullableFilter<"TutorProfile"> | string | null
   availability?: Prisma.AvailabilityListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
@@ -295,6 +305,7 @@ export type TutorProfileOrderByWithAggregationInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bankAccountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TutorProfileCountOrderByAggregateInput
   _avg?: Prisma.TutorProfileAvgOrderByAggregateInput
   _max?: Prisma.TutorProfileMaxOrderByAggregateInput
@@ -314,6 +325,7 @@ export type TutorProfileScalarWhereWithAggregatesInput = {
   isFeatured?: Prisma.BoolWithAggregatesFilter<"TutorProfile"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TutorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TutorProfile"> | Date | string
+  bankAccountNumber?: Prisma.StringNullableWithAggregatesFilter<"TutorProfile"> | string | null
 }
 
 export type TutorProfileCreateInput = {
@@ -324,6 +336,7 @@ export type TutorProfileCreateInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
@@ -340,6 +353,7 @@ export type TutorProfileUncheckedCreateInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
@@ -354,6 +368,7 @@ export type TutorProfileUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
@@ -370,6 +385,7 @@ export type TutorProfileUncheckedUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
@@ -385,6 +401,7 @@ export type TutorProfileCreateManyInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
 }
 
 export type TutorProfileUpdateManyMutationInput = {
@@ -395,6 +412,7 @@ export type TutorProfileUpdateManyMutationInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TutorProfileUncheckedUpdateManyInput = {
@@ -406,6 +424,7 @@ export type TutorProfileUncheckedUpdateManyInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TutorProfileNullableScalarRelationFilter = {
@@ -422,6 +441,7 @@ export type TutorProfileCountOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bankAccountNumber?: Prisma.SortOrder
 }
 
 export type TutorProfileAvgOrderByAggregateInput = {
@@ -438,6 +458,7 @@ export type TutorProfileMaxOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bankAccountNumber?: Prisma.SortOrder
 }
 
 export type TutorProfileMinOrderByAggregateInput = {
@@ -449,6 +470,7 @@ export type TutorProfileMinOrderByAggregateInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  bankAccountNumber?: Prisma.SortOrder
 }
 
 export type TutorProfileSumOrderByAggregateInput = {
@@ -573,6 +595,7 @@ export type TutorProfileCreateWithoutUserInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
@@ -587,6 +610,7 @@ export type TutorProfileUncheckedCreateWithoutUserInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
@@ -617,6 +641,7 @@ export type TutorProfileUpdateWithoutUserInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
@@ -631,6 +656,7 @@ export type TutorProfileUncheckedUpdateWithoutUserInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
@@ -645,6 +671,7 @@ export type TutorProfileCreateWithoutCategoriesInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
@@ -660,6 +687,7 @@ export type TutorProfileUncheckedCreateWithoutCategoriesInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
@@ -689,6 +717,7 @@ export type TutorProfileUpdateWithoutCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
@@ -704,6 +733,7 @@ export type TutorProfileUncheckedUpdateWithoutCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
@@ -717,6 +747,7 @@ export type TutorProfileCreateWithoutAvailabilityInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
@@ -732,6 +763,7 @@ export type TutorProfileUncheckedCreateWithoutAvailabilityInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
@@ -761,6 +793,7 @@ export type TutorProfileUpdateWithoutAvailabilityInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
@@ -776,6 +809,7 @@ export type TutorProfileUncheckedUpdateWithoutAvailabilityInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
@@ -789,6 +823,7 @@ export type TutorProfileCreateWithoutBookingsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
@@ -804,6 +839,7 @@ export type TutorProfileUncheckedCreateWithoutBookingsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
@@ -833,6 +869,7 @@ export type TutorProfileUpdateWithoutBookingsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
@@ -848,6 +885,7 @@ export type TutorProfileUncheckedUpdateWithoutBookingsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
@@ -861,6 +899,7 @@ export type TutorProfileCreateWithoutReviewsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
@@ -876,6 +915,7 @@ export type TutorProfileUncheckedCreateWithoutReviewsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  bankAccountNumber?: string | null
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
@@ -905,6 +945,7 @@ export type TutorProfileUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
@@ -920,6 +961,7 @@ export type TutorProfileUncheckedUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
@@ -992,6 +1034,7 @@ export type TutorProfileSelect<ExtArgs extends runtime.Types.Extensions.Internal
   isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bankAccountNumber?: boolean
   availability?: boolean | Prisma.TutorProfile$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.TutorProfile$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.TutorProfile$reviewsArgs<ExtArgs>
@@ -1009,6 +1052,7 @@ export type TutorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bankAccountNumber?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorProfile"]>
 
@@ -1021,6 +1065,7 @@ export type TutorProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bankAccountNumber?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorProfile"]>
 
@@ -1033,9 +1078,10 @@ export type TutorProfileSelectScalar = {
   isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  bankAccountNumber?: boolean
 }
 
-export type TutorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "bio" | "experience" | "pricePerHour" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["tutorProfile"]>
+export type TutorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "bio" | "experience" | "pricePerHour" | "isFeatured" | "createdAt" | "updatedAt" | "bankAccountNumber", ExtArgs["result"]["tutorProfile"]>
 export type TutorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   availability?: boolean | Prisma.TutorProfile$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.TutorProfile$bookingsArgs<ExtArgs>
@@ -1069,6 +1115,7 @@ export type $TutorProfilePayload<ExtArgs extends runtime.Types.Extensions.Intern
     isFeatured: boolean
     createdAt: Date
     updatedAt: Date
+    bankAccountNumber: string | null
   }, ExtArgs["result"]["tutorProfile"]>
   composites: {}
 }
@@ -1505,6 +1552,7 @@ export interface TutorProfileFieldRefs {
   readonly isFeatured: Prisma.FieldRef<"TutorProfile", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"TutorProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TutorProfile", 'DateTime'>
+  readonly bankAccountNumber: Prisma.FieldRef<"TutorProfile", 'String'>
 }
     
 

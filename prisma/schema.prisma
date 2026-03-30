@@ -83,6 +83,8 @@ model TutorProfile {
   isFeatured   Boolean         @default(false)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
+    bankAccountNumber String? // Added as optional to avoid migration errors
+
   availability Availability[]
   bookings     Booking[]
   reviews      Review[]

@@ -10,6 +10,7 @@ export const createTutorProfile = async (data: any) => {
       bio: data.bio,
       experience: data.experience,
       pricePerHour: data.pricePerHour,
+      bankAccountNumber: data.bankAccountNumber, // Ensure this field is included in the create data  
       // This is the link to the middle table
       categories: {
         create: data.categoryIds.map((id: string) => ({
