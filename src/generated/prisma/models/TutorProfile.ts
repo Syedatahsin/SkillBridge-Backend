@@ -217,7 +217,7 @@ export type TutorProfileGroupByOutputType = {
   _max: TutorProfileMaxAggregateOutputType | null
 }
 
-type GetTutorProfileGroupByPayload<T extends TutorProfileGroupByArgs> = Prisma.PrismaPromise<
+export type GetTutorProfileGroupByPayload<T extends TutorProfileGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TutorProfileGroupByOutputType, T['by']> &
       {
@@ -244,11 +244,11 @@ export type TutorProfileWhereInput = {
   isFeatured?: Prisma.BoolFilter<"TutorProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  categories?: Prisma.TutorCategoryListRelationFilter
   availability?: Prisma.AvailabilityListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
+  categories?: Prisma.TutorCategoryListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TutorProfileOrderByWithRelationInput = {
@@ -260,11 +260,11 @@ export type TutorProfileOrderByWithRelationInput = {
   isFeatured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
-  categories?: Prisma.TutorCategoryOrderByRelationAggregateInput
   availability?: Prisma.AvailabilityOrderByRelationAggregateInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
+  categories?: Prisma.TutorCategoryOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type TutorProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -279,11 +279,11 @@ export type TutorProfileWhereUniqueInput = Prisma.AtLeast<{
   isFeatured?: Prisma.BoolFilter<"TutorProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TutorProfile"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  categories?: Prisma.TutorCategoryListRelationFilter
   availability?: Prisma.AvailabilityListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
+  categories?: Prisma.TutorCategoryListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
 export type TutorProfileOrderByWithAggregationInput = {
@@ -324,11 +324,11 @@ export type TutorProfileCreateInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
-  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
+  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
 }
 
 export type TutorProfileUncheckedCreateInput = {
@@ -340,10 +340,10 @@ export type TutorProfileUncheckedCreateInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileUpdateInput = {
@@ -354,11 +354,11 @@ export type TutorProfileUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
-  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
 }
 
 export type TutorProfileUncheckedUpdateInput = {
@@ -370,10 +370,10 @@ export type TutorProfileUncheckedUpdateInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
 }
 
 export type TutorProfileCreateManyInput = {
@@ -573,10 +573,10 @@ export type TutorProfileCreateWithoutUserInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileUncheckedCreateWithoutUserInput = {
@@ -587,10 +587,10 @@ export type TutorProfileUncheckedCreateWithoutUserInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileCreateOrConnectWithoutUserInput = {
@@ -617,10 +617,10 @@ export type TutorProfileUpdateWithoutUserInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
 }
 
 export type TutorProfileUncheckedUpdateWithoutUserInput = {
@@ -631,10 +631,10 @@ export type TutorProfileUncheckedUpdateWithoutUserInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
 }
 
 export type TutorProfileCreateWithoutCategoriesInput = {
@@ -645,10 +645,10 @@ export type TutorProfileCreateWithoutCategoriesInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
+  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
 }
 
 export type TutorProfileUncheckedCreateWithoutCategoriesInput = {
@@ -689,10 +689,10 @@ export type TutorProfileUpdateWithoutCategoriesInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
 }
 
 export type TutorProfileUncheckedUpdateWithoutCategoriesInput = {
@@ -717,10 +717,10 @@ export type TutorProfileCreateWithoutAvailabilityInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
-  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
+  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
 }
 
 export type TutorProfileUncheckedCreateWithoutAvailabilityInput = {
@@ -732,9 +732,9 @@ export type TutorProfileUncheckedCreateWithoutAvailabilityInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileCreateOrConnectWithoutAvailabilityInput = {
@@ -761,10 +761,10 @@ export type TutorProfileUpdateWithoutAvailabilityInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
-  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
 }
 
 export type TutorProfileUncheckedUpdateWithoutAvailabilityInput = {
@@ -776,9 +776,9 @@ export type TutorProfileUncheckedUpdateWithoutAvailabilityInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
 }
 
 export type TutorProfileCreateWithoutBookingsInput = {
@@ -789,10 +789,10 @@ export type TutorProfileCreateWithoutBookingsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
-  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
+  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
 }
 
 export type TutorProfileUncheckedCreateWithoutBookingsInput = {
@@ -804,9 +804,9 @@ export type TutorProfileUncheckedCreateWithoutBookingsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileCreateOrConnectWithoutBookingsInput = {
@@ -833,10 +833,10 @@ export type TutorProfileUpdateWithoutBookingsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
-  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
 }
 
 export type TutorProfileUncheckedUpdateWithoutBookingsInput = {
@@ -848,9 +848,9 @@ export type TutorProfileUncheckedUpdateWithoutBookingsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
 }
 
 export type TutorProfileCreateWithoutReviewsInput = {
@@ -861,10 +861,10 @@ export type TutorProfileCreateWithoutReviewsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
-  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryCreateNestedManyWithoutTutorInput
+  user: Prisma.UserCreateNestedOneWithoutTutorProfileInput
 }
 
 export type TutorProfileUncheckedCreateWithoutReviewsInput = {
@@ -876,9 +876,9 @@ export type TutorProfileUncheckedCreateWithoutReviewsInput = {
   isFeatured?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutTutorInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTutorInput
+  categories?: Prisma.TutorCategoryUncheckedCreateNestedManyWithoutTutorInput
 }
 
 export type TutorProfileCreateOrConnectWithoutReviewsInput = {
@@ -905,10 +905,10 @@ export type TutorProfileUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
-  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUpdateManyWithoutTutorNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTutorProfileNestedInput
 }
 
 export type TutorProfileUncheckedUpdateWithoutReviewsInput = {
@@ -920,9 +920,9 @@ export type TutorProfileUncheckedUpdateWithoutReviewsInput = {
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutTutorNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutTutorNestedInput
+  categories?: Prisma.TutorCategoryUncheckedUpdateManyWithoutTutorNestedInput
 }
 
 
@@ -931,17 +931,17 @@ export type TutorProfileUncheckedUpdateWithoutReviewsInput = {
  */
 
 export type TutorProfileCountOutputType = {
-  categories: number
   availability: number
   bookings: number
   reviews: number
+  categories: number
 }
 
 export type TutorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  categories?: boolean | TutorProfileCountOutputTypeCountCategoriesArgs
   availability?: boolean | TutorProfileCountOutputTypeCountAvailabilityArgs
   bookings?: boolean | TutorProfileCountOutputTypeCountBookingsArgs
   reviews?: boolean | TutorProfileCountOutputTypeCountReviewsArgs
+  categories?: boolean | TutorProfileCountOutputTypeCountCategoriesArgs
 }
 
 /**
@@ -952,13 +952,6 @@ export type TutorProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
    * Select specific fields to fetch from the TutorProfileCountOutputType
    */
   select?: Prisma.TutorProfileCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * TutorProfileCountOutputType without action
- */
-export type TutorProfileCountOutputTypeCountCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TutorCategoryWhereInput
 }
 
 /**
@@ -982,6 +975,13 @@ export type TutorProfileCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.
   where?: Prisma.ReviewWhereInput
 }
 
+/**
+ * TutorProfileCountOutputType without action
+ */
+export type TutorProfileCountOutputTypeCountCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TutorCategoryWhereInput
+}
+
 
 export type TutorProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -992,11 +992,11 @@ export type TutorProfileSelect<ExtArgs extends runtime.Types.Extensions.Internal
   isFeatured?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  categories?: boolean | Prisma.TutorProfile$categoriesArgs<ExtArgs>
   availability?: boolean | Prisma.TutorProfile$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.TutorProfile$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.TutorProfile$reviewsArgs<ExtArgs>
+  categories?: boolean | Prisma.TutorProfile$categoriesArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TutorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorProfile"]>
 
@@ -1037,11 +1037,11 @@ export type TutorProfileSelectScalar = {
 
 export type TutorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "bio" | "experience" | "pricePerHour" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["tutorProfile"]>
 export type TutorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  categories?: boolean | Prisma.TutorProfile$categoriesArgs<ExtArgs>
   availability?: boolean | Prisma.TutorProfile$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.TutorProfile$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.TutorProfile$reviewsArgs<ExtArgs>
+  categories?: boolean | Prisma.TutorProfile$categoriesArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TutorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TutorProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1054,11 +1054,11 @@ export type TutorProfileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type $TutorProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TutorProfile"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
-    categories: Prisma.$TutorCategoryPayload<ExtArgs>[]
     availability: Prisma.$AvailabilityPayload<ExtArgs>[]
     bookings: Prisma.$BookingPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
+    categories: Prisma.$TutorCategoryPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1463,11 +1463,11 @@ readonly fields: TutorProfileFieldRefs;
  */
 export interface Prisma__TutorProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  categories<T extends Prisma.TutorProfile$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfile$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TutorCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   availability<T extends Prisma.TutorProfile$availabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfile$availabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookings<T extends Prisma.TutorProfile$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfile$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.TutorProfile$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfile$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  categories<T extends Prisma.TutorProfile$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfile$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TutorCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1701,6 +1701,11 @@ export type TutorProfileFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` TutorProfiles.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TutorProfiles.
+   */
   distinct?: Prisma.TutorProfileScalarFieldEnum | Prisma.TutorProfileScalarFieldEnum[]
 }
 
@@ -1901,30 +1906,6 @@ export type TutorProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * TutorProfile.categories
- */
-export type TutorProfile$categoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TutorCategory
-   */
-  select?: Prisma.TutorCategorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TutorCategory
-   */
-  omit?: Prisma.TutorCategoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TutorCategoryInclude<ExtArgs> | null
-  where?: Prisma.TutorCategoryWhereInput
-  orderBy?: Prisma.TutorCategoryOrderByWithRelationInput | Prisma.TutorCategoryOrderByWithRelationInput[]
-  cursor?: Prisma.TutorCategoryWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TutorCategoryScalarFieldEnum | Prisma.TutorCategoryScalarFieldEnum[]
-}
-
-/**
  * TutorProfile.availability
  */
 export type TutorProfile$availabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1994,6 +1975,30 @@ export type TutorProfile$reviewsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ReviewScalarFieldEnum | Prisma.ReviewScalarFieldEnum[]
+}
+
+/**
+ * TutorProfile.categories
+ */
+export type TutorProfile$categoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TutorCategory
+   */
+  select?: Prisma.TutorCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TutorCategory
+   */
+  omit?: Prisma.TutorCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TutorCategoryInclude<ExtArgs> | null
+  where?: Prisma.TutorCategoryWhereInput
+  orderBy?: Prisma.TutorCategoryOrderByWithRelationInput | Prisma.TutorCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.TutorCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TutorCategoryScalarFieldEnum | Prisma.TutorCategoryScalarFieldEnum[]
 }
 
 /**

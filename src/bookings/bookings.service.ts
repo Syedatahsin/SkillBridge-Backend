@@ -49,46 +49,56 @@ export const studentBookingService = {
 
 
 
-
-
 export const createBookingService = async (
   studentId: string,
   tutorId: string,
   availabilityId: string,
   meetingLink?: string
 ) => {
-  // 1️⃣ Atomically mark the slot as booked
-  const updatedSlot = await prisma.availability.updateMany({
-    where: {
-      id: availabilityId,
-      isBooked: false, // only update if not already booked
-    },
-    data: {
-      isBooked: true,
-    },
+  // 1. Check for any existing booking for this slot
+  const existingBooking = await prisma.booking.findUnique({
+    where: { availabilityId: availabilityId }
   });
 
-  // 2️⃣ If no slot was updated, it was already booked
-  if (updatedSlot.count === 0) {
-    throw new Error("This slot has already been taken.");
+  if (existingBooking) {
+    // 🛑 Case 1: Already paid. Nobody else can touch it.
+    if (existingBooking.status === "CONFIRMED") {
+      throw new Error("This session is already booked and paid for.");
+    }
+
+    // ⏳ Case 2: It's PENDING. Is it a "Fresh" lock or an "Old" one?
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const isOldBooking = existingBooking.createdAt < fifteenMinutesAgo;
+
+    if (existingBooking.status === "PENDING") {
+      // If it's the SAME student, let them try again regardless of time
+      if (existingBooking.studentId === studentId) {
+        return existingBooking;
+      }
+
+      // If it's a NEW student (Student B) and the old lock is EXPIRED
+      if (isOldBooking) {
+        // Delete the old abandoned booking to free up the slot
+        await prisma.booking.delete({ where: { id: existingBooking.id } });
+        // The code will now continue down to create a new one for Student B
+      } else {
+        // It's a fresh lock (less than 15 mins old). Student B must wait.
+        throw new Error("Someone is currently in the middle of paying for this. Please try again in 15 minutes.");
+      }
+    }
   }
 
-  // 🛠️ EDIT: Create a unique fallback link if meetingLink is missing
+  // 2. Create the new booking (for Student B or a fresh attempt)
   const generatedLink = `https://meet.jit.si/skillbridge-${availabilityId.slice(0, 8)}`;
-
-  // 3️⃣ Create the booking
-  const newBooking = await prisma.booking.create({
+  return await prisma.booking.create({
     data: {
       studentId,
       tutorId,
       availabilityId,
-      // Use the provided link, otherwise use our generated unique link
       meetingLink: meetingLink || generatedLink, 
-      status: "CONFIRMED",
+      status: "PENDING",
     },
   });
-
-  return newBooking;
 };
 export const BookingService = {
   /**

@@ -172,7 +172,7 @@ export type BookingGroupByOutputType = {
   _max: BookingMaxAggregateOutputType | null
 }
 
-type GetBookingGroupByPayload<T extends BookingGroupByArgs> = Prisma.PrismaPromise<
+export type GetBookingGroupByPayload<T extends BookingGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BookingGroupByOutputType, T['by']> &
       {
@@ -198,10 +198,10 @@ export type BookingWhereInput = {
   meetingLink?: Prisma.StringNullableFilter<"Booking"> | string | null
   status?: Prisma.EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
-  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
+  availability?: Prisma.XOR<Prisma.AvailabilityScalarRelationFilter, Prisma.AvailabilityWhereInput>
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
-  availability?: Prisma.XOR<Prisma.AvailabilityScalarRelationFilter, Prisma.AvailabilityWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
 }
 
@@ -213,10 +213,10 @@ export type BookingOrderByWithRelationInput = {
   meetingLink?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  payment?: Prisma.PaymentOrderByWithRelationInput
+  availability?: Prisma.AvailabilityOrderByWithRelationInput
   student?: Prisma.UserOrderByWithRelationInput
   tutor?: Prisma.TutorProfileOrderByWithRelationInput
-  availability?: Prisma.AvailabilityOrderByWithRelationInput
+  payment?: Prisma.PaymentOrderByWithRelationInput
   review?: Prisma.ReviewOrderByWithRelationInput
 }
 
@@ -231,10 +231,10 @@ export type BookingWhereUniqueInput = Prisma.AtLeast<{
   meetingLink?: Prisma.StringNullableFilter<"Booking"> | string | null
   status?: Prisma.EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFilter<"Booking"> | Date | string
-  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
+  availability?: Prisma.XOR<Prisma.AvailabilityScalarRelationFilter, Prisma.AvailabilityWhereInput>
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
-  availability?: Prisma.XOR<Prisma.AvailabilityScalarRelationFilter, Prisma.AvailabilityWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
 }, "id" | "availabilityId">
 
@@ -269,10 +269,10 @@ export type BookingCreateInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
-  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
+  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
   student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
   tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
-  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
 }
 
@@ -293,10 +293,10 @@ export type BookingUpdateInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
+  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
   tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
-  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
 }
 
@@ -542,9 +542,9 @@ export type BookingCreateWithoutStudentInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
-  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
-  tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
   availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
+  tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
 }
 
@@ -603,9 +603,9 @@ export type BookingCreateWithoutTutorInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
-  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
-  student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
   availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
+  student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
 }
 
@@ -651,9 +651,9 @@ export type BookingCreateWithoutAvailabilityInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
-  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
   student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
   tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
 }
 
@@ -689,9 +689,9 @@ export type BookingUpdateWithoutAvailabilityInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
   tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
 }
 
@@ -711,9 +711,9 @@ export type BookingCreateWithoutPaymentInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
+  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
   student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
   tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
-  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
   review?: Prisma.ReviewCreateNestedOneWithoutBookingInput
 }
 
@@ -749,9 +749,9 @@ export type BookingUpdateWithoutPaymentInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
   tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
-  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
 }
 
@@ -771,10 +771,10 @@ export type BookingCreateWithoutReviewInput = {
   meetingLink?: string | null
   status?: $Enums.BookingStatus
   createdAt?: Date | string
-  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
+  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
   student: Prisma.UserCreateNestedOneWithoutBookingsAsStudentInput
   tutor: Prisma.TutorProfileCreateNestedOneWithoutBookingsInput
-  availability: Prisma.AvailabilityCreateNestedOneWithoutBookingInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutBookingInput
 }
 
 export type BookingUncheckedCreateWithoutReviewInput = {
@@ -809,10 +809,10 @@ export type BookingUpdateWithoutReviewInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
+  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
   tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
-  availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
 }
 
 export type BookingUncheckedUpdateWithoutReviewInput = {
@@ -840,9 +840,9 @@ export type BookingUpdateWithoutStudentInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
-  tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
   availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
+  tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutBookingsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
 }
 
@@ -880,9 +880,9 @@ export type BookingUpdateWithoutTutorInput = {
   meetingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
   availability?: Prisma.AvailabilityUpdateOneRequiredWithoutBookingNestedInput
+  student?: Prisma.UserUpdateOneRequiredWithoutBookingsAsStudentNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutBookingNestedInput
   review?: Prisma.ReviewUpdateOneWithoutBookingNestedInput
 }
 
@@ -916,10 +916,10 @@ export type BookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   meetingLink?: boolean
   status?: boolean
   createdAt?: boolean
-  payment?: boolean | Prisma.Booking$paymentArgs<ExtArgs>
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Booking$paymentArgs<ExtArgs>
   review?: boolean | Prisma.Booking$reviewArgs<ExtArgs>
 }, ExtArgs["result"]["booking"]>
 
@@ -931,9 +931,9 @@ export type BookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   meetingLink?: boolean
   status?: boolean
   createdAt?: boolean
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["booking"]>
 
 export type BookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -944,9 +944,9 @@ export type BookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   meetingLink?: boolean
   status?: boolean
   createdAt?: boolean
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["booking"]>
 
 export type BookingSelectScalar = {
@@ -961,30 +961,30 @@ export type BookingSelectScalar = {
 
 export type BookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "tutorId" | "availabilityId" | "meetingLink" | "status" | "createdAt", ExtArgs["result"]["booking"]>
 export type BookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  payment?: boolean | Prisma.Booking$paymentArgs<ExtArgs>
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Booking$paymentArgs<ExtArgs>
   review?: boolean | Prisma.Booking$reviewArgs<ExtArgs>
 }
 export type BookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
 }
 export type BookingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
-  availability?: boolean | Prisma.AvailabilityDefaultArgs<ExtArgs>
 }
 
 export type $BookingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Booking"
   objects: {
-    payment: Prisma.$PaymentPayload<ExtArgs> | null
+    availability: Prisma.$AvailabilityPayload<ExtArgs>
     student: Prisma.$UserPayload<ExtArgs>
     tutor: Prisma.$TutorProfilePayload<ExtArgs>
-    availability: Prisma.$AvailabilityPayload<ExtArgs>
+    payment: Prisma.$PaymentPayload<ExtArgs> | null
     review: Prisma.$ReviewPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1389,10 +1389,10 @@ readonly fields: BookingFieldRefs;
  */
 export interface Prisma__BookingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  payment<T extends Prisma.Booking$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  availability<T extends Prisma.AvailabilityDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AvailabilityDefaultArgs<ExtArgs>>): Prisma.Prisma__AvailabilityClient<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   tutor<T extends Prisma.TutorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__TutorProfileClient<runtime.Types.Result.GetResult<Prisma.$TutorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  availability<T extends Prisma.AvailabilityDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AvailabilityDefaultArgs<ExtArgs>>): Prisma.Prisma__AvailabilityClient<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payment<T extends Prisma.Booking$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   review<T extends Prisma.Booking$reviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Booking$reviewArgs<ExtArgs>>): Prisma.Prisma__ReviewClient<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1626,6 +1626,11 @@ export type BookingFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` Bookings.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Bookings.
+   */
   distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
 }
 

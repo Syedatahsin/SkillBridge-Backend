@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,34 +5,32 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-
-  tutorProfile      TutorProfile?
+  id                String        @id
+  name              String
+  email             String        @unique
+  emailVerified     Boolean       @default(false)
+  image             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  role              String
+  status            String
   bookingsAsStudent Booking[]     @relation("StudentBookings")
   reviews           Review[]
+  tutorProfile      TutorProfile?
+  accounts          Account[]
+  sessions          Session[]
 
-  role   String
-  status String
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -46,7 +38,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -56,7 +47,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -66,6 +56,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -83,46 +74,35 @@ model Verification {
   @@map("verification")
 }
 
-enum BookingStatus {
-  PENDING      
-  CONFIRMED    
-  COMPLETED    
-  CANCELLED    
-}
-
 model TutorProfile {
   id           String          @id @default(uuid())
   userId       String          @unique
-
   bio          String
   experience   Int
   pricePerHour Float
-
-  isFeatured   Boolean         @default(false) 
-
-  user         User            @relation(fields: [userId], references: [id])
-  categories   TutorCategory[]
+  isFeatured   Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   availability Availability[]
   bookings     Booking[]
   reviews      Review[]
-
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  categories   TutorCategory[]
+  user         User            @relation(fields: [userId], references: [id])
 }
 
 model Category {
-  id        String          @id @default(uuid())
-  name      String          @unique
+  id          String          @id @default(uuid())
+  name        String          @unique
   description String?
-  tutors    TutorCategory[]
-  createdAt DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+  tutors      TutorCategory[]
 }
 
 model TutorCategory {
   tutorId    String
   categoryId String
-  tutor      TutorProfile @relation(fields: [tutorId], references: [id])
   category   Category     @relation(fields: [categoryId], references: [id])
+  tutor      TutorProfile @relation(fields: [tutorId], references: [id])
 
   @@id([tutorId, categoryId])
 }
@@ -133,9 +113,9 @@ model Availability {
   startTime DateTime
   endTime   DateTime
   isBooked  Boolean      @default(false)
+  createdAt DateTime     @default(now())
   tutor     TutorProfile @relation(fields: [tutorId], references: [id])
   booking   Booking?
-  createdAt DateTime     @default(now())
 }
 
 model Booking {
@@ -144,26 +124,26 @@ model Booking {
   tutorId        String
   availabilityId String        @unique
   meetingLink    String?
- status         BookingStatus @default(PENDING) 
-  payment        Payment?      
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  availability   Availability  @relation(fields: [availabilityId], references: [id])
   student        User          @relation("StudentBookings", fields: [studentId], references: [id])
   tutor          TutorProfile  @relation(fields: [tutorId], references: [id])
-  availability   Availability  @relation(fields: [availabilityId], references: [id])
+  payment        Payment?
   review         Review?
-  createdAt      DateTime      @default(now())
 }
+
 model Payment {
-  id               String   @id @default(uuid())
-  bookingId        String   @unique
-  booking          Booking  @relation(fields: [bookingId], references: [id])
-  
-  stripeSessionId  String   @unique // The ID from Stripe to find this record later
-  amount           Float
-  status           String   // e.g., "paid", "unpaid", "expired"
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(uuid())
+  bookingId       String   @unique
+  stripeSessionId String   @unique
+  amount          Float
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  booking         Booking  @relation(fields: [bookingId], references: [id])
 }
+
 model Review {
   id        String       @id @default(uuid())
   bookingId String       @unique
@@ -171,8 +151,15 @@ model Review {
   tutorId   String
   rating    Int
   comment   String?
+  createdAt DateTime     @default(now())
   booking   Booking      @relation(fields: [bookingId], references: [id])
   student   User         @relation(fields: [studentId], references: [id])
   tutor     TutorProfile @relation(fields: [tutorId], references: [id])
-  createdAt DateTime     @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
 }

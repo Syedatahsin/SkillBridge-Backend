@@ -137,7 +137,7 @@ export type TutorCategoryGroupByOutputType = {
   _max: TutorCategoryMaxAggregateOutputType | null
 }
 
-type GetTutorCategoryGroupByPayload<T extends TutorCategoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetTutorCategoryGroupByPayload<T extends TutorCategoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TutorCategoryGroupByOutputType, T['by']> &
       {
@@ -158,15 +158,15 @@ export type TutorCategoryWhereInput = {
   NOT?: Prisma.TutorCategoryWhereInput | Prisma.TutorCategoryWhereInput[]
   tutorId?: Prisma.StringFilter<"TutorCategory"> | string
   categoryId?: Prisma.StringFilter<"TutorCategory"> | string
-  tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
+  tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
 }
 
 export type TutorCategoryOrderByWithRelationInput = {
   tutorId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  tutor?: Prisma.TutorProfileOrderByWithRelationInput
   category?: Prisma.CategoryOrderByWithRelationInput
+  tutor?: Prisma.TutorProfileOrderByWithRelationInput
 }
 
 export type TutorCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -176,8 +176,8 @@ export type TutorCategoryWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TutorCategoryWhereInput | Prisma.TutorCategoryWhereInput[]
   tutorId?: Prisma.StringFilter<"TutorCategory"> | string
   categoryId?: Prisma.StringFilter<"TutorCategory"> | string
-  tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
+  tutor?: Prisma.XOR<Prisma.TutorProfileScalarRelationFilter, Prisma.TutorProfileWhereInput>
 }, "tutorId_categoryId">
 
 export type TutorCategoryOrderByWithAggregationInput = {
@@ -197,8 +197,8 @@ export type TutorCategoryScalarWhereWithAggregatesInput = {
 }
 
 export type TutorCategoryCreateInput = {
-  tutor: Prisma.TutorProfileCreateNestedOneWithoutCategoriesInput
   category: Prisma.CategoryCreateNestedOneWithoutTutorsInput
+  tutor: Prisma.TutorProfileCreateNestedOneWithoutCategoriesInput
 }
 
 export type TutorCategoryUncheckedCreateInput = {
@@ -207,8 +207,8 @@ export type TutorCategoryUncheckedCreateInput = {
 }
 
 export type TutorCategoryUpdateInput = {
-  tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutCategoriesNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutTutorsNestedInput
+  tutor?: Prisma.TutorProfileUpdateOneRequiredWithoutCategoriesNestedInput
 }
 
 export type TutorCategoryUncheckedUpdateInput = {
@@ -457,22 +457,22 @@ export type TutorCategoryUncheckedUpdateManyWithoutCategoryInput = {
 export type TutorCategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   tutorId?: boolean
   categoryId?: boolean
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorCategory"]>
 
 export type TutorCategorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   tutorId?: boolean
   categoryId?: boolean
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorCategory"]>
 
 export type TutorCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   tutorId?: boolean
   categoryId?: boolean
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tutorCategory"]>
 
 export type TutorCategorySelectScalar = {
@@ -482,23 +482,23 @@ export type TutorCategorySelectScalar = {
 
 export type TutorCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"tutorId" | "categoryId", ExtArgs["result"]["tutorCategory"]>
 export type TutorCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }
 export type TutorCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }
 export type TutorCategoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
+  tutor?: boolean | Prisma.TutorProfileDefaultArgs<ExtArgs>
 }
 
 export type $TutorCategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TutorCategory"
   objects: {
-    tutor: Prisma.$TutorProfilePayload<ExtArgs>
     category: Prisma.$CategoryPayload<ExtArgs>
+    tutor: Prisma.$TutorProfilePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     tutorId: string
@@ -897,8 +897,8 @@ readonly fields: TutorCategoryFieldRefs;
  */
 export interface Prisma__TutorCategoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  tutor<T extends Prisma.TutorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__TutorProfileClient<runtime.Types.Result.GetResult<Prisma.$TutorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.CategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tutor<T extends Prisma.TutorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TutorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__TutorProfileClient<runtime.Types.Result.GetResult<Prisma.$TutorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1126,6 +1126,11 @@ export type TutorCategoryFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` TutorCategories.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TutorCategories.
+   */
   distinct?: Prisma.TutorCategoryScalarFieldEnum | Prisma.TutorCategoryScalarFieldEnum[]
 }
 

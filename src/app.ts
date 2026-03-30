@@ -14,6 +14,7 @@ import availabilityrouter from './availability/availability.routes';
 import bookingrouter from './bookings/bookings.routes';
 import reviewrouter from './reviews/reviews.routes';
 import userrouter from './users/users.routes';
+import webhookRoutes from './routes/webhook.routes';
 
 // Load environment variables
 dotenv.config();
@@ -54,6 +55,7 @@ app.use(cors({
 app.all("/api/auth/*splat", toNodeHandler(auth));
 // --- 3. BODY PARSERS ---
 // Only runs for routes defined below this line
+app.use('/api/webhooks', webhookRoutes);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
