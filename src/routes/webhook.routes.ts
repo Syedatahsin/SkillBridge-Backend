@@ -26,9 +26,8 @@ router.post(
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       
-      // Pulling data from the Dahlia version session object
       const bookingId = session.metadata?.bookingId;
-      const paidAmount = session.amount_total ? session.amount_total / 100 : 0; // Convert cents to dollars
+      const paidAmount = session.amount_total ? session.amount_total / 100 : 0; 
       const stripeSessionId = session.id;
 
       if (!bookingId) {
@@ -39,18 +38,21 @@ router.post(
       console.log(`🔔 Payment of $${paidAmount} received for Booking: ${bookingId}`);
 
       try {
-        // 1. Update the Booking Status and Save the Price
+        // 1. Update Booking Status AND mark Availability as Booked
         await prisma.booking.update({
           where: { id: bookingId },
           data: { 
             status: 'CONFIRMED',
-            // Ensure these fields exist in your Booking model if you deleted the Payment table
-            // totalPrice: paidAmount, 
-            // stripeSessionId: stripeSessionId 
+            // This is the fix: it updates the related availability slot to true
+            availability: {
+              update: {
+                isBooked: true
+              }
+            }
           },
         });
 
-        // 2. If you KEPT the Payment table, update it here:
+        // 2. Create Payment Record
         await prisma.payment.create({
           data: {
             bookingId: bookingId,
@@ -60,14 +62,13 @@ router.post(
           },
         }).catch(() => console.log("Payment record already exists or table deleted."));
 
-        console.log(`✅ Database synced for Booking ${bookingId}`);
+        console.log(`✅ Database synced for Booking ${bookingId} and Slot marked as Booked`);
       } catch (error) {
         console.error('❌ Database update failed:', error);
         return res.status(500).json({ error: 'Database update failed' });
       }
     }
 
-    // Return 200 to Stripe immediately so it doesn't retry
     res.status(200).json({ received: true });
   }
 );
