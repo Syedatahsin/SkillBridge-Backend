@@ -113,9 +113,9 @@ export const createBookingController = async (
         quantity: 1,
       }],
       mode: 'payment',
-      // Where to send the user after they finish
-      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/tutors/${tutorId}`,
+        // Where to send the user after they finish
+        success_url: `${process.env.FRONTEND_URL}/payment-success}`,
+        cancel_url: `${process.env.FRONTEND_URL}/payment-failed}`,
       // IMPORTANT: Hide the booking ID in metadata so the Webhook can find it later
       metadata: {
         bookingId: booking.id,
