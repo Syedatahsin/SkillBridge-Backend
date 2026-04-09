@@ -4,16 +4,19 @@ import {
   getAllUsersController,
   updateUserController,
   deleteUserController,
+  getUserCountsController,
   updateUserStatusController
-} from "../users/users.controller";
+} from "./users.controller";
 import auth, { UserRole } from "../middlewares/auth";
-import { toggleTutorBanStatus } from "../users/users.controller";
+import { toggleTutorBanStatus } from "./users.controller";
 import { updateUser } from "./users.controller";
 
 const userrouter = Router();
 
 // 1. STATIC ROUTES (No parameters like :id)
 userrouter.get("/", getAllUsersController);
+userrouter.get("/counts", getUserCountsController);
+userrouter.get("/count", getUserCountsController);
 userrouter.post("/update-status", toggleTutorBanStatus); 
 
 // 2. SPECIFIC DYNAMIC ROUTES (Must be ABOVE the generic /:id)

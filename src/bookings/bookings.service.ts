@@ -271,6 +271,40 @@ export const deleteBooking = async (id: string) => {
   });
 };
 
+// Get session overview for a specific user (student/tutor)
+export const getSessionsOverview = async (id: string) => {
+  const confirmedBookings = await prisma.booking.findMany({
+    where: {
+      OR: [
+        { studentId: id },
+        { tutorId: id },
+        { tutor: { userId: id } }
+      ],
+      status: {
+        in: ["CONFIRMED", "COMPLETED"]
+      }
+    },
+    include: {
+      student: {
+        select: { name: true, image: true, email: true }
+      },
+      tutor: {
+        include: { user: { select: { name: true } } }
+      },
+      availability: true,
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+
+  return {
+    success: true,
+    totalSessions: confirmedBookings.length,
+    bookings: confirmedBookings
+  };
+};
+
 // Export Booking service
 export const bookingService = {
   createBookingService,
@@ -278,4 +312,5 @@ export const bookingService = {
   getAllBookings,
   updateBooking,
   deleteBooking,
+  getSessionsOverview,
 };

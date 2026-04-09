@@ -5,6 +5,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from './lib/auth';
 import errorHandler from './middlewares/globalErrorHandler';
 import { notFound } from './middlewares/notFound';
+import chatRoutes from './routes/chat.route';
 
 // Import your route handlers
 import categoryrouters from './categories/categories.routes';
@@ -16,13 +17,14 @@ import reviewrouter from './reviews/reviews.routes';
 import userrouter from './users/users.routes';
 import webhookRoutes from './routes/webhook.routes';
 
-// Load environment variables
 dotenv.config();
 
 const app: Application = express();
 
-// --- 1. CORS CONFIGURATION ---
-// Must stay at the top to handle Preflight (OPTIONS) requests
+/* 🔥 FIX 1: REQUIRED FOR VERCEL + OAUTH COOKIES */
+app.set("trust proxy", 1);
+
+// --- CORS CONFIGURATION ---
 const allowedOrigins = [
   process.env.APP_URL, 
   "http://localhost:3000",
@@ -49,22 +51,20 @@ app.use(cors({
   exposedHeaders: ["Set-Cookie"],
 }));
 
-// --- 2. BETTER AUTH HANDLER ---
-// CRITICAL: This MUST be placed BEFORE express.json() 
-// We use the standard "*" wildcard to ensure all auth paths are captured correctly.
+// --- BETTER AUTH HANDLER ---
 app.all("/api/auth/*splat", toNodeHandler(auth));
-// --- 3. BODY PARSERS ---
-// Only runs for routes defined below this line
+
+// --- BODY PARSERS ---
 app.use('/api/webhooks', webhookRoutes);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- 4. PUBLIC & SYSTEM ROUTES ---
+// --- ROUTES ---
 app.get("/", (req, res) => {
   res.send("SkillBridge API is running...");
 });
+app.use("/api", chatRoutes);
 
-// --- 5. APPLICATION ROUTES ---
 app.use("/api/categories", categoryrouters);
 app.use("/api/tutor", router);
 app.use("/api/support", emailrouter);
@@ -73,7 +73,7 @@ app.use("/api/bookings", bookingrouter);
 app.use("/api/reviews", reviewrouter);
 app.use("/api/users", userrouter); 
 
-// --- 6. ERROR HANDLING ---
+// --- ERROR HANDLING ---
 app.use(notFound);
 app.use(errorHandler); 
 

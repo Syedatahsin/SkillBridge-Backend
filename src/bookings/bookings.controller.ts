@@ -114,8 +114,8 @@ export const createBookingController = async (
       }],
       mode: 'payment',
         // Where to send the user after they finish
-        success_url: `${process.env.FRONTEND_URL}/payment-success}`,
-        cancel_url: `${process.env.FRONTEND_URL}/payment-failed}`,
+        success_url: `${process.env.APP_URL}/payment-success`,
+        cancel_url: `${process.env.APP_URL}/payment-failed`,
       // IMPORTANT: Hide the booking ID in metadata so the Webhook can find it later
       metadata: {
         bookingId: booking.id,
@@ -188,6 +188,19 @@ export const deleteBookingController = async (req: Request, res: Response, next:
     
     const deleted = await bookingService.deleteBooking(id);
     res.json(deleted);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Session Overview
+export const getSessionsOverviewController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    if (!id || Array.isArray(id)) return res.status(400).json({ message: "Invalid ID" });
+    
+    const overview = await bookingService.getSessionsOverview(id);
+    res.status(200).json(overview);
   } catch (error) {
     next(error);
   }

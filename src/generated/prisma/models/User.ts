@@ -296,8 +296,8 @@ export type UserCreateInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileCreateNestedOneWithoutUserInput
@@ -313,8 +313,8 @@ export type UserUncheckedCreateInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingUncheckedCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileUncheckedCreateNestedOneWithoutUserInput
@@ -364,8 +364,8 @@ export type UserCreateManyInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
 }
 
 export type UserUpdateManyMutationInput = {
@@ -527,8 +527,8 @@ export type UserCreateWithoutSessionsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileCreateNestedOneWithoutUserInput
@@ -543,8 +543,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingUncheckedCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileUncheckedCreateNestedOneWithoutUserInput
@@ -607,8 +607,8 @@ export type UserCreateWithoutAccountsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileCreateNestedOneWithoutUserInput
@@ -623,8 +623,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingUncheckedCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileUncheckedCreateNestedOneWithoutUserInput
@@ -687,8 +687,8 @@ export type UserCreateWithoutTutorProfileInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutStudentInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -703,8 +703,8 @@ export type UserUncheckedCreateWithoutTutorProfileInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingUncheckedCreateNestedManyWithoutStudentInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutStudentInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -767,8 +767,8 @@ export type UserCreateWithoutBookingsAsStudentInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   reviews?: Prisma.ReviewCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -783,8 +783,8 @@ export type UserUncheckedCreateWithoutBookingsAsStudentInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -847,8 +847,8 @@ export type UserCreateWithoutReviewsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -863,8 +863,8 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   image?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: string
-  status: string
+  role?: string
+  status?: string
   bookingsAsStudent?: Prisma.BookingUncheckedCreateNestedManyWithoutStudentInput
   tutorProfile?: Prisma.TutorProfileUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput

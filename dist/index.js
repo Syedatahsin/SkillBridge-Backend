@@ -6,7 +6,7 @@ var __export = (target, all) => {
 
 // src/app.ts
 import cors from "cors";
-import express2 from "express";
+import express3 from "express";
 import dotenv from "dotenv";
 import { toNodeHandler } from "better-auth/node";
 
@@ -26,10 +26,10 @@ import { fileURLToPath } from "url";
 import * as runtime from "@prisma/client/runtime/client";
 var config = {
   "previewFeatures": [],
-  "clientVersion": "7.6.0",
+  "clientVersion": "7.7.0",
   "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
   "activeProvider": "postgresql",
-  "inlineSchema": 'generator client {\n  provider = "prisma-client"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel User {\n  id                String        @id\n  name              String\n  email             String        @unique\n  emailVerified     Boolean       @default(false)\n  image             String?\n  createdAt         DateTime      @default(now())\n  updatedAt         DateTime      @updatedAt\n  role              String\n  status            String\n  bookingsAsStudent Booking[]     @relation("StudentBookings")\n  reviews           Review[]\n  tutorProfile      TutorProfile?\n  accounts          Account[]\n  sessions          Session[]\n\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel TutorProfile {\n  id                String   @id @default(uuid())\n  userId            String   @unique\n  bio               String\n  experience        Int\n  pricePerHour      Float\n  isFeatured        Boolean  @default(false)\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  bankAccountNumber String? // Added as optional to avoid migration errors\n\n  availability Availability[]\n  bookings     Booking[]\n  reviews      Review[]\n  categories   TutorCategory[]\n  user         User            @relation(fields: [userId], references: [id])\n}\n\nmodel Category {\n  id          String          @id @default(uuid())\n  name        String          @unique\n  description String?\n  createdAt   DateTime        @default(now())\n  tutors      TutorCategory[]\n}\n\nmodel TutorCategory {\n  tutorId    String\n  categoryId String\n  category   Category     @relation(fields: [categoryId], references: [id])\n  tutor      TutorProfile @relation(fields: [tutorId], references: [id])\n\n  @@id([tutorId, categoryId])\n}\n\nmodel Availability {\n  id        String       @id @default(uuid())\n  tutorId   String\n  startTime DateTime\n  endTime   DateTime\n  isBooked  Boolean      @default(false)\n  createdAt DateTime     @default(now())\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n  booking   Booking?\n}\n\nmodel Booking {\n  id             String        @id @default(uuid())\n  studentId      String\n  tutorId        String\n  availabilityId String        @unique\n  meetingLink    String?\n  status         BookingStatus @default(PENDING)\n  createdAt      DateTime      @default(now())\n  availability   Availability  @relation(fields: [availabilityId], references: [id])\n  student        User          @relation("StudentBookings", fields: [studentId], references: [id])\n  tutor          TutorProfile  @relation(fields: [tutorId], references: [id])\n  payment        Payment?\n  review         Review?\n}\n\nmodel Payment {\n  id              String   @id @default(uuid())\n  bookingId       String   @unique\n  stripeSessionId String   @unique\n  amount          Float\n  status          String\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n  booking         Booking  @relation(fields: [bookingId], references: [id])\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  bookingId String       @unique\n  studentId String\n  tutorId   String\n  rating    Int\n  comment   String?\n  createdAt DateTime     @default(now())\n  booking   Booking      @relation(fields: [bookingId], references: [id])\n  student   User         @relation(fields: [studentId], references: [id])\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n}\n\nenum BookingStatus {\n  PENDING\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n',
+  "inlineSchema": 'generator client {\n  provider = "prisma-client"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel User {\n  id                String        @id\n  name              String\n  email             String        @unique\n  emailVerified     Boolean       @default(false)\n  image             String?\n  createdAt         DateTime      @default(now())\n  updatedAt         DateTime      @updatedAt\n  role              String        @default("STUDENT") // Added default\n  status            String        @default("ACTIVE") // Added default\n  bookingsAsStudent Booking[]     @relation("StudentBookings")\n  reviews           Review[]\n  tutorProfile      TutorProfile?\n  accounts          Account[]\n  sessions          Session[]\n\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel TutorProfile {\n  id                String   @id @default(uuid())\n  userId            String   @unique\n  bio               String\n  experience        Int\n  pricePerHour      Float\n  isFeatured        Boolean  @default(false)\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  bankAccountNumber String? // Added as optional to avoid migration errors\n\n  availability Availability[]\n  bookings     Booking[]\n  reviews      Review[]\n  categories   TutorCategory[]\n  user         User            @relation(fields: [userId], references: [id])\n}\n\nmodel Category {\n  id          String          @id @default(uuid())\n  name        String          @unique\n  description String?\n  createdAt   DateTime        @default(now())\n  tutors      TutorCategory[]\n}\n\nmodel TutorCategory {\n  tutorId    String\n  categoryId String\n  category   Category     @relation(fields: [categoryId], references: [id])\n  tutor      TutorProfile @relation(fields: [tutorId], references: [id])\n\n  @@id([tutorId, categoryId])\n}\n\nmodel Availability {\n  id        String       @id @default(uuid())\n  tutorId   String\n  startTime DateTime\n  endTime   DateTime\n  isBooked  Boolean      @default(false)\n  createdAt DateTime     @default(now())\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n  booking   Booking?\n}\n\nmodel Booking {\n  id             String        @id @default(uuid())\n  studentId      String\n  tutorId        String\n  availabilityId String        @unique\n  meetingLink    String?\n  status         BookingStatus @default(PENDING)\n  createdAt      DateTime      @default(now())\n  availability   Availability  @relation(fields: [availabilityId], references: [id])\n  student        User          @relation("StudentBookings", fields: [studentId], references: [id])\n  tutor          TutorProfile  @relation(fields: [tutorId], references: [id])\n  payment        Payment?\n  review         Review?\n}\n\nmodel Payment {\n  id              String   @id @default(uuid())\n  bookingId       String   @unique\n  stripeSessionId String   @unique\n  amount          Float\n  status          String\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n  booking         Booking  @relation(fields: [bookingId], references: [id])\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  bookingId String       @unique\n  studentId String\n  tutorId   String\n  rating    Int\n  comment   String?\n  createdAt DateTime     @default(now())\n  booking   Booking      @relation(fields: [bookingId], references: [id])\n  student   User         @relation(fields: [studentId], references: [id])\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n}\n\nenum BookingStatus {\n  PENDING\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -114,7 +114,7 @@ var Sql2 = runtime2.Sql;
 var Decimal2 = runtime2.Decimal;
 var getExtensionContext = runtime2.Extensions.getExtensionContext;
 var prismaVersion = {
-  client: "7.6.0",
+  client: "7.7.0",
   engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 };
 var NullTypes2 = {
@@ -270,6 +270,7 @@ var prisma = new PrismaClient({ adapter });
 // src/lib/auth.ts
 import nodemailer from "nodemailer";
 import { z } from "zod";
+import { oAuthProxy } from "better-auth/plugins/oauth-proxy";
 var transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -280,12 +281,12 @@ var transporter = nodemailer.createTransport({
   }
 });
 var auth = betterAuth({
-  // 1. ADDED: Tell Better Auth the Backend URL for redirects
+  // --- BASE URL ---
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
   database: prismaAdapter(prisma, {
     provider: "postgresql"
   }),
-  // 2. MODIFIED: Dynamic origins to allow Vercel previews and local dev
+  // --- TRUSTED ORIGINS ---
   trustedOrigins: async (request) => {
     const origin = request?.headers.get("origin");
     const allowedOrigins2 = [
@@ -294,7 +295,8 @@ var auth = betterAuth({
       "http://localhost:3000",
       "http://localhost:5000"
     ].filter(Boolean);
-    if (!origin || allowedOrigins2.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
+    if (!origin) return allowedOrigins2;
+    if (allowedOrigins2.includes(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)) {
       return [origin];
     }
     return [];
@@ -304,6 +306,9 @@ var auth = betterAuth({
       role: {
         type: "string",
         required: false,
+        // Must be false so social login doesn't fail
+        defaultValue: "STUDENT",
+        // This is the magic line
         validator: { input: z.enum(["STUDENT", "TUTOR", "ADMIN"]) },
         input: true
       },
@@ -321,71 +326,53 @@ var auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true
   },
+  // --- GOOGLE LOGIN ---
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`
+    }
+  },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: false,
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, token }) => {
       try {
         const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
-        const info = await transporter.sendMail({
+        await transporter.sendMail({
           from: '"SkillBridge" <anikasyeda82@gmail.com>',
           to: user.email,
           subject: "Please verify your email!",
-          html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkillBridge Verification</title>
-  <style>
-    body { margin: 0; padding: 0; width: 100% !important; background-color: #050505; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-    .wrapper { width: 100%; table-layout: fixed; background-color: #050505; padding-bottom: 40px; }
-    .container { max-width: 600px; background-color: #0A0A0B; margin: 40px auto; border-radius: 32px; border: 1px solid #1f1f23; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); overflow: hidden; }
-    .header { padding: 40px 20px; text-align: center; }
-    .logo-text { font-size: 32px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; font-style: italic; color: #ffffff; margin: 0; }
-    .logo-accent { color: #a855f7; }
-    .content { padding: 0 40px 40px 40px; text-align: center; color: #e5e7eb; }
-    .verify-button { background: linear-gradient(to right, #9333ea, #2563eb); color: #ffffff !important; padding: 18px 45px; text-decoration: none; font-weight: 900; border-radius: 14px; display: inline-block; text-transform: uppercase; letter-spacing: 2px; }
-    .footer { padding: 30px; text-align: center; font-size: 12px; color: #4b5563; border-top: 1px solid #1f1f23; }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="container">
-      <div class="header">
-        <h1 class="logo-text">SKILL<span class="logo-accent">BRIDGE</span></h1>
-      </div>
-      <div class="content">
-        <h2>Verify your terminal</h2>
-        <p>Hello <span class="user-name">${user.name}</span>, welcome to SkillBridge.</p>
-        <div class="btn-container"><a href="${verificationUrl}" class="verify-button">Verify Identity</a></div>
-        <div class="fallback-box"><a href="${url}" style="color:#a855f7; font-size:12px;">${url}</a></div>
-      </div>
-      <div class="footer"><p>\xA9 2026 SKILLBRIDGE ECOSYSTEM</p></div>
-    </div>
-  </div>
-</body>
-</html>`
+          html: `<p>Verify here: <a href="${verificationUrl}">Click</a></p>`
         });
-        console.log("Message sent:", info.messageId);
       } catch (err) {
-        console.error(err);
+        console.error("Email Verification Error:", err);
         throw err;
       }
     }
   },
-  // 3. ADDED: Advanced settings for Production Cookies
+  plugins: [oAuthProxy()],
+  // --- FORCING IT TO WORK ---
   advanced: {
     cookiePrefix: "skillbridge-auth",
-    useSecureCookies: process.env.NODE_ENV === "production",
-    // Essential for cross-domain frontend/backend
-    sameSiteCookie: "none"
+    useSecureCookies: true,
+    // Required for SameSite: none
+    // Apply permissive attributes to ALL cookies (including state)
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      path: "/"
+    }
   },
-  // 4. ADDED: Performance caching for sessions
   session: {
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60
+    },
+    cookieOptions: {
+      sameSite: "none",
+      secure: true
     }
   }
 });
@@ -466,6 +453,54 @@ function notFound(req, res) {
     date: Date()
   });
 }
+
+// src/routes/chat.route.ts
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import express from "express";
+var router = express.Router();
+var genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+router.post("/chat", async (req, res) => {
+  try {
+    const { message, userRole = "guest", userName = "User" } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+    const context = `
+      You are SKILLBOT, the exclusive AI guide for SkillBridge.
+      
+      === PLATFORM IDENTITY ===
+      SkillBridge is a premium 1-to-1 mentoring portal. 
+      PAYMENT: We use **Stripe** for secure, upfront payments. Once a student pays, the session is instantly 'Confirmed'.
+      
+      === CURRENT USER CONTEXT ===
+      - Name: ${userName} | Role: ${userRole}
+      (Guests must sign up via Google/Email to access booking.)
+
+      === HOW TO BOOK & PAY ===
+      1. Visit a Tutor's profile and pick an "Available Slot."
+      2. Click "Reserve Spot" to trigger the black confirmation banner.
+      3. Click "Confirm" to be redirected to the secure **Stripe Checkout**.
+      4. After payment, your session will appear in your Dashboard under #bookings.
+
+      === UI STATES & TROUBLESHOOTING ===
+      - Grayscale Screen: If the UI is grey and unclickable, the account is "Suspended" by an Admin.
+      - Missing Admin Tools: "Ban" or "Feature" buttons only appear for verified Admin roles.
+      - Featured Badges: Tutors with a bouncing yellow Star are platform-verified for excellence.
+
+      === BEHAVIOR ===
+      - Tone: Bubbly, professional, and tech-savvy.
+      - Constraint: NEVER exceed 4 sentences. Use emojis (\u{1F680}, \u2728, \u{1F4B3}).
+      - Formatting: Use bullet points for steps.
+    `;
+    const result = await model.generateContent(`${context}
+
+User: ${message}`);
+    const text = result.response.text();
+    return res.json({ text });
+  } catch (error) {
+    console.error("SkillBot Log:", error.message);
+    return res.status(500).json({ text: "I'm having a quick technical snack! \u26A1 Try again in a second! \u{1F4B3}" });
+  }
+});
+var chat_route_default = router;
 
 // src/categories/categories.routes.ts
 import { Router } from "express";
@@ -981,23 +1016,23 @@ var deleteTutorProfileController = async (req, res, next) => {
 };
 
 // src/tutors/tutors.routes.ts
-var router = Router3();
-router.post("/", createTutorProfileController);
-router.get("/alltutor", getAllTutorsController);
-router.put("/:id", updateTutorProfileController);
-router.delete("/:id", deleteTutorProfileController);
-router.patch(
+var router2 = Router3();
+router2.post("/", createTutorProfileController);
+router2.get("/alltutor", getAllTutorsController);
+router2.put("/:id", updateTutorProfileController);
+router2.delete("/:id", deleteTutorProfileController);
+router2.patch(
   "admin/users/:id",
   updateTutorFeatureController
 );
-router.get("/public/getSEARCHtutors", getAllsearchTutors2);
-router.get("/public/featured", getFeaturedTutorsController);
-router.patch("/feature/:id", toggleFeaturedTutor);
-router.get("/tutorid/:userId", getTutorIdHandler);
-router.get("/public/:id", getTutorProfileByIdController);
-router.post("/teacher/createprofile", createTutorProfileController);
-router.patch("/update/:id", updateTutorProfileController);
-var tutors_routes_default = router;
+router2.get("/public/getSEARCHtutors", getAllsearchTutors2);
+router2.get("/public/featured", getFeaturedTutorsController);
+router2.patch("/feature/:id", toggleFeaturedTutor);
+router2.get("/tutorid/:userId", getTutorIdHandler);
+router2.get("/public/:id", getTutorProfileByIdController);
+router2.post("/teacher/createprofile", createTutorProfileController);
+router2.patch("/update/:id", updateTutorProfileController);
+var tutors_routes_default = router2;
 
 // src/availability/availability.routes.ts
 import { Router as Router4 } from "express";
@@ -1360,12 +1395,44 @@ var deleteBooking = async (id) => {
     where: { id }
   });
 };
+var getSessionsOverview = async (id) => {
+  const confirmedBookings = await prisma.booking.findMany({
+    where: {
+      OR: [
+        { studentId: id },
+        { tutorId: id },
+        { tutor: { userId: id } }
+      ],
+      status: {
+        in: ["CONFIRMED", "COMPLETED"]
+      }
+    },
+    include: {
+      student: {
+        select: { name: true, image: true, email: true }
+      },
+      tutor: {
+        include: { user: { select: { name: true } } }
+      },
+      availability: true
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+  return {
+    success: true,
+    totalSessions: confirmedBookings.length,
+    bookings: confirmedBookings
+  };
+};
 var bookingService = {
   createBookingService,
   getBookingById,
   getAllBookings,
   updateBooking,
-  deleteBooking
+  deleteBooking,
+  getSessionsOverview
 };
 
 // src/lib/stripe.ts
@@ -1466,8 +1533,8 @@ var createBookingController = async (req, res, next) => {
       }],
       mode: "payment",
       // Where to send the user after they finish
-      success_url: `${process.env.FRONTEND_URL}/payment-success}`,
-      cancel_url: `${process.env.FRONTEND_URL}/payment-failed}`,
+      success_url: `${process.env.APP_URL}/payment-success`,
+      cancel_url: `${process.env.APP_URL}/payment-failed`,
       // IMPORTANT: Hide the booking ID in metadata so the Webhook can find it later
       metadata: {
         bookingId: booking.id
@@ -1528,12 +1595,23 @@ var deleteBookingController = async (req, res, next) => {
     next(error);
   }
 };
+var getSessionsOverviewController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id || Array.isArray(id)) return res.status(400).json({ message: "Invalid ID" });
+    const overview = await bookingService.getSessionsOverview(id);
+    res.status(200).json(overview);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // src/bookings/bookings.routes.ts
 var bookingrouter = Router5();
 bookingrouter.get("/bookings", getAllBookingsController);
 bookingrouter.get("/tutorbookings", BookingController.getMyBookings);
 bookingrouter.get("/studentbookings", studentBookingController.getStudentBookings);
+bookingrouter.get("/overview/:id", getSessionsOverviewController);
 bookingrouter.patch("/tutorbookings/complete/:id", BookingController.completeBooking);
 bookingrouter.patch("/studentbookings/cancel/:id", studentBookingController.cancelByStudent);
 bookingrouter.post("/", createBookingController);
@@ -1690,14 +1768,14 @@ var deleteReviewController = async (req, res, next) => {
 };
 
 // src/reviews/reviews.routes.ts
-var router2 = Router6();
-router2.get("/", getAllReviewsController);
-router2.post("/", createReviewController);
-router2.put("/:id", updateReviewController);
-router2.delete("/:id", deleteReviewController);
-router2.get("/:id", getReviewStatsHandler);
-router2.get("/stats/:tutorId", getReviewStats);
-var reviews_routes_default = router2;
+var router3 = Router6();
+router3.get("/", getAllReviewsController);
+router3.post("/", createReviewController);
+router3.put("/:id", updateReviewController);
+router3.delete("/:id", deleteReviewController);
+router3.get("/:id", getReviewStatsHandler);
+router3.get("/stats/:tutorId", getReviewStats);
+var reviews_routes_default = router3;
 
 // src/users/users.routes.ts
 import { Router as Router7 } from "express";
@@ -1777,7 +1855,24 @@ var deleteUser = async (id) => {
   });
   return deletedUser;
 };
+var getUserCounts = async () => {
+  const [adminCount, studentCount, tutorCount, totalCount] = await Promise.all([
+    prisma.user.count({ where: { role: "ADMIN" } }),
+    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { role: "TUTOR" } }),
+    prisma.user.count()
+    // Total count of all users
+  ]);
+  return {
+    admin: adminCount,
+    student: studentCount,
+    teacher: tutorCount,
+    // Labeled as teacher per user request
+    total: totalCount
+  };
+};
 var userService = {
+  getUserCounts,
   createUser,
   getUserById,
   getAllUsers,
@@ -1859,10 +1954,23 @@ var updateUserController = async (req, res, next) => {
     next(error);
   }
 };
+var getUserCountsController = async (req, res, next) => {
+  try {
+    const counts = await userService.getUserCounts();
+    res.status(200).json({
+      success: true,
+      ...counts
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // src/users/users.routes.ts
 var userrouter = Router7();
 userrouter.get("/", getAllUsersController);
+userrouter.get("/counts", getUserCountsController);
+userrouter.get("/count", getUserCountsController);
 userrouter.post("/update-status", toggleTutorBanStatus);
 userrouter.patch("/update/:id", updateUser2);
 userrouter.get("/:id", getUserByIdController);
@@ -1870,11 +1978,11 @@ userrouter.patch("/:id", updateUserController);
 var users_routes_default = userrouter;
 
 // src/routes/webhook.routes.ts
-import express from "express";
-var router3 = express.Router();
-router3.post(
+import express2 from "express";
+var router4 = express2.Router();
+router4.post(
   "/stripe",
-  express.raw({ type: "application/json" }),
+  express2.raw({ type: "application/json" }),
   async (req, res) => {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -1925,11 +2033,12 @@ router3.post(
     res.status(200).json({ received: true });
   }
 );
-var webhook_routes_default = router3;
+var webhook_routes_default = router4;
 
 // src/app.ts
 dotenv.config();
-var app = express2();
+var app = express3();
+app.set("trust proxy", 1);
 var allowedOrigins = [
   process.env.APP_URL,
   "http://localhost:3000",
@@ -1952,11 +2061,12 @@ app.use(cors({
 }));
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/webhooks", webhook_routes_default);
-app.use(express2.json());
-app.use(express2.urlencoded({ extended: true }));
+app.use(express3.json());
+app.use(express3.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("SkillBridge API is running...");
 });
+app.use("/api", chat_route_default);
 app.use("/api/categories", categories_routes_default);
 app.use("/api/tutor", tutors_routes_default);
 app.use("/api/support", supportemail_default);

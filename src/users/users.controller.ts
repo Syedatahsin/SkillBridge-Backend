@@ -129,3 +129,15 @@ export const deleteUserController = async (req: Request, res: Response, next: Ne
     next(error);
   }
 };
+
+export const getUserCountsController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const counts = await userService.getUserCounts();
+    res.status(200).json({
+      success: true,
+      ...counts
+    });
+  } catch (error) {
+    next(error);
+  }
+};

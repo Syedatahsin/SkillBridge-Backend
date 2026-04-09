@@ -16,8 +16,8 @@ model User {
   image             String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-  role              String
-  status            String
+  role          String   @default("STUDENT") // Added default
+  status        String   @default("ACTIVE")  // Added default
   bookingsAsStudent Booking[]     @relation("StudentBookings")
   reviews           Review[]
   tutorProfile      TutorProfile?

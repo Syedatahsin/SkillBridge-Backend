@@ -120,9 +120,25 @@ const deleteUser = async (id: string) => {
   return deletedUser;
 };
 
+export const getUserCounts = async () => {
+  const [adminCount, studentCount, tutorCount, totalCount] = await Promise.all([
+    prisma.user.count({ where: { role: "ADMIN" } }),
+    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { role: "TUTOR" } }),
+    prisma.user.count(), // Total count of all users
+  ]);
+
+  return {
+    admin: adminCount,
+    student: studentCount,
+    teacher: tutorCount, // Labeled as teacher per user request
+    total: totalCount,
+  };
+};
+
 export const userService = {
   
-
+  getUserCounts,
   createUser,
   getUserById,
   getAllUsers,

@@ -6,7 +6,7 @@ import {
   getAllBookingsController,
   updateBookingController,
   deleteBookingController,
-  
+  getSessionsOverviewController,
 } from "../bookings/bookings.controller";
 import auth, { UserRole } from "../middlewares/auth";
 import { studentBookingController } from './bookings.controller';
@@ -18,6 +18,7 @@ const bookingrouter = Router();
 bookingrouter.get("/bookings", getAllBookingsController);
 bookingrouter.get("/tutorbookings", BookingController.getMyBookings);
 bookingrouter.get("/studentbookings", studentBookingController.getStudentBookings);
+bookingrouter.get("/overview/:id", getSessionsOverviewController);
 
 bookingrouter.patch("/tutorbookings/complete/:id", BookingController.completeBooking);
 bookingrouter.patch("/studentbookings/cancel/:id", studentBookingController.cancelByStudent);
