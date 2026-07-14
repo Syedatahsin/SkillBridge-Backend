@@ -21,16 +21,39 @@ export const getCategoryById = async (id: string) => {
 };
 
 // Get all Categories
-export const getAllCategories = async () => {
-  return await prisma.category.findMany({
+export const getAllCategories = async (page: number, limit: number) => {
+  const queryOptions: any = {
     include: {
       _count: {
         select: { 
           tutors: true 
         }
       }
+    },
+    orderBy: {
+      name: 'asc'
     }
-  });
+  };
+
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+
+  const [data, totalCount] = await Promise.all([
+    prisma.category.findMany(queryOptions),
+    prisma.category.count(),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page: page,
+      limit: limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1,
+    },
+  };
 };
 // Update Category
 export const updateCategory = async (id: string, data: Partial<{ name: string }>) => {

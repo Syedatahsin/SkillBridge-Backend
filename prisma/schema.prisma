@@ -133,6 +133,16 @@ model Booking {
   tutor          TutorProfile  @relation(fields: [tutorId], references: [id])
   payment        Payment?
   review         Review?
+  sessionResource SessionResource?
+}
+
+model SessionResource {
+  id             String   @id @default(uuid())
+  bookingId      String   @unique
+  transcriptText String   @db.Text
+  quizData       Json?
+  updatedAt      DateTime @updatedAt
+  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
 
 model Payment {

@@ -8,13 +8,15 @@ export const studentBookingController = {
   // GET: Fetch sessions where the logged-in user is the student
   async getStudentBookings(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.query;
+      const { userId, status } = req.query;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 4;
 
       if (!userId || typeof userId !== "string") {
         return res.status(400).json({ message: "Valid Student User ID is required" });
       }
 
-      const bookings = await studentBookingService.fetchStudentSchedule(userId);
+      const bookings = await studentBookingService.fetchStudentSchedule(userId, status as string, page, limit);
       return res.status(200).json(bookings);
     } catch (error) {
       next(error);
@@ -46,13 +48,15 @@ export const studentBookingController = {
 export const BookingController = {
   async getMyBookings(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.query;
+      const { userId, status } = req.query;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 4;
 
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
 
-      const bookings = await BookingService.getTeacherBookings(String(userId));
+      const bookings = await BookingService.getTeacherBookings(String(userId), status as string, page, limit);
       return res.status(200).json(bookings);
     } catch (error) {
       next(error);

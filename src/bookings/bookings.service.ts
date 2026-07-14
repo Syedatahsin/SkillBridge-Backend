@@ -8,11 +8,17 @@ export type BookingStatus = "CONFIRMED" | "COMPLETED" | "CANCELLED";
 import { Request, Response } from "express";
 export const studentBookingService = {
   // Logic to get the student's classes + Teacher's User Name
-  async fetchStudentSchedule(studentUserId: string) {
-    return await prisma.booking.findMany({
-      where: {
-        studentId: studentUserId,
-      },
+  async fetchStudentSchedule(studentUserId: string, statusFilter?: string, page: number = 1, limit: number = 4) {
+    const whereClause: any = { studentId: studentUserId };
+    
+    if (statusFilter === 'upcoming') {
+      whereClause.status = { in: ["PENDING", "CONFIRMED"] };
+    } else if (statusFilter === 'completed') {
+      whereClause.status = "COMPLETED";
+    }
+
+    const queryOptions: any = {
+      where: whereClause,
       include: {
         availability: true, // For dates and times
         tutor: {
@@ -29,7 +35,27 @@ export const studentBookingService = {
       orderBy: {
         createdAt: 'desc'
       }
-    });
+    };
+
+    if (limit > 0) {
+      queryOptions.take = limit;
+      queryOptions.skip = (page - 1) * limit;
+    }
+
+    const [bookings, totalCount] = await Promise.all([
+      prisma.booking.findMany(queryOptions),
+      prisma.booking.count({ where: whereClause })
+    ]);
+
+    return {
+      bookings,
+      meta: {
+        total: totalCount,
+        page,
+        limit,
+        lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+      }
+    };
   },
 
   // Logic to change status to CANCELLED
@@ -102,7 +128,7 @@ export const createBookingService = async (
 };
 export const BookingService = {
   
-  async getTeacherBookings(identifier: string) {
+  async getTeacherBookings(identifier: string, statusFilter?: string, page: number = 1, limit: number = 4) {
     // 1. Find the profile first
     const profile = await prisma.tutorProfile.findFirst({
       where: {
@@ -115,51 +141,66 @@ export const BookingService = {
 
     if (!profile) {
       console.log(`[Service] No TutorProfile found for: ${identifier}`);
-      return { bookings: [], totalEarnings: 0 }; 
+      return { bookings: [], totalEarnings: 0, meta: { total: 0, page, limit, lastPage: 1 } }; 
     }
 
-    // 2. Fetch all bookings with ALL payment fields
-    const bookings = await prisma.booking.findMany({
-      where: {
-        tutorId: profile.id
-      },
+    const whereClause: any = { tutorId: profile.id };
+    
+    if (statusFilter === 'upcoming') {
+      whereClause.status = { in: ["PENDING", "CONFIRMED"] };
+    } else if (statusFilter === 'completed') {
+      whereClause.status = "COMPLETED";
+    }
+
+    const queryOptions: any = {
+      where: whereClause,
       include: {
         student: {
-          select: {
-            name: true,
-            image: true,
-            email: true
-          }
+          select: { name: true, image: true, email: true }
         },
         availability: {
-          select: {
-            startTime: true,
-            endTime: true
-          }
+          select: { startTime: true, endTime: true }
         },
-        // CHANGED: Include the entire payment record without specifying fields
         payment: true 
       },
       orderBy: {
-        availability: {
-          startTime: "asc"
-        }
+        availability: { startTime: "asc" }
       }
+    };
+
+    if (limit > 0) {
+      queryOptions.take = limit;
+      queryOptions.skip = (page - 1) * limit;
+    }
+
+    // 2. Fetch all COMPLETED bookings to calculate total sum consistently
+    const allCompletedBookings = await prisma.booking.findMany({
+      where: { tutorId: profile.id, status: "COMPLETED" },
+      include: { payment: true }
     });
 
-    // 3. Calculate total balance
-    const totalEarnings = bookings.reduce((sum, booking) => {
-      // Check if payment exists and status is successful/completed
-      // Note: Use the exact status string your DB uses (e.g., "COMPLETED", "PAID", or "SUCCESS")
+    const totalEarnings = allCompletedBookings.reduce((sum, booking) => {
       if (booking.payment && (booking.payment.status === "COMPLETED" || booking.payment.status === "PAID")) {
         return sum + (booking.payment.amount || 0);
       }
       return sum;
     }, 0);
 
+    // 3. Fetch paginated subset for the UI Display
+    const [bookings, totalCount] = await Promise.all([
+      prisma.booking.findMany(queryOptions),
+      prisma.booking.count({ where: whereClause })
+    ]);
+
     return {
       bookings,
-      totalEarnings
+      totalEarnings,
+      meta: {
+        total: totalCount,
+        page,
+        limit,
+        lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+      }
     };
   },
 

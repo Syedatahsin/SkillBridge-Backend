@@ -68,11 +68,19 @@ const getUserById = async (id: string) => {
   return user;
 };
 
-export const getAllUsers = async (page: number, limit: number) => {
+export const getAllUsers = async (page: number, limit: number, role?: string) => {
   const queryOptions: any = {
-    include: {
+    where: role ? { role: role } : {},
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
       sessions: true,
-      accounts: true,
       tutorProfile: true,
       bookingsAsStudent: true,
       reviews: true
@@ -91,7 +99,7 @@ export const getAllUsers = async (page: number, limit: number) => {
   // Promise.all for speed
   const [data, totalCount] = await Promise.all([
     prisma.user.findMany(queryOptions),
-    prisma.user.count(),
+    prisma.user.count({ where: role ? { role: role } : {} }),
   ]);
 
   return {

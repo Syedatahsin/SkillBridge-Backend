@@ -28,20 +28,33 @@ export const getTutorProfileById = async (id: string) => {
   return prisma.tutorProfile.findUnique({
     where: { id },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       bookings: true,
-      reviews: {            // 1st Level: Get the reviews for this tutor
+      reviews: {            
         include: {
-          student: true,    // 2nd Level: Get the student details for EACH review
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true,
+            }
+          },
         }
-
-
-
-
+      }
     }
-  }});
+  });
 };
 
 export const findTutorIdByUserId = async (userId: string) => {
@@ -56,14 +69,21 @@ export const findTutorIdByUserId = async (userId: string) => {
 
 
 
-export const getFeaturedTutors = async () => {
-  // findMany always returns an array (empty [] or full)
-  return await prisma.tutorProfile.findMany({
+export const getFeaturedTutors = async (page: number, limit: number) => {
+  const queryOptions: any = {
     where: {
       isFeatured: true,
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        }
+      },
       categories: {
         include: {
           category: true,
@@ -71,7 +91,30 @@ export const getFeaturedTutors = async () => {
       },
       reviews: true,
     },
-  });
+    orderBy: {
+      createdAt: 'desc',
+    },
+  };
+
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+
+  const [data, totalCount] = await Promise.all([
+    prisma.tutorProfile.findMany(queryOptions),
+    prisma.tutorProfile.count({ where: { isFeatured: true } }),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page: page,
+      limit: limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1,
+    },
+  };
 };
 
 
@@ -80,7 +123,15 @@ export const getAllTutorProfiles = async (page: number, limit: number) => {
   // Use a dynamic query object
   const queryOptions: any = {
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       reviews: true,
@@ -164,7 +215,15 @@ export const updateTutorProfile = async (
     where: { id },
     data: updateData,
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       bookings: true,
@@ -197,6 +256,8 @@ export const getAllsearchTutors = async ({
   minPrice,
   maxPrice,
   minRating,
+  page = 1,
+  limit = 10
 }: any) => {
   const andConditions: any[] = [];
 
@@ -228,25 +289,57 @@ export const getAllsearchTutors = async ({
     andConditions.push({ pricePerHour: { lte: maxPrice } });
   }
 
-  const tutors = await prisma.tutorProfile.findMany({
-    where: andConditions.length > 0 ? { AND: andConditions } : {},
+  const where = andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const queryOptions: any = {
+    where,
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        }
+      },
       categories: { include: { category: true } },
       reviews: true,
     },
-  });
+    orderBy: {
+      createdAt: 'desc',
+    },
+  };
 
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+
+  let tutors = await prisma.tutorProfile.findMany(queryOptions);
+  let totalCount = await prisma.tutorProfile.count({ where });
+
+  // Filter by minRating if provided (Note: Rating filtering in DB is complex with nested reviews, 
+  // currently done in memory which affects pagination accuracy if many are filtered out)
   if (typeof minRating === "number" && minRating > 0) {
-    return tutors.filter((tutor) => {
+    tutors = tutors.filter((tutor) => {
       const avgRating = tutor.reviews.length > 0
         ? tutor.reviews.reduce((sum, r) => sum + r.rating, 0) / tutor.reviews.length
         : 0;
       return avgRating >= minRating;
     });
+    // In-memory filtering means totalCount and lastPage might be slightly off for the consumer
   }
 
-  return tutors;
+  return {
+    data: tutors,
+    meta: {
+      total: totalCount,
+      page: page,
+      limit: limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1,
+    },
+  };
 };
 
 

@@ -63,6 +63,11 @@ export type Availability = Prisma.AvailabilityModel
  */
 export type Booking = Prisma.BookingModel
 /**
+ * Model SessionResource
+ * 
+ */
+export type SessionResource = Prisma.SessionResourceModel
+/**
  * Model Payment
  * 
  */

@@ -104,13 +104,17 @@ export const getAllsearchTutors = async (req: Request, res: Response, next: Next
     const minPrice = req.query.minPrice ? Number(req.query.minPrice) : undefined;
     const maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : undefined;
     const minRating = req.query.minRating ? Number(req.query.minRating) : undefined;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
 
     const result = await tutorProfileService.getAllsearchTutors({
       search,
       categories,
       minPrice,
       maxPrice,
-      minRating
+      minRating,
+      page,
+      limit
     });
 
     return res.status(200).json(result); 
@@ -137,8 +141,11 @@ export const getTutorProfileByIdController = async (req: Request, res: Response,
 
 export const getFeaturedTutorsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await tutorProfileService.getFeaturedTutors();
-    return res.status(200).json(result || []);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
+
+    const result = await tutorProfileService.getFeaturedTutors(page, limit);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -147,7 +154,7 @@ export const getFeaturedTutorsController = async (req: Request, res: Response, n
 export const getAllTutorsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 0;
+    const limit = req.query.limit !== undefined ? Number(req.query.limit) : 8;
 
     const result = await tutorProfileService.getAllTutorProfiles(page, limit);
 

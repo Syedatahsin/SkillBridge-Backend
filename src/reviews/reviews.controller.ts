@@ -7,7 +7,9 @@ import { getReviewById } from "../reviews/reviews.service";
 export const getReviewStats = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { tutorId } = req.params;
-    const data = await ReviewServicee.getTutorReviewStats(tutorId as any);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 2;
+    const data = await ReviewServicee.getTutorReviewStats(tutorId as any, page, limit);
     res.json(data);
   } catch (error) {
     next(error);

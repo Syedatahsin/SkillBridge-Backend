@@ -42,7 +42,7 @@ export const getReviewById = async (tutorId: string) => {
 };
 
 export const ReviewServicee = {
-  async getTutorReviewStats(tutorId: string) {
+  async getTutorReviewStats(tutorId: string, page: number = 1, limit: number = 2) {
     // 1. Get Average Rating & Total Count
     const stats = await prisma.review.aggregate({
       where: { tutorId },
@@ -50,10 +50,13 @@ export const ReviewServicee = {
       _count: { id: true },
     });
 
-    // 2. Get the 2 most recent reviews
+    const skip = (page - 1) * limit;
+
+    // 2. Get paginated reviews
     const latestReviews = await prisma.review.findMany({
       where: { tutorId },
-      take: 2,
+      take: limit,
+      skip,
       orderBy: { createdAt: "desc" },
       include: {
         student: {
@@ -62,10 +65,19 @@ export const ReviewServicee = {
       }
     });
 
+    const totalReviews = stats._count.id;
+    const lastPage = Math.ceil(totalReviews / limit);
+
     return {
       averageRating: stats._avg.rating?.toFixed(1) || "0.0",
-      totalReviews: stats._count.id,
-      latestReviews
+      totalReviews,
+      latestReviews,
+      meta: {
+        total: totalReviews,
+        page,
+        limit,
+        lastPage: lastPage > 0 ? lastPage : 1
+      }
     };
   }
 };

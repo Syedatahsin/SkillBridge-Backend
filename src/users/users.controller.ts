@@ -87,8 +87,11 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
 export const getAllUsersController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const limit = Number(req.query.limit) || 0;
-    const result = await userService.getAllUsers(1, limit);
+    const limit = req.query.limit !== undefined ? Number(req.query.limit) : 8;
+    const page = Number(req.query.page) || 1;
+    const role = req.query.role as string | undefined;
+
+    const result = await userService.getAllUsers(page, limit, role);
 
     res.status(200).json({
       success: true,

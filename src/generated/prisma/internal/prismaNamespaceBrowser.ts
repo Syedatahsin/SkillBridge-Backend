@@ -60,6 +60,7 @@ export const ModelName = {
   TutorCategory: 'TutorCategory',
   Availability: 'Availability',
   Booking: 'Booking',
+  SessionResource: 'SessionResource',
   Payment: 'Payment',
   Review: 'Review'
 } as const
@@ -198,6 +199,17 @@ export const BookingScalarFieldEnum = {
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
 
 
+export const SessionResourceScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  transcriptText: 'transcriptText',
+  quizData: 'quizData',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SessionResourceScalarFieldEnum = (typeof SessionResourceScalarFieldEnum)[keyof typeof SessionResourceScalarFieldEnum]
+
+
 export const PaymentScalarFieldEnum = {
   id: 'id',
   bookingId: 'bookingId',
@@ -232,6 +244,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -246,4 +266,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -16,6 +16,7 @@ import bookingrouter from './bookings/bookings.routes';
 import reviewrouter from './reviews/reviews.routes';
 import userrouter from './users/users.routes';
 import webhookRoutes from './routes/webhook.routes';
+import sessionResourceRoutes from './routes/sessionResource.route';
 
 dotenv.config();
 
@@ -72,6 +73,7 @@ app.use("/api/availability", availabilityrouter);
 app.use("/api/bookings", bookingrouter);
 app.use("/api/reviews", reviewrouter);
 app.use("/api/users", userrouter); 
+app.use("/api/session-resources", sessionResourceRoutes);
 
 // --- ERROR HANDLING ---
 app.use(notFound);

@@ -29,10 +29,13 @@ export const getCategoryByIdController = async (req: Request, res: Response, nex
 };
 
 // Get all Categories
-export const getAllCategoriesController = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllCategoriesController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const categories = await categoryService.getAllCategories();
-    res.json(categories);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
+    
+    const result = await categoryService.getAllCategories(page, limit);
+    res.json(result);
   } catch (error) {
     next(error);
   }

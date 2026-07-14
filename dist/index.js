@@ -29,7 +29,7 @@ var config = {
   "clientVersion": "7.7.0",
   "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
   "activeProvider": "postgresql",
-  "inlineSchema": 'generator client {\n  provider = "prisma-client"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel User {\n  id                String        @id\n  name              String\n  email             String        @unique\n  emailVerified     Boolean       @default(false)\n  image             String?\n  createdAt         DateTime      @default(now())\n  updatedAt         DateTime      @updatedAt\n  role              String        @default("STUDENT") // Added default\n  status            String        @default("ACTIVE") // Added default\n  bookingsAsStudent Booking[]     @relation("StudentBookings")\n  reviews           Review[]\n  tutorProfile      TutorProfile?\n  accounts          Account[]\n  sessions          Session[]\n\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel TutorProfile {\n  id                String   @id @default(uuid())\n  userId            String   @unique\n  bio               String\n  experience        Int\n  pricePerHour      Float\n  isFeatured        Boolean  @default(false)\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  bankAccountNumber String? // Added as optional to avoid migration errors\n\n  availability Availability[]\n  bookings     Booking[]\n  reviews      Review[]\n  categories   TutorCategory[]\n  user         User            @relation(fields: [userId], references: [id])\n}\n\nmodel Category {\n  id          String          @id @default(uuid())\n  name        String          @unique\n  description String?\n  createdAt   DateTime        @default(now())\n  tutors      TutorCategory[]\n}\n\nmodel TutorCategory {\n  tutorId    String\n  categoryId String\n  category   Category     @relation(fields: [categoryId], references: [id])\n  tutor      TutorProfile @relation(fields: [tutorId], references: [id])\n\n  @@id([tutorId, categoryId])\n}\n\nmodel Availability {\n  id        String       @id @default(uuid())\n  tutorId   String\n  startTime DateTime\n  endTime   DateTime\n  isBooked  Boolean      @default(false)\n  createdAt DateTime     @default(now())\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n  booking   Booking?\n}\n\nmodel Booking {\n  id             String        @id @default(uuid())\n  studentId      String\n  tutorId        String\n  availabilityId String        @unique\n  meetingLink    String?\n  status         BookingStatus @default(PENDING)\n  createdAt      DateTime      @default(now())\n  availability   Availability  @relation(fields: [availabilityId], references: [id])\n  student        User          @relation("StudentBookings", fields: [studentId], references: [id])\n  tutor          TutorProfile  @relation(fields: [tutorId], references: [id])\n  payment        Payment?\n  review         Review?\n}\n\nmodel Payment {\n  id              String   @id @default(uuid())\n  bookingId       String   @unique\n  stripeSessionId String   @unique\n  amount          Float\n  status          String\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n  booking         Booking  @relation(fields: [bookingId], references: [id])\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  bookingId String       @unique\n  studentId String\n  tutorId   String\n  rating    Int\n  comment   String?\n  createdAt DateTime     @default(now())\n  booking   Booking      @relation(fields: [bookingId], references: [id])\n  student   User         @relation(fields: [studentId], references: [id])\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n}\n\nenum BookingStatus {\n  PENDING\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n',
+  "inlineSchema": 'generator client {\n  provider = "prisma-client"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel User {\n  id                String        @id\n  name              String\n  email             String        @unique\n  emailVerified     Boolean       @default(false)\n  image             String?\n  createdAt         DateTime      @default(now())\n  updatedAt         DateTime      @updatedAt\n  role              String        @default("STUDENT") // Added default\n  status            String        @default("ACTIVE") // Added default\n  bookingsAsStudent Booking[]     @relation("StudentBookings")\n  reviews           Review[]\n  tutorProfile      TutorProfile?\n  accounts          Account[]\n  sessions          Session[]\n\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel TutorProfile {\n  id                String   @id @default(uuid())\n  userId            String   @unique\n  bio               String\n  experience        Int\n  pricePerHour      Float\n  isFeatured        Boolean  @default(false)\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n  bankAccountNumber String? // Added as optional to avoid migration errors\n\n  availability Availability[]\n  bookings     Booking[]\n  reviews      Review[]\n  categories   TutorCategory[]\n  user         User            @relation(fields: [userId], references: [id])\n}\n\nmodel Category {\n  id          String          @id @default(uuid())\n  name        String          @unique\n  description String?\n  createdAt   DateTime        @default(now())\n  tutors      TutorCategory[]\n}\n\nmodel TutorCategory {\n  tutorId    String\n  categoryId String\n  category   Category     @relation(fields: [categoryId], references: [id])\n  tutor      TutorProfile @relation(fields: [tutorId], references: [id])\n\n  @@id([tutorId, categoryId])\n}\n\nmodel Availability {\n  id        String       @id @default(uuid())\n  tutorId   String\n  startTime DateTime\n  endTime   DateTime\n  isBooked  Boolean      @default(false)\n  createdAt DateTime     @default(now())\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n  booking   Booking?\n}\n\nmodel Booking {\n  id              String           @id @default(uuid())\n  studentId       String\n  tutorId         String\n  availabilityId  String           @unique\n  meetingLink     String?\n  status          BookingStatus    @default(PENDING)\n  createdAt       DateTime         @default(now())\n  availability    Availability     @relation(fields: [availabilityId], references: [id])\n  student         User             @relation("StudentBookings", fields: [studentId], references: [id])\n  tutor           TutorProfile     @relation(fields: [tutorId], references: [id])\n  payment         Payment?\n  review          Review?\n  sessionResource SessionResource?\n}\n\nmodel SessionResource {\n  id             String   @id @default(uuid())\n  bookingId      String   @unique\n  transcriptText String   @db.Text\n  quizData       Json?\n  updatedAt      DateTime @updatedAt\n  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)\n}\n\nmodel Payment {\n  id              String   @id @default(uuid())\n  bookingId       String   @unique\n  stripeSessionId String   @unique\n  amount          Float\n  status          String\n  createdAt       DateTime @default(now())\n  updatedAt       DateTime @updatedAt\n  booking         Booking  @relation(fields: [bookingId], references: [id])\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  bookingId String       @unique\n  studentId String\n  tutorId   String\n  rating    Int\n  comment   String?\n  createdAt DateTime     @default(now())\n  booking   Booking      @relation(fields: [bookingId], references: [id])\n  student   User         @relation(fields: [studentId], references: [id])\n  tutor     TutorProfile @relation(fields: [tutorId], references: [id])\n}\n\nenum BookingStatus {\n  PENDING\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -40,10 +40,10 @@ var config = {
     "graph": ""
   }
 };
-config.runtimeDataModel = JSON.parse('{"models":{"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"image","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"role","kind":"scalar","type":"String"},{"name":"status","kind":"scalar","type":"String"},{"name":"bookingsAsStudent","kind":"object","type":"Booking","relationName":"StudentBookings"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToUser"},{"name":"tutorProfile","kind":"object","type":"TutorProfile","relationName":"TutorProfileToUser"},{"name":"accounts","kind":"object","type":"Account","relationName":"AccountToUser"},{"name":"sessions","kind":"object","type":"Session","relationName":"SessionToUser"}],"dbName":"user"},"Session":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"token","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"ipAddress","kind":"scalar","type":"String"},{"name":"userAgent","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"SessionToUser"}],"dbName":"session"},"Account":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"accountId","kind":"scalar","type":"String"},{"name":"providerId","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"accessToken","kind":"scalar","type":"String"},{"name":"refreshToken","kind":"scalar","type":"String"},{"name":"idToken","kind":"scalar","type":"String"},{"name":"accessTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"refreshTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"scope","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"user","kind":"object","type":"User","relationName":"AccountToUser"}],"dbName":"account"},"Verification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"identifier","kind":"scalar","type":"String"},{"name":"value","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"verification"},"TutorProfile":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"pricePerHour","kind":"scalar","type":"Float"},{"name":"isFeatured","kind":"scalar","type":"Boolean"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"bankAccountNumber","kind":"scalar","type":"String"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToTutorProfile"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToTutorProfile"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToTutorProfile"},{"name":"categories","kind":"object","type":"TutorCategory","relationName":"TutorCategoryToTutorProfile"},{"name":"user","kind":"object","type":"User","relationName":"TutorProfileToUser"}],"dbName":null},"Category":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"tutors","kind":"object","type":"TutorCategory","relationName":"CategoryToTutorCategory"}],"dbName":null},"TutorCategory":{"fields":[{"name":"tutorId","kind":"scalar","type":"String"},{"name":"categoryId","kind":"scalar","type":"String"},{"name":"category","kind":"object","type":"Category","relationName":"CategoryToTutorCategory"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"TutorCategoryToTutorProfile"}],"dbName":null},"Availability":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"isBooked","kind":"scalar","type":"Boolean"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"AvailabilityToTutorProfile"},{"name":"booking","kind":"object","type":"Booking","relationName":"AvailabilityToBooking"}],"dbName":null},"Booking":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"availabilityId","kind":"scalar","type":"String"},{"name":"meetingLink","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"BookingStatus"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToBooking"},{"name":"student","kind":"object","type":"User","relationName":"StudentBookings"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"BookingToTutorProfile"},{"name":"payment","kind":"object","type":"Payment","relationName":"BookingToPayment"},{"name":"review","kind":"object","type":"Review","relationName":"BookingToReview"}],"dbName":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"stripeSessionId","kind":"scalar","type":"String"},{"name":"amount","kind":"scalar","type":"Float"},{"name":"status","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToPayment"}],"dbName":null},"Review":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"rating","kind":"scalar","type":"Int"},{"name":"comment","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToReview"},{"name":"student","kind":"object","type":"User","relationName":"ReviewToUser"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"ReviewToTutorProfile"}],"dbName":null}},"enums":{},"types":{}}');
+config.runtimeDataModel = JSON.parse('{"models":{"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"image","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"role","kind":"scalar","type":"String"},{"name":"status","kind":"scalar","type":"String"},{"name":"bookingsAsStudent","kind":"object","type":"Booking","relationName":"StudentBookings"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToUser"},{"name":"tutorProfile","kind":"object","type":"TutorProfile","relationName":"TutorProfileToUser"},{"name":"accounts","kind":"object","type":"Account","relationName":"AccountToUser"},{"name":"sessions","kind":"object","type":"Session","relationName":"SessionToUser"}],"dbName":"user"},"Session":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"token","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"ipAddress","kind":"scalar","type":"String"},{"name":"userAgent","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"SessionToUser"}],"dbName":"session"},"Account":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"accountId","kind":"scalar","type":"String"},{"name":"providerId","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"accessToken","kind":"scalar","type":"String"},{"name":"refreshToken","kind":"scalar","type":"String"},{"name":"idToken","kind":"scalar","type":"String"},{"name":"accessTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"refreshTokenExpiresAt","kind":"scalar","type":"DateTime"},{"name":"scope","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"user","kind":"object","type":"User","relationName":"AccountToUser"}],"dbName":"account"},"Verification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"identifier","kind":"scalar","type":"String"},{"name":"value","kind":"scalar","type":"String"},{"name":"expiresAt","kind":"scalar","type":"DateTime"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"verification"},"TutorProfile":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"bio","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"pricePerHour","kind":"scalar","type":"Float"},{"name":"isFeatured","kind":"scalar","type":"Boolean"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"bankAccountNumber","kind":"scalar","type":"String"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToTutorProfile"},{"name":"bookings","kind":"object","type":"Booking","relationName":"BookingToTutorProfile"},{"name":"reviews","kind":"object","type":"Review","relationName":"ReviewToTutorProfile"},{"name":"categories","kind":"object","type":"TutorCategory","relationName":"TutorCategoryToTutorProfile"},{"name":"user","kind":"object","type":"User","relationName":"TutorProfileToUser"}],"dbName":null},"Category":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"tutors","kind":"object","type":"TutorCategory","relationName":"CategoryToTutorCategory"}],"dbName":null},"TutorCategory":{"fields":[{"name":"tutorId","kind":"scalar","type":"String"},{"name":"categoryId","kind":"scalar","type":"String"},{"name":"category","kind":"object","type":"Category","relationName":"CategoryToTutorCategory"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"TutorCategoryToTutorProfile"}],"dbName":null},"Availability":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"isBooked","kind":"scalar","type":"Boolean"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"AvailabilityToTutorProfile"},{"name":"booking","kind":"object","type":"Booking","relationName":"AvailabilityToBooking"}],"dbName":null},"Booking":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"availabilityId","kind":"scalar","type":"String"},{"name":"meetingLink","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"BookingStatus"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"availability","kind":"object","type":"Availability","relationName":"AvailabilityToBooking"},{"name":"student","kind":"object","type":"User","relationName":"StudentBookings"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"BookingToTutorProfile"},{"name":"payment","kind":"object","type":"Payment","relationName":"BookingToPayment"},{"name":"review","kind":"object","type":"Review","relationName":"BookingToReview"},{"name":"sessionResource","kind":"object","type":"SessionResource","relationName":"BookingToSessionResource"}],"dbName":null},"SessionResource":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"transcriptText","kind":"scalar","type":"String"},{"name":"quizData","kind":"scalar","type":"Json"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToSessionResource"}],"dbName":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"stripeSessionId","kind":"scalar","type":"String"},{"name":"amount","kind":"scalar","type":"Float"},{"name":"status","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToPayment"}],"dbName":null},"Review":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"bookingId","kind":"scalar","type":"String"},{"name":"studentId","kind":"scalar","type":"String"},{"name":"tutorId","kind":"scalar","type":"String"},{"name":"rating","kind":"scalar","type":"Int"},{"name":"comment","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"booking","kind":"object","type":"Booking","relationName":"BookingToReview"},{"name":"student","kind":"object","type":"User","relationName":"ReviewToUser"},{"name":"tutor","kind":"object","type":"TutorProfile","relationName":"ReviewToTutorProfile"}],"dbName":null}},"enums":{},"types":{}}');
 config.parameterizationSchema = {
-  strings: JSON.parse('["where","orderBy","cursor","availability","bookings","booking","student","tutor","reviews","tutors","_count","category","categories","user","payment","review","bookingsAsStudent","tutorProfile","accounts","sessions","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","data","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","create","update","User.upsertOne","User.deleteOne","User.deleteMany","having","_min","_max","User.groupBy","User.aggregate","Session.findUnique","Session.findUniqueOrThrow","Session.findFirst","Session.findFirstOrThrow","Session.findMany","Session.createOne","Session.createMany","Session.createManyAndReturn","Session.updateOne","Session.updateMany","Session.updateManyAndReturn","Session.upsertOne","Session.deleteOne","Session.deleteMany","Session.groupBy","Session.aggregate","Account.findUnique","Account.findUniqueOrThrow","Account.findFirst","Account.findFirstOrThrow","Account.findMany","Account.createOne","Account.createMany","Account.createManyAndReturn","Account.updateOne","Account.updateMany","Account.updateManyAndReturn","Account.upsertOne","Account.deleteOne","Account.deleteMany","Account.groupBy","Account.aggregate","Verification.findUnique","Verification.findUniqueOrThrow","Verification.findFirst","Verification.findFirstOrThrow","Verification.findMany","Verification.createOne","Verification.createMany","Verification.createManyAndReturn","Verification.updateOne","Verification.updateMany","Verification.updateManyAndReturn","Verification.upsertOne","Verification.deleteOne","Verification.deleteMany","Verification.groupBy","Verification.aggregate","TutorProfile.findUnique","TutorProfile.findUniqueOrThrow","TutorProfile.findFirst","TutorProfile.findFirstOrThrow","TutorProfile.findMany","TutorProfile.createOne","TutorProfile.createMany","TutorProfile.createManyAndReturn","TutorProfile.updateOne","TutorProfile.updateMany","TutorProfile.updateManyAndReturn","TutorProfile.upsertOne","TutorProfile.deleteOne","TutorProfile.deleteMany","_avg","_sum","TutorProfile.groupBy","TutorProfile.aggregate","Category.findUnique","Category.findUniqueOrThrow","Category.findFirst","Category.findFirstOrThrow","Category.findMany","Category.createOne","Category.createMany","Category.createManyAndReturn","Category.updateOne","Category.updateMany","Category.updateManyAndReturn","Category.upsertOne","Category.deleteOne","Category.deleteMany","Category.groupBy","Category.aggregate","TutorCategory.findUnique","TutorCategory.findUniqueOrThrow","TutorCategory.findFirst","TutorCategory.findFirstOrThrow","TutorCategory.findMany","TutorCategory.createOne","TutorCategory.createMany","TutorCategory.createManyAndReturn","TutorCategory.updateOne","TutorCategory.updateMany","TutorCategory.updateManyAndReturn","TutorCategory.upsertOne","TutorCategory.deleteOne","TutorCategory.deleteMany","TutorCategory.groupBy","TutorCategory.aggregate","Availability.findUnique","Availability.findUniqueOrThrow","Availability.findFirst","Availability.findFirstOrThrow","Availability.findMany","Availability.createOne","Availability.createMany","Availability.createManyAndReturn","Availability.updateOne","Availability.updateMany","Availability.updateManyAndReturn","Availability.upsertOne","Availability.deleteOne","Availability.deleteMany","Availability.groupBy","Availability.aggregate","Booking.findUnique","Booking.findUniqueOrThrow","Booking.findFirst","Booking.findFirstOrThrow","Booking.findMany","Booking.createOne","Booking.createMany","Booking.createManyAndReturn","Booking.updateOne","Booking.updateMany","Booking.updateManyAndReturn","Booking.upsertOne","Booking.deleteOne","Booking.deleteMany","Booking.groupBy","Booking.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","Payment.groupBy","Payment.aggregate","Review.findUnique","Review.findUniqueOrThrow","Review.findFirst","Review.findFirstOrThrow","Review.findMany","Review.createOne","Review.createMany","Review.createManyAndReturn","Review.updateOne","Review.updateMany","Review.updateManyAndReturn","Review.upsertOne","Review.deleteOne","Review.deleteMany","Review.groupBy","Review.aggregate","AND","OR","NOT","id","bookingId","studentId","tutorId","rating","comment","createdAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","stripeSessionId","amount","status","updatedAt","availabilityId","meetingLink","BookingStatus","startTime","endTime","isBooked","categoryId","name","description","every","some","none","userId","bio","experience","pricePerHour","isFeatured","bankAccountNumber","identifier","value","expiresAt","accountId","providerId","accessToken","refreshToken","idToken","accessTokenExpiresAt","refreshTokenExpiresAt","scope","password","token","ipAddress","userAgent","email","emailVerified","image","role","tutorId_categoryId","is","isNot","connectOrCreate","upsert","disconnect","delete","connect","createMany","set","updateMany","deleteMany","increment","decrement","multiply","divide"]'),
-  graph: "ogVisAERCAAA1AIAIBAAANMCACARAADfAgAgEgAA4AIAIBMAAOECACDMAQAA3gIAMM0BAAAuABDOAQAA3gIAMM8BAQAAAAHVAUAAvwIAIeMBAQC-AgAh5AFAAL8CACHsAQEAvgIAIYYCAQAAAAGHAiAA0QIAIYgCAQDMAgAhiQIBAL4CACEBAAAAAQAgDwMAAO4CACAGAADVAgAgBwAA6AIAIA4AAO8CACAPAADwAgAgzAEAAOwCADDNAQAAAwAQzgEAAOwCADDPAQEAvgIAIdEBAQC-AgAh0gEBAL4CACHVAUAAvwIAIeMBAADtAugBIuUBAQC-AgAh5gEBAMwCACEGAwAA1gQAIAYAAIcEACAHAADSBAAgDgAA1wQAIA8AANgEACDmAQAA8QIAIA8DAADuAgAgBgAA1QIAIAcAAOgCACAOAADvAgAgDwAA8AIAIMwBAADsAgAwzQEAAAMAEM4BAADsAgAwzwEBAAAAAdEBAQC-AgAh0gEBAL4CACHVAUAAvwIAIeMBAADtAugBIuUBAQAAAAHmAQEAzAIAIQMAAAADACABAAAEADACAAAFACALBQAA6wIAIAcAAOgCACDMAQAA6gIAMM0BAAAHABDOAQAA6gIAMM8BAQC-AgAh0gEBAL4CACHVAUAAvwIAIegBQAC_AgAh6QFAAL8CACHqASAA0QIAIQIFAACJAwAgBwAA0gQAIAsFAADrAgAgBwAA6AIAIMwBAADqAgAwzQEAAAcAEM4BAADqAgAwzwEBAAAAAdIBAQC-AgAh1QFAAL8CACHoAUAAvwIAIekBQAC_AgAh6gEgANECACEDAAAABwAgAQAACAAwAgAACQAgAwAAAAMAIAEAAAQAMAIAAAUAIA0FAADAAgAgBgAA1QIAIAcAAOgCACDMAQAA6QIAMM0BAAAMABDOAQAA6QIAMM8BAQC-AgAh0AEBAL4CACHRAQEAvgIAIdIBAQC-AgAh0wECANACACHUAQEAzAIAIdUBQAC_AgAhBAUAAIkDACAGAACHBAAgBwAA0gQAINQBAADxAgAgDQUAAMACACAGAADVAgAgBwAA6AIAIMwBAADpAgAwzQEAAAwAEM4BAADpAgAwzwEBAAAAAdABAQAAAAHRAQEAvgIAIdIBAQC-AgAh0wECANACACHUAQEAzAIAIdUBQAC_AgAhAwAAAAwAIAEAAA0AMAIAAA4AIAcHAADoAgAgCwAA5wIAIMwBAADmAgAwzQEAABAAEM4BAADmAgAw0gEBAL4CACHrAQEAvgIAIQIHAADSBAAgCwAA1QQAIAgHAADoAgAgCwAA5wIAIMwBAADmAgAwzQEAABAAEM4BAADmAgAw0gEBAL4CACHrAQEAvgIAIYoCAADlAgAgAwAAABAAIAEAABEAMAIAABIAIAMAAAAQACABAAARADACAAASACABAAAAEAAgAQAAAAcAIAEAAAADACABAAAADAAgAQAAABAAIAEAAAADACALBQAAwAIAIMwBAAC8AgAwzQEAABsAEM4BAAC8AgAwzwEBAL4CACHQAQEAvgIAIdUBQAC_AgAh4QEBAL4CACHiAQgAvQIAIeMBAQC-AgAh5AFAAL8CACEBAAAAGwAgAQAAAAwAIAMAAAAMACABAAANADACAAAOACARAwAA0gIAIAQAANMCACAIAADUAgAgDAAAzQIAIA0AANUCACDMAQAAzwIAMM0BAAAfABDOAQAAzwIAMM8BAQC-AgAh1QFAAL8CACHkAUAAvwIAIfEBAQC-AgAh8gEBAL4CACHzAQIA0AIAIfQBCAC9AgAh9QEgANECACH2AQEAzAIAIQEAAAAfACARDQAA1QIAIMwBAADjAgAwzQEAACEAEM4BAADjAgAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH6AQEAvgIAIfsBAQC-AgAh_AEBAMwCACH9AQEAzAIAIf4BAQDMAgAh_wFAAOQCACGAAkAA5AIAIYECAQDMAgAhggIBAMwCACEIDQAAhwQAIPwBAADxAgAg_QEAAPECACD-AQAA8QIAIP8BAADxAgAggAIAAPECACCBAgAA8QIAIIICAADxAgAgEQ0AANUCACDMAQAA4wIAMM0BAAAhABDOAQAA4wIAMM8BAQAAAAHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH6AQEAvgIAIfsBAQC-AgAh_AEBAMwCACH9AQEAzAIAIf4BAQDMAgAh_wFAAOQCACGAAkAA5AIAIYECAQDMAgAhggIBAMwCACEDAAAAIQAgAQAAIgAwAgAAIwAgDA0AANUCACDMAQAA4gIAMM0BAAAlABDOAQAA4gIAMM8BAQC-AgAh1QFAAL8CACHkAUAAvwIAIfEBAQC-AgAh-QFAAL8CACGDAgEAvgIAIYQCAQDMAgAhhQIBAMwCACEDDQAAhwQAIIQCAADxAgAghQIAAPECACAMDQAA1QIAIMwBAADiAgAwzQEAACUAEM4BAADiAgAwzwEBAAAAAdUBQAC_AgAh5AFAAL8CACHxAQEAvgIAIfkBQAC_AgAhgwIBAAAAAYQCAQDMAgAhhQIBAMwCACEDAAAAJQAgAQAAJgAwAgAAJwAgAQAAAAMAIAEAAAAMACABAAAAIQAgAQAAACUAIAEAAAABACARCAAA1AIAIBAAANMCACARAADfAgAgEgAA4AIAIBMAAOECACDMAQAA3gIAMM0BAAAuABDOAQAA3gIAMM8BAQC-AgAh1QFAAL8CACHjAQEAvgIAIeQBQAC_AgAh7AEBAL4CACGGAgEAvgIAIYcCIADRAgAhiAIBAMwCACGJAgEAvgIAIQYIAACGBAAgEAAAhQQAIBEAANIEACASAADTBAAgEwAA1AQAIIgCAADxAgAgAwAAAC4AIAEAAC8AMAIAAAEAIAMAAAAuACABAAAvADACAAABACADAAAALgAgAQAALwAwAgAAAQAgDggAAM4EACAQAADNBAAgEQAAzwQAIBIAANAEACATAADRBAAgzwEBAAAAAdUBQAAAAAHjAQEAAAAB5AFAAAAAAewBAQAAAAGGAgEAAAABhwIgAAAAAYgCAQAAAAGJAgEAAAABARkAADMAIAnPAQEAAAAB1QFAAAAAAeMBAQAAAAHkAUAAAAAB7AEBAAAAAYYCAQAAAAGHAiAAAAABiAIBAAAAAYkCAQAAAAEBGQAANQAwARkAADUAMA4IAACaBAAgEAAAmQQAIBEAAJsEACASAACcBAAgEwAAnQQAIM8BAQD3AgAh1QFAAPoCACHjAQEA9wIAIeQBQAD6AgAh7AEBAPcCACGGAgEA9wIAIYcCIAClAwAhiAIBAPkCACGJAgEA9wIAIQIAAAABACAZAAA4ACAJzwEBAPcCACHVAUAA-gIAIeMBAQD3AgAh5AFAAPoCACHsAQEA9wIAIYYCAQD3AgAhhwIgAKUDACGIAgEA-QIAIYkCAQD3AgAhAgAAAC4AIBkAADoAIAIAAAAuACAZAAA6ACADAAAAAQAgIAAAMwAgIQAAOAAgAQAAAAEAIAEAAAAuACAECgAAlgQAICYAAJgEACAnAACXBAAgiAIAAPECACAMzAEAAN0CADDNAQAAQQAQzgEAAN0CADDPAQEAqwIAIdUBQACuAgAh4wEBAKsCACHkAUAArgIAIewBAQCrAgAhhgIBAKsCACGHAiAAxgIAIYgCAQCtAgAhiQIBAKsCACEDAAAALgAgAQAAQAAwJQAAQQAgAwAAAC4AIAEAAC8AMAIAAAEAIAEAAAAnACABAAAAJwAgAwAAACUAIAEAACYAMAIAACcAIAMAAAAlACABAAAmADACAAAnACADAAAAJQAgAQAAJgAwAgAAJwAgCQ0AAJUEACDPAQEAAAAB1QFAAAAAAeQBQAAAAAHxAQEAAAAB-QFAAAAAAYMCAQAAAAGEAgEAAAABhQIBAAAAAQEZAABJACAIzwEBAAAAAdUBQAAAAAHkAUAAAAAB8QEBAAAAAfkBQAAAAAGDAgEAAAABhAIBAAAAAYUCAQAAAAEBGQAASwAwARkAAEsAMAkNAACUBAAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACH5AUAA-gIAIYMCAQD3AgAhhAIBAPkCACGFAgEA-QIAIQIAAAAnACAZAABOACAIzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACH5AUAA-gIAIYMCAQD3AgAhhAIBAPkCACGFAgEA-QIAIQIAAAAlACAZAABQACACAAAAJQAgGQAAUAAgAwAAACcAICAAAEkAICEAAE4AIAEAAAAnACABAAAAJQAgBQoAAJEEACAmAACTBAAgJwAAkgQAIIQCAADxAgAghQIAAPECACALzAEAANwCADDNAQAAVwAQzgEAANwCADDPAQEAqwIAIdUBQACuAgAh5AFAAK4CACHxAQEAqwIAIfkBQACuAgAhgwIBAKsCACGEAgEArQIAIYUCAQCtAgAhAwAAACUAIAEAAFYAMCUAAFcAIAMAAAAlACABAAAmADACAAAnACABAAAAIwAgAQAAACMAIAMAAAAhACABAAAiADACAAAjACADAAAAIQAgAQAAIgAwAgAAIwAgAwAAACEAIAEAACIAMAIAACMAIA4NAACQBAAgzwEBAAAAAdUBQAAAAAHkAUAAAAAB8QEBAAAAAfoBAQAAAAH7AQEAAAAB_AEBAAAAAf0BAQAAAAH-AQEAAAAB_wFAAAAAAYACQAAAAAGBAgEAAAABggIBAAAAAQEZAABfACANzwEBAAAAAdUBQAAAAAHkAUAAAAAB8QEBAAAAAfoBAQAAAAH7AQEAAAAB_AEBAAAAAf0BAQAAAAH-AQEAAAAB_wFAAAAAAYACQAAAAAGBAgEAAAABggIBAAAAAQEZAABhADABGQAAYQAwDg0AAI8EACDPAQEA9wIAIdUBQAD6AgAh5AFAAPoCACHxAQEA9wIAIfoBAQD3AgAh-wEBAPcCACH8AQEA-QIAIf0BAQD5AgAh_gEBAPkCACH_AUAAjgQAIYACQACOBAAhgQIBAPkCACGCAgEA-QIAIQIAAAAjACAZAABkACANzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACH6AQEA9wIAIfsBAQD3AgAh_AEBAPkCACH9AQEA-QIAIf4BAQD5AgAh_wFAAI4EACGAAkAAjgQAIYECAQD5AgAhggIBAPkCACECAAAAIQAgGQAAZgAgAgAAACEAIBkAAGYAIAMAAAAjACAgAABfACAhAABkACABAAAAIwAgAQAAACEAIAoKAACLBAAgJgAAjQQAICcAAIwEACD8AQAA8QIAIP0BAADxAgAg_gEAAPECACD_AQAA8QIAIIACAADxAgAggQIAAPECACCCAgAA8QIAIBDMAQAA2AIAMM0BAABtABDOAQAA2AIAMM8BAQCrAgAh1QFAAK4CACHkAUAArgIAIfEBAQCrAgAh-gEBAKsCACH7AQEAqwIAIfwBAQCtAgAh_QEBAK0CACH-AQEArQIAIf8BQADZAgAhgAJAANkCACGBAgEArQIAIYICAQCtAgAhAwAAACEAIAEAAGwAMCUAAG0AIAMAAAAhACABAAAiADACAAAjACAJzAEAANcCADDNAQAAcwAQzgEAANcCADDPAQEAAAAB1QFAAL8CACHkAUAAvwIAIfcBAQC-AgAh-AEBAL4CACH5AUAAvwIAIQEAAABwACABAAAAcAAgCcwBAADXAgAwzQEAAHMAEM4BAADXAgAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh9wEBAL4CACH4AQEAvgIAIfkBQAC_AgAhAAMAAABzACABAAB0ADACAABwACADAAAAcwAgAQAAdAAwAgAAcAAgAwAAAHMAIAEAAHQAMAIAAHAAIAbPAQEAAAAB1QFAAAAAAeQBQAAAAAH3AQEAAAAB-AEBAAAAAfkBQAAAAAEBGQAAeAAgBs8BAQAAAAHVAUAAAAAB5AFAAAAAAfcBAQAAAAH4AQEAAAAB-QFAAAAAAQEZAAB6ADABGQAAegAwBs8BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfcBAQD3AgAh-AEBAPcCACH5AUAA-gIAIQIAAABwACAZAAB9ACAGzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh9wEBAPcCACH4AQEA9wIAIfkBQAD6AgAhAgAAAHMAIBkAAH8AIAIAAABzACAZAAB_ACADAAAAcAAgIAAAeAAgIQAAfQAgAQAAAHAAIAEAAABzACADCgAAiAQAICYAAIoEACAnAACJBAAgCcwBAADWAgAwzQEAAIYBABDOAQAA1gIAMM8BAQCrAgAh1QFAAK4CACHkAUAArgIAIfcBAQCrAgAh-AEBAKsCACH5AUAArgIAIQMAAABzACABAACFAQAwJQAAhgEAIAMAAABzACABAAB0ADACAABwACARAwAA0gIAIAQAANMCACAIAADUAgAgDAAAzQIAIA0AANUCACDMAQAAzwIAMM0BAAAfABDOAQAAzwIAMM8BAQAAAAHVAUAAvwIAIeQBQAC_AgAh8QEBAAAAAfIBAQC-AgAh8wECANACACH0AQgAvQIAIfUBIADRAgAh9gEBAMwCACEBAAAAiQEAIAEAAACJAQAgBgMAAIQEACAEAACFBAAgCAAAhgQAIAwAAMcDACANAACHBAAg9gEAAPECACADAAAAHwAgAQAAjAEAMAIAAIkBACADAAAAHwAgAQAAjAEAMAIAAIkBACADAAAAHwAgAQAAjAEAMAIAAIkBACAOAwAA_wMAIAQAAIAEACAIAACBBAAgDAAAggQAIA0AAIMEACDPAQEAAAAB1QFAAAAAAeQBQAAAAAHxAQEAAAAB8gEBAAAAAfMBAgAAAAH0AQgAAAAB9QEgAAAAAfYBAQAAAAEBGQAAkAEAIAnPAQEAAAAB1QFAAAAAAeQBQAAAAAHxAQEAAAAB8gEBAAAAAfMBAgAAAAH0AQgAAAAB9QEgAAAAAfYBAQAAAAEBGQAAkgEAMAEZAACSAQAwDgMAAM0DACAEAADOAwAgCAAAzwMAIAwAANADACANAADRAwAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACHyAQEA9wIAIfMBAgD4AgAh9AEIAIYDACH1ASAApQMAIfYBAQD5AgAhAgAAAIkBACAZAACVAQAgCc8BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfEBAQD3AgAh8gEBAPcCACHzAQIA-AIAIfQBCACGAwAh9QEgAKUDACH2AQEA-QIAIQIAAAAfACAZAACXAQAgAgAAAB8AIBkAAJcBACADAAAAiQEAICAAAJABACAhAACVAQAgAQAAAIkBACABAAAAHwAgBgoAAMgDACAmAADLAwAgJwAAygMAIGgAAMkDACBpAADMAwAg9gEAAPECACAMzAEAAM4CADDNAQAAngEAEM4BAADOAgAwzwEBAKsCACHVAUAArgIAIeQBQACuAgAh8QEBAKsCACHyAQEAqwIAIfMBAgCsAgAh9AEIALoCACH1ASAAxgIAIfYBAQCtAgAhAwAAAB8AIAEAAJ0BADAlAACeAQAgAwAAAB8AIAEAAIwBADACAACJAQAgCAkAAM0CACDMAQAAywIAMM0BAACkAQAQzgEAAMsCADDPAQEAAAAB1QFAAL8CACHsAQEAAAAB7QEBAMwCACEBAAAAoQEAIAEAAAChAQAgCAkAAM0CACDMAQAAywIAMM0BAACkAQAQzgEAAMsCADDPAQEAvgIAIdUBQAC_AgAh7AEBAL4CACHtAQEAzAIAIQIJAADHAwAg7QEAAPECACADAAAApAEAIAEAAKUBADACAAChAQAgAwAAAKQBACABAAClAQAwAgAAoQEAIAMAAACkAQAgAQAApQEAMAIAAKEBACAFCQAAxgMAIM8BAQAAAAHVAUAAAAAB7AEBAAAAAe0BAQAAAAEBGQAAqQEAIATPAQEAAAAB1QFAAAAAAewBAQAAAAHtAQEAAAABARkAAKsBADABGQAAqwEAMAUJAAC5AwAgzwEBAPcCACHVAUAA-gIAIewBAQD3AgAh7QEBAPkCACECAAAAoQEAIBkAAK4BACAEzwEBAPcCACHVAUAA-gIAIewBAQD3AgAh7QEBAPkCACECAAAApAEAIBkAALABACACAAAApAEAIBkAALABACADAAAAoQEAICAAAKkBACAhAACuAQAgAQAAAKEBACABAAAApAEAIAQKAAC2AwAgJgAAuAMAICcAALcDACDtAQAA8QIAIAfMAQAAygIAMM0BAAC3AQAQzgEAAMoCADDPAQEAqwIAIdUBQACuAgAh7AEBAKsCACHtAQEArQIAIQMAAACkAQAgAQAAtgEAMCUAALcBACADAAAApAEAIAEAAKUBADACAAChAQAgAQAAABIAIAEAAAASACADAAAAEAAgAQAAEQAwAgAAEgAgAwAAABAAIAEAABEAMAIAABIAIAMAAAAQACABAAARADACAAASACAEBwAAtQMAIAsAALQDACDSAQEAAAAB6wEBAAAAAQEZAAC_AQAgAtIBAQAAAAHrAQEAAAABARkAAMEBADABGQAAwQEAMAQHAACzAwAgCwAAsgMAINIBAQD3AgAh6wEBAPcCACECAAAAEgAgGQAAxAEAIALSAQEA9wIAIesBAQD3AgAhAgAAABAAIBkAAMYBACACAAAAEAAgGQAAxgEAIAMAAAASACAgAAC_AQAgIQAAxAEAIAEAAAASACABAAAAEAAgAwoAAK8DACAmAACxAwAgJwAAsAMAIAXMAQAAyQIAMM0BAADNAQAQzgEAAMkCADDSAQEAqwIAIesBAQCrAgAhAwAAABAAIAEAAMwBADAlAADNAQAgAwAAABAAIAEAABEAMAIAABIAIAEAAAAJACABAAAACQAgAwAAAAcAIAEAAAgAMAIAAAkAIAMAAAAHACABAAAIADACAAAJACADAAAABwAgAQAACAAwAgAACQAgCAUAAK4DACAHAACtAwAgzwEBAAAAAdIBAQAAAAHVAUAAAAAB6AFAAAAAAekBQAAAAAHqASAAAAABARkAANUBACAGzwEBAAAAAdIBAQAAAAHVAUAAAAAB6AFAAAAAAekBQAAAAAHqASAAAAABARkAANcBADABGQAA1wEAMAgFAACnAwAgBwAApgMAIM8BAQD3AgAh0gEBAPcCACHVAUAA-gIAIegBQAD6AgAh6QFAAPoCACHqASAApQMAIQIAAAAJACAZAADaAQAgBs8BAQD3AgAh0gEBAPcCACHVAUAA-gIAIegBQAD6AgAh6QFAAPoCACHqASAApQMAIQIAAAAHACAZAADcAQAgAgAAAAcAIBkAANwBACADAAAACQAgIAAA1QEAICEAANoBACABAAAACQAgAQAAAAcAIAMKAACiAwAgJgAApAMAICcAAKMDACAJzAEAAMUCADDNAQAA4wEAEM4BAADFAgAwzwEBAKsCACHSAQEAqwIAIdUBQACuAgAh6AFAAK4CACHpAUAArgIAIeoBIADGAgAhAwAAAAcAIAEAAOIBADAlAADjAQAgAwAAAAcAIAEAAAgAMAIAAAkAIAEAAAAFACABAAAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAMAAAADACABAAAEADACAAAFACADAAAAAwAgAQAABAAwAgAABQAgDAMAAJ0DACAGAACeAwAgBwAAnwMAIA4AAKADACAPAAChAwAgzwEBAAAAAdEBAQAAAAHSAQEAAAAB1QFAAAAAAeMBAAAA6AEC5QEBAAAAAeYBAQAAAAEBGQAA6wEAIAfPAQEAAAAB0QEBAAAAAdIBAQAAAAHVAUAAAAAB4wEAAADoAQLlAQEAAAAB5gEBAAAAAQEZAADtAQAwARkAAO0BADAMAwAAjgMAIAYAAI8DACAHAACQAwAgDgAAkQMAIA8AAJIDACDPAQEA9wIAIdEBAQD3AgAh0gEBAPcCACHVAUAA-gIAIeMBAACNA-gBIuUBAQD3AgAh5gEBAPkCACECAAAABQAgGQAA8AEAIAfPAQEA9wIAIdEBAQD3AgAh0gEBAPcCACHVAUAA-gIAIeMBAACNA-gBIuUBAQD3AgAh5gEBAPkCACECAAAAAwAgGQAA8gEAIAIAAAADACAZAADyAQAgAwAAAAUAICAAAOsBACAhAADwAQAgAQAAAAUAIAEAAAADACAECgAAigMAICYAAIwDACAnAACLAwAg5gEAAPECACAKzAEAAMECADDNAQAA-QEAEM4BAADBAgAwzwEBAKsCACHRAQEAqwIAIdIBAQCrAgAh1QFAAK4CACHjAQAAwgLoASLlAQEAqwIAIeYBAQCtAgAhAwAAAAMAIAEAAPgBADAlAAD5AQAgAwAAAAMAIAEAAAQAMAIAAAUAIAsFAADAAgAgzAEAALwCADDNAQAAGwAQzgEAALwCADDPAQEAAAAB0AEBAAAAAdUBQAC_AgAh4QEBAAAAAeIBCAC9AgAh4wEBAL4CACHkAUAAvwIAIQEAAAD8AQAgAQAAAPwBACABBQAAiQMAIAMAAAAbACABAAD_AQAwAgAA_AEAIAMAAAAbACABAAD_AQAwAgAA_AEAIAMAAAAbACABAAD_AQAwAgAA_AEAIAgFAACIAwAgzwEBAAAAAdABAQAAAAHVAUAAAAAB4QEBAAAAAeIBCAAAAAHjAQEAAAAB5AFAAAAAAQEZAACDAgAgB88BAQAAAAHQAQEAAAAB1QFAAAAAAeEBAQAAAAHiAQgAAAAB4wEBAAAAAeQBQAAAAAEBGQAAhQIAMAEZAACFAgAwCAUAAIcDACDPAQEA9wIAIdABAQD3AgAh1QFAAPoCACHhAQEA9wIAIeIBCACGAwAh4wEBAPcCACHkAUAA-gIAIQIAAAD8AQAgGQAAiAIAIAfPAQEA9wIAIdABAQD3AgAh1QFAAPoCACHhAQEA9wIAIeIBCACGAwAh4wEBAPcCACHkAUAA-gIAIQIAAAAbACAZAACKAgAgAgAAABsAIBkAAIoCACADAAAA_AEAICAAAIMCACAhAACIAgAgAQAAAPwBACABAAAAGwAgBQoAAIEDACAmAACEAwAgJwAAgwMAIGgAAIIDACBpAACFAwAgCswBAAC5AgAwzQEAAJECABDOAQAAuQIAMM8BAQCrAgAh0AEBAKsCACHVAUAArgIAIeEBAQCrAgAh4gEIALoCACHjAQEAqwIAIeQBQACuAgAhAwAAABsAIAEAAJACADAlAACRAgAgAwAAABsAIAEAAP8BADACAAD8AQAgAQAAAA4AIAEAAAAOACADAAAADAAgAQAADQAwAgAADgAgAwAAAAwAIAEAAA0AMAIAAA4AIAMAAAAMACABAAANADACAAAOACAKBQAA_gIAIAYAAP8CACAHAACAAwAgzwEBAAAAAdABAQAAAAHRAQEAAAAB0gEBAAAAAdMBAgAAAAHUAQEAAAAB1QFAAAAAAQEZAACZAgAgB88BAQAAAAHQAQEAAAAB0QEBAAAAAdIBAQAAAAHTAQIAAAAB1AEBAAAAAdUBQAAAAAEBGQAAmwIAMAEZAACbAgAwCgUAAPsCACAGAAD8AgAgBwAA_QIAIM8BAQD3AgAh0AEBAPcCACHRAQEA9wIAIdIBAQD3AgAh0wECAPgCACHUAQEA-QIAIdUBQAD6AgAhAgAAAA4AIBkAAJ4CACAHzwEBAPcCACHQAQEA9wIAIdEBAQD3AgAh0gEBAPcCACHTAQIA-AIAIdQBAQD5AgAh1QFAAPoCACECAAAADAAgGQAAoAIAIAIAAAAMACAZAACgAgAgAwAAAA4AICAAAJkCACAhAACeAgAgAQAAAA4AIAEAAAAMACAGCgAA8gIAICYAAPUCACAnAAD0AgAgaAAA8wIAIGkAAPYCACDUAQAA8QIAIArMAQAAqgIAMM0BAACnAgAQzgEAAKoCADDPAQEAqwIAIdABAQCrAgAh0QEBAKsCACHSAQEAqwIAIdMBAgCsAgAh1AEBAK0CACHVAUAArgIAIQMAAAAMACABAACmAgAwJQAApwIAIAMAAAAMACABAAANADACAAAOACAKzAEAAKoCADDNAQAApwIAEM4BAACqAgAwzwEBAKsCACHQAQEAqwIAIdEBAQCrAgAh0gEBAKsCACHTAQIArAIAIdQBAQCtAgAh1QFAAK4CACEOCgAAsAIAICYAALgCACAnAAC4AgAg1gEBAAAAAdcBAQAAAATYAQEAAAAE2QEBAAAAAdoBAQAAAAHbAQEAAAAB3AEBAAAAAd0BAQC3AgAh3gEBAAAAAd8BAQAAAAHgAQEAAAABDQoAALACACAmAACwAgAgJwAAsAIAIGgAALYCACBpAACwAgAg1gECAAAAAdcBAgAAAATYAQIAAAAE2QECAAAAAdoBAgAAAAHbAQIAAAAB3AECAAAAAd0BAgC1AgAhDgoAALMCACAmAAC0AgAgJwAAtAIAINYBAQAAAAHXAQEAAAAF2AEBAAAABdkBAQAAAAHaAQEAAAAB2wEBAAAAAdwBAQAAAAHdAQEAsgIAId4BAQAAAAHfAQEAAAAB4AEBAAAAAQsKAACwAgAgJgAAsQIAICcAALECACDWAUAAAAAB1wFAAAAABNgBQAAAAATZAUAAAAAB2gFAAAAAAdsBQAAAAAHcAUAAAAAB3QFAAK8CACELCgAAsAIAICYAALECACAnAACxAgAg1gFAAAAAAdcBQAAAAATYAUAAAAAE2QFAAAAAAdoBQAAAAAHbAUAAAAAB3AFAAAAAAd0BQACvAgAhCNYBAgAAAAHXAQIAAAAE2AECAAAABNkBAgAAAAHaAQIAAAAB2wECAAAAAdwBAgAAAAHdAQIAsAIAIQjWAUAAAAAB1wFAAAAABNgBQAAAAATZAUAAAAAB2gFAAAAAAdsBQAAAAAHcAUAAAAAB3QFAALECACEOCgAAswIAICYAALQCACAnAAC0AgAg1gEBAAAAAdcBAQAAAAXYAQEAAAAF2QEBAAAAAdoBAQAAAAHbAQEAAAAB3AEBAAAAAd0BAQCyAgAh3gEBAAAAAd8BAQAAAAHgAQEAAAABCNYBAgAAAAHXAQIAAAAF2AECAAAABdkBAgAAAAHaAQIAAAAB2wECAAAAAdwBAgAAAAHdAQIAswIAIQvWAQEAAAAB1wEBAAAABdgBAQAAAAXZAQEAAAAB2gEBAAAAAdsBAQAAAAHcAQEAAAAB3QEBALQCACHeAQEAAAAB3wEBAAAAAeABAQAAAAENCgAAsAIAICYAALACACAnAACwAgAgaAAAtgIAIGkAALACACDWAQIAAAAB1wECAAAABNgBAgAAAATZAQIAAAAB2gECAAAAAdsBAgAAAAHcAQIAAAAB3QECALUCACEI1gEIAAAAAdcBCAAAAATYAQgAAAAE2QEIAAAAAdoBCAAAAAHbAQgAAAAB3AEIAAAAAd0BCAC2AgAhDgoAALACACAmAAC4AgAgJwAAuAIAINYBAQAAAAHXAQEAAAAE2AEBAAAABNkBAQAAAAHaAQEAAAAB2wEBAAAAAdwBAQAAAAHdAQEAtwIAId4BAQAAAAHfAQEAAAAB4AEBAAAAAQvWAQEAAAAB1wEBAAAABNgBAQAAAATZAQEAAAAB2gEBAAAAAdsBAQAAAAHcAQEAAAAB3QEBALgCACHeAQEAAAAB3wEBAAAAAeABAQAAAAEKzAEAALkCADDNAQAAkQIAEM4BAAC5AgAwzwEBAKsCACHQAQEAqwIAIdUBQACuAgAh4QEBAKsCACHiAQgAugIAIeMBAQCrAgAh5AFAAK4CACENCgAAsAIAICYAALYCACAnAAC2AgAgaAAAtgIAIGkAALYCACDWAQgAAAAB1wEIAAAABNgBCAAAAATZAQgAAAAB2gEIAAAAAdsBCAAAAAHcAQgAAAAB3QEIALsCACENCgAAsAIAICYAALYCACAnAAC2AgAgaAAAtgIAIGkAALYCACDWAQgAAAAB1wEIAAAABNgBCAAAAATZAQgAAAAB2gEIAAAAAdsBCAAAAAHcAQgAAAAB3QEIALsCACELBQAAwAIAIMwBAAC8AgAwzQEAABsAEM4BAAC8AgAwzwEBAL4CACHQAQEAvgIAIdUBQAC_AgAh4QEBAL4CACHiAQgAvQIAIeMBAQC-AgAh5AFAAL8CACEI1gEIAAAAAdcBCAAAAATYAQgAAAAE2QEIAAAAAdoBCAAAAAHbAQgAAAAB3AEIAAAAAd0BCAC2AgAhC9YBAQAAAAHXAQEAAAAE2AEBAAAABNkBAQAAAAHaAQEAAAAB2wEBAAAAAdwBAQAAAAHdAQEAuAIAId4BAQAAAAHfAQEAAAAB4AEBAAAAAQjWAUAAAAAB1wFAAAAABNgBQAAAAATZAUAAAAAB2gFAAAAAAdsBQAAAAAHcAUAAAAAB3QFAALECACERAwAA7gIAIAYAANUCACAHAADoAgAgDgAA7wIAIA8AAPACACDMAQAA7AIAMM0BAAADABDOAQAA7AIAMM8BAQC-AgAh0QEBAL4CACHSAQEAvgIAIdUBQAC_AgAh4wEAAO0C6AEi5QEBAL4CACHmAQEAzAIAIYsCAAADACCMAgAAAwAgCswBAADBAgAwzQEAAPkBABDOAQAAwQIAMM8BAQCrAgAh0QEBAKsCACHSAQEAqwIAIdUBQACuAgAh4wEAAMIC6AEi5QEBAKsCACHmAQEArQIAIQcKAACwAgAgJgAAxAIAICcAAMQCACDWAQAAAOgBAtcBAAAA6AEI2AEAAADoAQjdAQAAwwLoASIHCgAAsAIAICYAAMQCACAnAADEAgAg1gEAAADoAQLXAQAAAOgBCNgBAAAA6AEI3QEAAMMC6AEiBNYBAAAA6AEC1wEAAADoAQjYAQAAAOgBCN0BAADEAugBIgnMAQAAxQIAMM0BAADjAQAQzgEAAMUCADDPAQEAqwIAIdIBAQCrAgAh1QFAAK4CACHoAUAArgIAIekBQACuAgAh6gEgAMYCACEFCgAAsAIAICYAAMgCACAnAADIAgAg1gEgAAAAAd0BIADHAgAhBQoAALACACAmAADIAgAgJwAAyAIAINYBIAAAAAHdASAAxwIAIQLWASAAAAAB3QEgAMgCACEFzAEAAMkCADDNAQAAzQEAEM4BAADJAgAw0gEBAKsCACHrAQEAqwIAIQfMAQAAygIAMM0BAAC3AQAQzgEAAMoCADDPAQEAqwIAIdUBQACuAgAh7AEBAKsCACHtAQEArQIAIQgJAADNAgAgzAEAAMsCADDNAQAApAEAEM4BAADLAgAwzwEBAL4CACHVAUAAvwIAIewBAQC-AgAh7QEBAMwCACEL1gEBAAAAAdcBAQAAAAXYAQEAAAAF2QEBAAAAAdoBAQAAAAHbAQEAAAAB3AEBAAAAAd0BAQC0AgAh3gEBAAAAAd8BAQAAAAHgAQEAAAABA-4BAAAQACDvAQAAEAAg8AEAABAAIAzMAQAAzgIAMM0BAACeAQAQzgEAAM4CADDPAQEAqwIAIdUBQACuAgAh5AFAAK4CACHxAQEAqwIAIfIBAQCrAgAh8wECAKwCACH0AQgAugIAIfUBIADGAgAh9gEBAK0CACERAwAA0gIAIAQAANMCACAIAADUAgAgDAAAzQIAIA0AANUCACDMAQAAzwIAMM0BAAAfABDOAQAAzwIAMM8BAQC-AgAh1QFAAL8CACHkAUAAvwIAIfEBAQC-AgAh8gEBAL4CACHzAQIA0AIAIfQBCAC9AgAh9QEgANECACH2AQEAzAIAIQjWAQIAAAAB1wECAAAABNgBAgAAAATZAQIAAAAB2gECAAAAAdsBAgAAAAHcAQIAAAAB3QECALACACEC1gEgAAAAAd0BIADIAgAhA-4BAAAHACDvAQAABwAg8AEAAAcAIAPuAQAAAwAg7wEAAAMAIPABAAADACAD7gEAAAwAIO8BAAAMACDwAQAADAAgEwgAANQCACAQAADTAgAgEQAA3wIAIBIAAOACACATAADhAgAgzAEAAN4CADDNAQAALgAQzgEAAN4CADDPAQEAvgIAIdUBQAC_AgAh4wEBAL4CACHkAUAAvwIAIewBAQC-AgAhhgIBAL4CACGHAiAA0QIAIYgCAQDMAgAhiQIBAL4CACGLAgAALgAgjAIAAC4AIAnMAQAA1gIAMM0BAACGAQAQzgEAANYCADDPAQEAqwIAIdUBQACuAgAh5AFAAK4CACH3AQEAqwIAIfgBAQCrAgAh-QFAAK4CACEJzAEAANcCADDNAQAAcwAQzgEAANcCADDPAQEAvgIAIdUBQAC_AgAh5AFAAL8CACH3AQEAvgIAIfgBAQC-AgAh-QFAAL8CACEQzAEAANgCADDNAQAAbQAQzgEAANgCADDPAQEAqwIAIdUBQACuAgAh5AFAAK4CACHxAQEAqwIAIfoBAQCrAgAh-wEBAKsCACH8AQEArQIAIf0BAQCtAgAh_gEBAK0CACH_AUAA2QIAIYACQADZAgAhgQIBAK0CACGCAgEArQIAIQsKAACzAgAgJgAA2wIAICcAANsCACDWAUAAAAAB1wFAAAAABdgBQAAAAAXZAUAAAAAB2gFAAAAAAdsBQAAAAAHcAUAAAAAB3QFAANoCACELCgAAswIAICYAANsCACAnAADbAgAg1gFAAAAAAdcBQAAAAAXYAUAAAAAF2QFAAAAAAdoBQAAAAAHbAUAAAAAB3AFAAAAAAd0BQADaAgAhCNYBQAAAAAHXAUAAAAAF2AFAAAAABdkBQAAAAAHaAUAAAAAB2wFAAAAAAdwBQAAAAAHdAUAA2wIAIQvMAQAA3AIAMM0BAABXABDOAQAA3AIAMM8BAQCrAgAh1QFAAK4CACHkAUAArgIAIfEBAQCrAgAh-QFAAK4CACGDAgEAqwIAIYQCAQCtAgAhhQIBAK0CACEMzAEAAN0CADDNAQAAQQAQzgEAAN0CADDPAQEAqwIAIdUBQACuAgAh4wEBAKsCACHkAUAArgIAIewBAQCrAgAhhgIBAKsCACGHAiAAxgIAIYgCAQCtAgAhiQIBAKsCACERCAAA1AIAIBAAANMCACARAADfAgAgEgAA4AIAIBMAAOECACDMAQAA3gIAMM0BAAAuABDOAQAA3gIAMM8BAQC-AgAh1QFAAL8CACHjAQEAvgIAIeQBQAC_AgAh7AEBAL4CACGGAgEAvgIAIYcCIADRAgAhiAIBAMwCACGJAgEAvgIAIRMDAADSAgAgBAAA0wIAIAgAANQCACAMAADNAgAgDQAA1QIAIMwBAADPAgAwzQEAAB8AEM4BAADPAgAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACHyAQEAvgIAIfMBAgDQAgAh9AEIAL0CACH1ASAA0QIAIfYBAQDMAgAhiwIAAB8AIIwCAAAfACAD7gEAACEAIO8BAAAhACDwAQAAIQAgA-4BAAAlACDvAQAAJQAg8AEAACUAIAwNAADVAgAgzAEAAOICADDNAQAAJQAQzgEAAOICADDPAQEAvgIAIdUBQAC_AgAh5AFAAL8CACHxAQEAvgIAIfkBQAC_AgAhgwIBAL4CACGEAgEAzAIAIYUCAQDMAgAhEQ0AANUCACDMAQAA4wIAMM0BAAAhABDOAQAA4wIAMM8BAQC-AgAh1QFAAL8CACHkAUAAvwIAIfEBAQC-AgAh-gEBAL4CACH7AQEAvgIAIfwBAQDMAgAh_QEBAMwCACH-AQEAzAIAIf8BQADkAgAhgAJAAOQCACGBAgEAzAIAIYICAQDMAgAhCNYBQAAAAAHXAUAAAAAF2AFAAAAABdkBQAAAAAHaAUAAAAAB2wFAAAAAAdwBQAAAAAHdAUAA2wIAIQLSAQEAAAAB6wEBAAAAAQcHAADoAgAgCwAA5wIAIMwBAADmAgAwzQEAABAAEM4BAADmAgAw0gEBAL4CACHrAQEAvgIAIQoJAADNAgAgzAEAAMsCADDNAQAApAEAEM4BAADLAgAwzwEBAL4CACHVAUAAvwIAIewBAQC-AgAh7QEBAMwCACGLAgAApAEAIIwCAACkAQAgEwMAANICACAEAADTAgAgCAAA1AIAIAwAAM0CACANAADVAgAgzAEAAM8CADDNAQAAHwAQzgEAAM8CADDPAQEAvgIAIdUBQAC_AgAh5AFAAL8CACHxAQEAvgIAIfIBAQC-AgAh8wECANACACH0AQgAvQIAIfUBIADRAgAh9gEBAMwCACGLAgAAHwAgjAIAAB8AIA0FAADAAgAgBgAA1QIAIAcAAOgCACDMAQAA6QIAMM0BAAAMABDOAQAA6QIAMM8BAQC-AgAh0AEBAL4CACHRAQEAvgIAIdIBAQC-AgAh0wECANACACHUAQEAzAIAIdUBQAC_AgAhCwUAAOsCACAHAADoAgAgzAEAAOoCADDNAQAABwAQzgEAAOoCADDPAQEAvgIAIdIBAQC-AgAh1QFAAL8CACHoAUAAvwIAIekBQAC_AgAh6gEgANECACERAwAA7gIAIAYAANUCACAHAADoAgAgDgAA7wIAIA8AAPACACDMAQAA7AIAMM0BAAADABDOAQAA7AIAMM8BAQC-AgAh0QEBAL4CACHSAQEAvgIAIdUBQAC_AgAh4wEAAO0C6AEi5QEBAL4CACHmAQEAzAIAIYsCAAADACCMAgAAAwAgDwMAAO4CACAGAADVAgAgBwAA6AIAIA4AAO8CACAPAADwAgAgzAEAAOwCADDNAQAAAwAQzgEAAOwCADDPAQEAvgIAIdEBAQC-AgAh0gEBAL4CACHVAUAAvwIAIeMBAADtAugBIuUBAQC-AgAh5gEBAMwCACEE1gEAAADoAQLXAQAAAOgBCNgBAAAA6AEI3QEAAMQC6AEiDQUAAOsCACAHAADoAgAgzAEAAOoCADDNAQAABwAQzgEAAOoCADDPAQEAvgIAIdIBAQC-AgAh1QFAAL8CACHoAUAAvwIAIekBQAC_AgAh6gEgANECACGLAgAABwAgjAIAAAcAIA0FAADAAgAgzAEAALwCADDNAQAAGwAQzgEAALwCADDPAQEAvgIAIdABAQC-AgAh1QFAAL8CACHhAQEAvgIAIeIBCAC9AgAh4wEBAL4CACHkAUAAvwIAIYsCAAAbACCMAgAAGwAgDwUAAMACACAGAADVAgAgBwAA6AIAIMwBAADpAgAwzQEAAAwAEM4BAADpAgAwzwEBAL4CACHQAQEAvgIAIdEBAQC-AgAh0gEBAL4CACHTAQIA0AIAIdQBAQDMAgAh1QFAAL8CACGLAgAADAAgjAIAAAwAIAAAAAAAAAGTAgEAAAABBZMCAgAAAAGWAgIAAAABlwICAAAAAZgCAgAAAAGZAgIAAAABAZMCAQAAAAEBkwJAAAAAAQUgAACYBQAgIQAAoQUAII0CAACZBQAgjgIAAKAFACCRAgAABQAgBSAAAJYFACAhAACeBQAgjQIAAJcFACCOAgAAnQUAIJECAAABACAFIAAAlAUAICEAAJsFACCNAgAAlQUAII4CAACaBQAgkQIAAIkBACADIAAAmAUAII0CAACZBQAgkQIAAAUAIAMgAACWBQAgjQIAAJcFACCRAgAAAQAgAyAAAJQFACCNAgAAlQUAIJECAACJAQAgAAAAAAAFkwIIAAAAAZYCCAAAAAGXAggAAAABmAIIAAAAAZkCCAAAAAEFIAAAjwUAICEAAJIFACCNAgAAkAUAII4CAACRBQAgkQIAAAUAIAMgAACPBQAgjQIAAJAFACCRAgAABQAgBgMAANYEACAGAACHBAAgBwAA0gQAIA4AANcEACAPAADYBAAg5gEAAPECACAAAAABkwIAAADoAQIFIAAAhAUAICEAAI0FACCNAgAAhQUAII4CAACMBQAgkQIAAAkAIAUgAACCBQAgIQAAigUAII0CAACDBQAgjgIAAIkFACCRAgAAAQAgBSAAAIAFACAhAACHBQAgjQIAAIEFACCOAgAAhgUAIJECAACJAQAgByAAAJgDACAhAACbAwAgjQIAAJkDACCOAgAAmgMAII8CAAAbACCQAgAAGwAgkQIAAPwBACAHIAAAkwMAICEAAJYDACCNAgAAlAMAII4CAACVAwAgjwIAAAwAIJACAAAMACCRAgAADgAgCAYAAP8CACAHAACAAwAgzwEBAAAAAdEBAQAAAAHSAQEAAAAB0wECAAAAAdQBAQAAAAHVAUAAAAABAgAAAA4AICAAAJMDACADAAAADAAgIAAAkwMAICEAAJcDACAKAAAADAAgBgAA_AIAIAcAAP0CACAZAACXAwAgzwEBAPcCACHRAQEA9wIAIdIBAQD3AgAh0wECAPgCACHUAQEA-QIAIdUBQAD6AgAhCAYAAPwCACAHAAD9AgAgzwEBAPcCACHRAQEA9wIAIdIBAQD3AgAh0wECAPgCACHUAQEA-QIAIdUBQAD6AgAhBs8BAQAAAAHVAUAAAAAB4QEBAAAAAeIBCAAAAAHjAQEAAAAB5AFAAAAAAQIAAAD8AQAgIAAAmAMAIAMAAAAbACAgAACYAwAgIQAAnAMAIAgAAAAbACAZAACcAwAgzwEBAPcCACHVAUAA-gIAIeEBAQD3AgAh4gEIAIYDACHjAQEA9wIAIeQBQAD6AgAhBs8BAQD3AgAh1QFAAPoCACHhAQEA9wIAIeIBCACGAwAh4wEBAPcCACHkAUAA-gIAIQMgAACEBQAgjQIAAIUFACCRAgAACQAgAyAAAIIFACCNAgAAgwUAIJECAAABACADIAAAgAUAII0CAACBBQAgkQIAAIkBACADIAAAmAMAII0CAACZAwAgkQIAAPwBACADIAAAkwMAII0CAACUAwAgkQIAAA4AIAAAAAGTAiAAAAABBSAAAPsEACAhAAD-BAAgjQIAAPwEACCOAgAA_QQAIJECAACJAQAgByAAAKgDACAhAACrAwAgjQIAAKkDACCOAgAAqgMAII8CAAADACCQAgAAAwAgkQIAAAUAIAoGAACeAwAgBwAAnwMAIA4AAKADACAPAAChAwAgzwEBAAAAAdEBAQAAAAHSAQEAAAAB1QFAAAAAAeMBAAAA6AEC5gEBAAAAAQIAAAAFACAgAACoAwAgAwAAAAMAICAAAKgDACAhAACsAwAgDAAAAAMAIAYAAI8DACAHAACQAwAgDgAAkQMAIA8AAJIDACAZAACsAwAgzwEBAPcCACHRAQEA9wIAIdIBAQD3AgAh1QFAAPoCACHjAQAAjQPoASLmAQEA-QIAIQoGAACPAwAgBwAAkAMAIA4AAJEDACAPAACSAwAgzwEBAPcCACHRAQEA9wIAIdIBAQD3AgAh1QFAAPoCACHjAQAAjQPoASLmAQEA-QIAIQMgAAD7BAAgjQIAAPwEACCRAgAAiQEAIAMgAACoAwAgjQIAAKkDACCRAgAABQAgAAAABSAAAPMEACAhAAD5BAAgjQIAAPQEACCOAgAA-AQAIJECAAChAQAgBSAAAPEEACAhAAD2BAAgjQIAAPIEACCOAgAA9QQAIJECAACJAQAgAyAAAPMEACCNAgAA9AQAIJECAAChAQAgAyAAAPEEACCNAgAA8gQAIJECAACJAQAgAAAACyAAALoDADAhAAC_AwAwjQIAALsDADCOAgAAvAMAMI8CAAC-AwAwkAIAAL4DADCRAgAAvgMAMJICAAC9AwAgkwIAAL4DADCUAgAAwAMAMJUCAADBAwAwAgcAALUDACDSAQEAAAABAgAAABIAICAAAMUDACADAAAAEgAgIAAAxQMAICEAAMQDACABGQAA8AQAMAgHAADoAgAgCwAA5wIAIMwBAADmAgAwzQEAABAAEM4BAADmAgAw0gEBAL4CACHrAQEAvgIAIYoCAADlAgAgAgAAABIAIBkAAMQDACACAAAAwgMAIBkAAMMDACAFzAEAAMEDADDNAQAAwgMAEM4BAADBAwAw0gEBAL4CACHrAQEAvgIAIQXMAQAAwQMAMM0BAADCAwAQzgEAAMEDADDSAQEAvgIAIesBAQC-AgAhAdIBAQD3AgAhAgcAALMDACDSAQEA9wIAIQIHAAC1AwAg0gEBAAAAAQQgAAC6AwAwjQIAALsDADCRAgAAvgMAMJICAAC9AwAgAAAAAAAACyAAAPMDADAhAAD4AwAwjQIAAPQDADCOAgAA9QMAMI8CAAD3AwAwkAIAAPcDADCRAgAA9wMAMJICAAD2AwAgkwIAAPcDADCUAgAA-QMAMJUCAAD6AwAwCyAAAOcDADAhAADsAwAwjQIAAOgDADCOAgAA6QMAMI8CAADrAwAwkAIAAOsDADCRAgAA6wMAMJICAADqAwAgkwIAAOsDADCUAgAA7QMAMJUCAADuAwAwCyAAANsDADAhAADgAwAwjQIAANwDADCOAgAA3QMAMI8CAADfAwAwkAIAAN8DADCRAgAA3wMAMJICAADeAwAgkwIAAN8DADCUAgAA4QMAMJUCAADiAwAwCyAAANIDADAhAADWAwAwjQIAANMDADCOAgAA1AMAMI8CAAC-AwAwkAIAAL4DADCRAgAAvgMAMJICAADVAwAgkwIAAL4DADCUAgAA1wMAMJUCAADBAwAwBSAAAOcEACAhAADuBAAgjQIAAOgEACCOAgAA7QQAIJECAAABACACCwAAtAMAIOsBAQAAAAECAAAAEgAgIAAA2gMAIAMAAAASACAgAADaAwAgIQAA2QMAIAEZAADsBAAwAgAAABIAIBkAANkDACACAAAAwgMAIBkAANgDACAB6wEBAPcCACECCwAAsgMAIOsBAQD3AgAhAgsAALQDACDrAQEAAAABCAUAAP4CACAGAAD_AgAgzwEBAAAAAdABAQAAAAHRAQEAAAAB0wECAAAAAdQBAQAAAAHVAUAAAAABAgAAAA4AICAAAOYDACADAAAADgAgIAAA5gMAICEAAOUDACABGQAA6wQAMA0FAADAAgAgBgAA1QIAIAcAAOgCACDMAQAA6QIAMM0BAAAMABDOAQAA6QIAMM8BAQAAAAHQAQEAAAAB0QEBAL4CACHSAQEAvgIAIdMBAgDQAgAh1AEBAMwCACHVAUAAvwIAIQIAAAAOACAZAADlAwAgAgAAAOMDACAZAADkAwAgCswBAADiAwAwzQEAAOMDABDOAQAA4gMAMM8BAQC-AgAh0AEBAL4CACHRAQEAvgIAIdIBAQC-AgAh0wECANACACHUAQEAzAIAIdUBQAC_AgAhCswBAADiAwAwzQEAAOMDABDOAQAA4gMAMM8BAQC-AgAh0AEBAL4CACHRAQEAvgIAIdIBAQC-AgAh0wECANACACHUAQEAzAIAIdUBQAC_AgAhBs8BAQD3AgAh0AEBAPcCACHRAQEA9wIAIdMBAgD4AgAh1AEBAPkCACHVAUAA-gIAIQgFAAD7AgAgBgAA_AIAIM8BAQD3AgAh0AEBAPcCACHRAQEA9wIAIdMBAgD4AgAh1AEBAPkCACHVAUAA-gIAIQgFAAD-AgAgBgAA_wIAIM8BAQAAAAHQAQEAAAAB0QEBAAAAAdMBAgAAAAHUAQEAAAAB1QFAAAAAAQoDAACdAwAgBgAAngMAIA4AAKADACAPAAChAwAgzwEBAAAAAdEBAQAAAAHVAUAAAAAB4wEAAADoAQLlAQEAAAAB5gEBAAAAAQIAAAAFACAgAADyAwAgAwAAAAUAICAAAPIDACAhAADxAwAgARkAAOoEADAPAwAA7gIAIAYAANUCACAHAADoAgAgDgAA7wIAIA8AAPACACDMAQAA7AIAMM0BAAADABDOAQAA7AIAMM8BAQAAAAHRAQEAvgIAIdIBAQC-AgAh1QFAAL8CACHjAQAA7QLoASLlAQEAAAAB5gEBAMwCACECAAAABQAgGQAA8QMAIAIAAADvAwAgGQAA8AMAIArMAQAA7gMAMM0BAADvAwAQzgEAAO4DADDPAQEAvgIAIdEBAQC-AgAh0gEBAL4CACHVAUAAvwIAIeMBAADtAugBIuUBAQC-AgAh5gEBAMwCACEKzAEAAO4DADDNAQAA7wMAEM4BAADuAwAwzwEBAL4CACHRAQEAvgIAIdIBAQC-AgAh1QFAAL8CACHjAQAA7QLoASLlAQEAvgIAIeYBAQDMAgAhBs8BAQD3AgAh0QEBAPcCACHVAUAA-gIAIeMBAACNA-gBIuUBAQD3AgAh5gEBAPkCACEKAwAAjgMAIAYAAI8DACAOAACRAwAgDwAAkgMAIM8BAQD3AgAh0QEBAPcCACHVAUAA-gIAIeMBAACNA-gBIuUBAQD3AgAh5gEBAPkCACEKAwAAnQMAIAYAAJ4DACAOAACgAwAgDwAAoQMAIM8BAQAAAAHRAQEAAAAB1QFAAAAAAeMBAAAA6AEC5QEBAAAAAeYBAQAAAAEGBQAArgMAIM8BAQAAAAHVAUAAAAAB6AFAAAAAAekBQAAAAAHqASAAAAABAgAAAAkAICAAAP4DACADAAAACQAgIAAA_gMAICEAAP0DACABGQAA6QQAMAsFAADrAgAgBwAA6AIAIMwBAADqAgAwzQEAAAcAEM4BAADqAgAwzwEBAAAAAdIBAQC-AgAh1QFAAL8CACHoAUAAvwIAIekBQAC_AgAh6gEgANECACECAAAACQAgGQAA_QMAIAIAAAD7AwAgGQAA_AMAIAnMAQAA-gMAMM0BAAD7AwAQzgEAAPoDADDPAQEAvgIAIdIBAQC-AgAh1QFAAL8CACHoAUAAvwIAIekBQAC_AgAh6gEgANECACEJzAEAAPoDADDNAQAA-wMAEM4BAAD6AwAwzwEBAL4CACHSAQEAvgIAIdUBQAC_AgAh6AFAAL8CACHpAUAAvwIAIeoBIADRAgAhBc8BAQD3AgAh1QFAAPoCACHoAUAA-gIAIekBQAD6AgAh6gEgAKUDACEGBQAApwMAIM8BAQD3AgAh1QFAAPoCACHoAUAA-gIAIekBQAD6AgAh6gEgAKUDACEGBQAArgMAIM8BAQAAAAHVAUAAAAAB6AFAAAAAAekBQAAAAAHqASAAAAABBCAAAPMDADCNAgAA9AMAMJECAAD3AwAwkgIAAPYDACAEIAAA5wMAMI0CAADoAwAwkQIAAOsDADCSAgAA6gMAIAQgAADbAwAwjQIAANwDADCRAgAA3wMAMJICAADeAwAgBCAAANIDADCNAgAA0wMAMJECAAC-AwAwkgIAANUDACADIAAA5wQAII0CAADoBAAgkQIAAAEAIAAAAAYIAACGBAAgEAAAhQQAIBEAANIEACASAADTBAAgEwAA1AQAIIgCAADxAgAgAAAAAAAAAZMCQAAAAAEFIAAA4gQAICEAAOUEACCNAgAA4wQAII4CAADkBAAgkQIAAAEAIAMgAADiBAAgjQIAAOMEACCRAgAAAQAgAAAABSAAAN0EACAhAADgBAAgjQIAAN4EACCOAgAA3wQAIJECAAABACADIAAA3QQAII0CAADeBAAgkQIAAAEAIAAAAAsgAADEBAAwIQAAyAQAMI0CAADFBAAwjgIAAMYEADCPAgAA6wMAMJACAADrAwAwkQIAAOsDADCSAgAAxwQAIJMCAADrAwAwlAIAAMkEADCVAgAA7gMAMAsgAAC7BAAwIQAAvwQAMI0CAAC8BAAwjgIAAL0EADCPAgAA3wMAMJACAADfAwAwkQIAAN8DADCSAgAAvgQAIJMCAADfAwAwlAIAAMAEADCVAgAA4gMAMAcgAAC2BAAgIQAAuQQAII0CAAC3BAAgjgIAALgEACCPAgAAHwAgkAIAAB8AIJECAACJAQAgCyAAAKoEADAhAACvBAAwjQIAAKsEADCOAgAArAQAMI8CAACuBAAwkAIAAK4EADCRAgAArgQAMJICAACtBAAgkwIAAK4EADCUAgAAsAQAMJUCAACxBAAwCyAAAJ4EADAhAACjBAAwjQIAAJ8EADCOAgAAoAQAMI8CAACiBAAwkAIAAKIEADCRAgAAogQAMJICAAChBAAgkwIAAKIEADCUAgAApAQAMJUCAAClBAAwB88BAQAAAAHVAUAAAAAB5AFAAAAAAfkBQAAAAAGDAgEAAAABhAIBAAAAAYUCAQAAAAECAAAAJwAgIAAAqQQAIAMAAAAnACAgAACpBAAgIQAAqAQAIAEZAADcBAAwDA0AANUCACDMAQAA4gIAMM0BAAAlABDOAQAA4gIAMM8BAQAAAAHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH5AUAAvwIAIYMCAQAAAAGEAgEAzAIAIYUCAQDMAgAhAgAAACcAIBkAAKgEACACAAAApgQAIBkAAKcEACALzAEAAKUEADDNAQAApgQAEM4BAAClBAAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH5AUAAvwIAIYMCAQC-AgAhhAIBAMwCACGFAgEAzAIAIQvMAQAApQQAMM0BAACmBAAQzgEAAKUEADDPAQEAvgIAIdUBQAC_AgAh5AFAAL8CACHxAQEAvgIAIfkBQAC_AgAhgwIBAL4CACGEAgEAzAIAIYUCAQDMAgAhB88BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfkBQAD6AgAhgwIBAPcCACGEAgEA-QIAIYUCAQD5AgAhB88BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfkBQAD6AgAhgwIBAPcCACGEAgEA-QIAIYUCAQD5AgAhB88BAQAAAAHVAUAAAAAB5AFAAAAAAfkBQAAAAAGDAgEAAAABhAIBAAAAAYUCAQAAAAEMzwEBAAAAAdUBQAAAAAHkAUAAAAAB-gEBAAAAAfsBAQAAAAH8AQEAAAAB_QEBAAAAAf4BAQAAAAH_AUAAAAABgAJAAAAAAYECAQAAAAGCAgEAAAABAgAAACMAICAAALUEACADAAAAIwAgIAAAtQQAICEAALQEACABGQAA2wQAMBENAADVAgAgzAEAAOMCADDNAQAAIQAQzgEAAOMCADDPAQEAAAAB1QFAAL8CACHkAUAAvwIAIfEBAQC-AgAh-gEBAL4CACH7AQEAvgIAIfwBAQDMAgAh_QEBAMwCACH-AQEAzAIAIf8BQADkAgAhgAJAAOQCACGBAgEAzAIAIYICAQDMAgAhAgAAACMAIBkAALQEACACAAAAsgQAIBkAALMEACAQzAEAALEEADDNAQAAsgQAEM4BAACxBAAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH6AQEAvgIAIfsBAQC-AgAh_AEBAMwCACH9AQEAzAIAIf4BAQDMAgAh_wFAAOQCACGAAkAA5AIAIYECAQDMAgAhggIBAMwCACEQzAEAALEEADDNAQAAsgQAEM4BAACxBAAwzwEBAL4CACHVAUAAvwIAIeQBQAC_AgAh8QEBAL4CACH6AQEAvgIAIfsBAQC-AgAh_AEBAMwCACH9AQEAzAIAIf4BAQDMAgAh_wFAAOQCACGAAkAA5AIAIYECAQDMAgAhggIBAMwCACEMzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh-gEBAPcCACH7AQEA9wIAIfwBAQD5AgAh_QEBAPkCACH-AQEA-QIAIf8BQACOBAAhgAJAAI4EACGBAgEA-QIAIYICAQD5AgAhDM8BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfoBAQD3AgAh-wEBAPcCACH8AQEA-QIAIf0BAQD5AgAh_gEBAPkCACH_AUAAjgQAIYACQACOBAAhgQIBAPkCACGCAgEA-QIAIQzPAQEAAAAB1QFAAAAAAeQBQAAAAAH6AQEAAAAB-wEBAAAAAfwBAQAAAAH9AQEAAAAB_gEBAAAAAf8BQAAAAAGAAkAAAAABgQIBAAAAAYICAQAAAAEMAwAA_wMAIAQAAIAEACAIAACBBAAgDAAAggQAIM8BAQAAAAHVAUAAAAAB5AFAAAAAAfIBAQAAAAHzAQIAAAAB9AEIAAAAAfUBIAAAAAH2AQEAAAABAgAAAIkBACAgAAC2BAAgAwAAAB8AICAAALYEACAhAAC6BAAgDgAAAB8AIAMAAM0DACAEAADOAwAgCAAAzwMAIAwAANADACAZAAC6BAAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8gEBAPcCACHzAQIA-AIAIfQBCACGAwAh9QEgAKUDACH2AQEA-QIAIQwDAADNAwAgBAAAzgMAIAgAAM8DACAMAADQAwAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8gEBAPcCACHzAQIA-AIAIfQBCACGAwAh9QEgAKUDACH2AQEA-QIAIQgFAAD-AgAgBwAAgAMAIM8BAQAAAAHQAQEAAAAB0gEBAAAAAdMBAgAAAAHUAQEAAAAB1QFAAAAAAQIAAAAOACAgAADDBAAgAwAAAA4AICAAAMMEACAhAADCBAAgARkAANoEADACAAAADgAgGQAAwgQAIAIAAADjAwAgGQAAwQQAIAbPAQEA9wIAIdABAQD3AgAh0gEBAPcCACHTAQIA-AIAIdQBAQD5AgAh1QFAAPoCACEIBQAA-wIAIAcAAP0CACDPAQEA9wIAIdABAQD3AgAh0gEBAPcCACHTAQIA-AIAIdQBAQD5AgAh1QFAAPoCACEIBQAA_gIAIAcAAIADACDPAQEAAAAB0AEBAAAAAdIBAQAAAAHTAQIAAAAB1AEBAAAAAdUBQAAAAAEKAwAAnQMAIAcAAJ8DACAOAACgAwAgDwAAoQMAIM8BAQAAAAHSAQEAAAAB1QFAAAAAAeMBAAAA6AEC5QEBAAAAAeYBAQAAAAECAAAABQAgIAAAzAQAIAMAAAAFACAgAADMBAAgIQAAywQAIAEZAADZBAAwAgAAAAUAIBkAAMsEACACAAAA7wMAIBkAAMoEACAGzwEBAPcCACHSAQEA9wIAIdUBQAD6AgAh4wEAAI0D6AEi5QEBAPcCACHmAQEA-QIAIQoDAACOAwAgBwAAkAMAIA4AAJEDACAPAACSAwAgzwEBAPcCACHSAQEA9wIAIdUBQAD6AgAh4wEAAI0D6AEi5QEBAPcCACHmAQEA-QIAIQoDAACdAwAgBwAAnwMAIA4AAKADACAPAAChAwAgzwEBAAAAAdIBAQAAAAHVAUAAAAAB4wEAAADoAQLlAQEAAAAB5gEBAAAAAQQgAADEBAAwjQIAAMUEADCRAgAA6wMAMJICAADHBAAgBCAAALsEADCNAgAAvAQAMJECAADfAwAwkgIAAL4EACADIAAAtgQAII0CAAC3BAAgkQIAAIkBACAEIAAAqgQAMI0CAACrBAAwkQIAAK4EADCSAgAArQQAIAQgAACeBAAwjQIAAJ8EADCRAgAAogQAMJICAAChBAAgBgMAAIQEACAEAACFBAAgCAAAhgQAIAwAAMcDACANAACHBAAg9gEAAPECACAAAAIJAADHAwAg7QEAAPECACACBQAAiQMAIAcAANIEACABBQAAiQMAIAQFAACJAwAgBgAAhwQAIAcAANIEACDUAQAA8QIAIAbPAQEAAAAB0gEBAAAAAdUBQAAAAAHjAQAAAOgBAuUBAQAAAAHmAQEAAAABBs8BAQAAAAHQAQEAAAAB0gEBAAAAAdMBAgAAAAHUAQEAAAAB1QFAAAAAAQzPAQEAAAAB1QFAAAAAAeQBQAAAAAH6AQEAAAAB-wEBAAAAAfwBAQAAAAH9AQEAAAAB_gEBAAAAAf8BQAAAAAGAAkAAAAABgQIBAAAAAYICAQAAAAEHzwEBAAAAAdUBQAAAAAHkAUAAAAAB-QFAAAAAAYMCAQAAAAGEAgEAAAABhQIBAAAAAQ0IAADOBAAgEAAAzQQAIBEAAM8EACASAADQBAAgzwEBAAAAAdUBQAAAAAHjAQEAAAAB5AFAAAAAAewBAQAAAAGGAgEAAAABhwIgAAAAAYgCAQAAAAGJAgEAAAABAgAAAAEAICAAAN0EACADAAAALgAgIAAA3QQAICEAAOEEACAPAAAALgAgCAAAmgQAIBAAAJkEACARAACbBAAgEgAAnAQAIBkAAOEEACDPAQEA9wIAIdUBQAD6AgAh4wEBAPcCACHkAUAA-gIAIewBAQD3AgAhhgIBAPcCACGHAiAApQMAIYgCAQD5AgAhiQIBAPcCACENCAAAmgQAIBAAAJkEACARAACbBAAgEgAAnAQAIM8BAQD3AgAh1QFAAPoCACHjAQEA9wIAIeQBQAD6AgAh7AEBAPcCACGGAgEA9wIAIYcCIAClAwAhiAIBAPkCACGJAgEA9wIAIQ0IAADOBAAgEAAAzQQAIBEAAM8EACATAADRBAAgzwEBAAAAAdUBQAAAAAHjAQEAAAAB5AFAAAAAAewBAQAAAAGGAgEAAAABhwIgAAAAAYgCAQAAAAGJAgEAAAABAgAAAAEAICAAAOIEACADAAAALgAgIAAA4gQAICEAAOYEACAPAAAALgAgCAAAmgQAIBAAAJkEACARAACbBAAgEwAAnQQAIBkAAOYEACDPAQEA9wIAIdUBQAD6AgAh4wEBAPcCACHkAUAA-gIAIewBAQD3AgAhhgIBAPcCACGHAiAApQMAIYgCAQD5AgAhiQIBAPcCACENCAAAmgQAIBAAAJkEACARAACbBAAgEwAAnQQAIM8BAQD3AgAh1QFAAPoCACHjAQEA9wIAIeQBQAD6AgAh7AEBAPcCACGGAgEA9wIAIYcCIAClAwAhiAIBAPkCACGJAgEA9wIAIQ0IAADOBAAgEAAAzQQAIBIAANAEACATAADRBAAgzwEBAAAAAdUBQAAAAAHjAQEAAAAB5AFAAAAAAewBAQAAAAGGAgEAAAABhwIgAAAAAYgCAQAAAAGJAgEAAAABAgAAAAEAICAAAOcEACAFzwEBAAAAAdUBQAAAAAHoAUAAAAAB6QFAAAAAAeoBIAAAAAEGzwEBAAAAAdEBAQAAAAHVAUAAAAAB4wEAAADoAQLlAQEAAAAB5gEBAAAAAQbPAQEAAAAB0AEBAAAAAdEBAQAAAAHTAQIAAAAB1AEBAAAAAdUBQAAAAAEB6wEBAAAAAQMAAAAuACAgAADnBAAgIQAA7wQAIA8AAAAuACAIAACaBAAgEAAAmQQAIBIAAJwEACATAACdBAAgGQAA7wQAIM8BAQD3AgAh1QFAAPoCACHjAQEA9wIAIeQBQAD6AgAh7AEBAPcCACGGAgEA9wIAIYcCIAClAwAhiAIBAPkCACGJAgEA9wIAIQ0IAACaBAAgEAAAmQQAIBIAAJwEACATAACdBAAgzwEBAPcCACHVAUAA-gIAIeMBAQD3AgAh5AFAAPoCACHsAQEA9wIAIYYCAQD3AgAhhwIgAKUDACGIAgEA-QIAIYkCAQD3AgAhAdIBAQAAAAENAwAA_wMAIAQAAIAEACAIAACBBAAgDQAAgwQAIM8BAQAAAAHVAUAAAAAB5AFAAAAAAfEBAQAAAAHyAQEAAAAB8wECAAAAAfQBCAAAAAH1ASAAAAAB9gEBAAAAAQIAAACJAQAgIAAA8QQAIATPAQEAAAAB1QFAAAAAAewBAQAAAAHtAQEAAAABAgAAAKEBACAgAADzBAAgAwAAAB8AICAAAPEEACAhAAD3BAAgDwAAAB8AIAMAAM0DACAEAADOAwAgCAAAzwMAIA0AANEDACAZAAD3BAAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACHyAQEA9wIAIfMBAgD4AgAh9AEIAIYDACH1ASAApQMAIfYBAQD5AgAhDQMAAM0DACAEAADOAwAgCAAAzwMAIA0AANEDACDPAQEA9wIAIdUBQAD6AgAh5AFAAPoCACHxAQEA9wIAIfIBAQD3AgAh8wECAPgCACH0AQgAhgMAIfUBIAClAwAh9gEBAPkCACEDAAAApAEAICAAAPMEACAhAAD6BAAgBgAAAKQBACAZAAD6BAAgzwEBAPcCACHVAUAA-gIAIewBAQD3AgAh7QEBAPkCACEEzwEBAPcCACHVAUAA-gIAIewBAQD3AgAh7QEBAPkCACENBAAAgAQAIAgAAIEEACAMAACCBAAgDQAAgwQAIM8BAQAAAAHVAUAAAAAB5AFAAAAAAfEBAQAAAAHyAQEAAAAB8wECAAAAAfQBCAAAAAH1ASAAAAAB9gEBAAAAAQIAAACJAQAgIAAA-wQAIAMAAAAfACAgAAD7BAAgIQAA_wQAIA8AAAAfACAEAADOAwAgCAAAzwMAIAwAANADACANAADRAwAgGQAA_wQAIM8BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfEBAQD3AgAh8gEBAPcCACHzAQIA-AIAIfQBCACGAwAh9QEgAKUDACH2AQEA-QIAIQ0EAADOAwAgCAAAzwMAIAwAANADACANAADRAwAgzwEBAPcCACHVAUAA-gIAIeQBQAD6AgAh8QEBAPcCACHyAQEA9wIAIfMBAgD4AgAh9AEIAIYDACH1ASAApQMAIfYBAQD5AgAhDQMAAP8DACAIAACBBAAgDAAAggQAIA0AAIMEACDPAQEAAAAB1QFAAAAAAeQBQAAAAAHxAQEAAAAB8gEBAAAAAfMBAgAAAAH0AQgAAAAB9QEgAAAAAfYBAQAAAAECAAAAiQEAICAAAIAFACANCAAAzgQAIBEAAM8EACASAADQBAAgEwAA0QQAIM8BAQAAAAHVAUAAAAAB4wEBAAAAAeQBQAAAAAHsAQEAAAABhgIBAAAAAYcCIAAAAAGIAgEAAAABiQIBAAAAAQIAAAABACAgAACCBQAgBwcAAK0DACDPAQEAAAAB0gEBAAAAAdUBQAAAAAHoAUAAAAAB6QFAAAAAAeoBIAAAAAECAAAACQAgIAAAhAUAIAMAAAAfACAgAACABQAgIQAAiAUAIA8AAAAfACADAADNAwAgCAAAzwMAIAwAANADACANAADRAwAgGQAAiAUAIM8BAQD3AgAh1QFAAPoCACHkAUAA-gIAIfEBAQD3AgAh8gEBAPcCACHzAQIA-AIAIfQBCACGAwAh9QEgAKUDACH2AQEA-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_JgBAJwBBAQcABAEHAAQDCgBGJgBHJwBIAAAAAwoARiYARycASAMDAAMGAAEHAAQDAwADBgABBwAEAwoATSYATicATwAAAAMKAE0mAE4nAE8BBQACAQUAAgUKAFQmAFcnAFhoAFVpAFYAAAAAAAUKAFQmAFcnAFhoAFVpAFYDBQACBgABBwAEAwUAAgYAAQcABAUKAF0mAGAnAGFoAF5pAF8AAAAAAAUKAF0mAGAnAGFoAF5pAF8UAgEVLQEWMAEXMQEYMgEaNAEbNg4cNw8dOQEeOw4fPBAiPQEjPgEkPw4oQhEpQxUqRAwrRQwsRgwtRwwuSAwvSgwwTA4xTRYyTwwzUQ40Uhc1Uww2VAw3VQ44WBg5WRw6Wgs7Wws8XAs9XQs-Xgs_YAtAYg5BYx1CZQtDZw5EaB5FaQtGagtHaw5Ibh9JbyNKcSRLciRMdSRNdiROdyRPeSRQew5RfCVSfiRTgAEOVIEBJlWCASRWgwEkV4QBDliHASdZiAErWooBBFuLAQRcjQEEXY4BBF6PAQRfkQEEYJMBDmGUASxilgEEY5gBDmSZAS1lmgEEZpsBBGecAQ5qnwEua6ABNGyiAQdtowEHbqYBB2-nAQdwqAEHcaoBB3KsAQ5zrQE1dK8BB3WxAQ52sgE2d7MBB3i0AQd5tQEOergBN3u5ATt8ugEGfbsBBn68AQZ_vQEGgAG-AQaBAcABBoIBwgEOgwHDATyEAcUBBoUBxwEOhgHIAT2HAckBBogBygEGiQHLAQ6KAc4BPosBzwFCjAHQAQONAdEBA44B0gEDjwHTAQOQAdQBA5EB1gEDkgHYAQ6TAdkBQ5QB2wEDlQHdAQ6WAd4BRJcB3wEDmAHgAQOZAeEBDpoB5AFFmwHlAUmcAeYBAp0B5wECngHoAQKfAekBAqAB6gECoQHsAQKiAe4BDqMB7wFKpAHxAQKlAfMBDqYB9AFLpwH1AQKoAfYBAqkB9wEOqgH6AUyrAfsBUKwB_QEKrQH-AQquAYACCq8BgQIKsAGCAgqxAYQCCrIBhgIOswGHAlG0AYkCCrUBiwIOtgGMAlK3AY0CCrgBjgIKuQGPAg66AZICU7sBkwJZvAGUAgW9AZUCBb4BlgIFvwGXAgXAAZgCBcEBmgIFwgGcAg7DAZ0CWsQBnwIFxQGhAg7GAaICW8cBowIFyAGkAgXJAaUCDsoBqAJcywGpAmI"
+  strings: JSON.parse('["where","orderBy","cursor","availability","bookings","booking","student","tutor","reviews","tutors","_count","category","categories","user","payment","review","sessionResource","bookingsAsStudent","tutorProfile","accounts","sessions","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","data","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","create","update","User.upsertOne","User.deleteOne","User.deleteMany","having","_min","_max","User.groupBy","User.aggregate","Session.findUnique","Session.findUniqueOrThrow","Session.findFirst","Session.findFirstOrThrow","Session.findMany","Session.createOne","Session.createMany","Session.createManyAndReturn","Session.updateOne","Session.updateMany","Session.updateManyAndReturn","Session.upsertOne","Session.deleteOne","Session.deleteMany","Session.groupBy","Session.aggregate","Account.findUnique","Account.findUniqueOrThrow","Account.findFirst","Account.findFirstOrThrow","Account.findMany","Account.createOne","Account.createMany","Account.createManyAndReturn","Account.updateOne","Account.updateMany","Account.updateManyAndReturn","Account.upsertOne","Account.deleteOne","Account.deleteMany","Account.groupBy","Account.aggregate","Verification.findUnique","Verification.findUniqueOrThrow","Verification.findFirst","Verification.findFirstOrThrow","Verification.findMany","Verification.createOne","Verification.createMany","Verification.createManyAndReturn","Verification.updateOne","Verification.updateMany","Verification.updateManyAndReturn","Verification.upsertOne","Verification.deleteOne","Verification.deleteMany","Verification.groupBy","Verification.aggregate","TutorProfile.findUnique","TutorProfile.findUniqueOrThrow","TutorProfile.findFirst","TutorProfile.findFirstOrThrow","TutorProfile.findMany","TutorProfile.createOne","TutorProfile.createMany","TutorProfile.createManyAndReturn","TutorProfile.updateOne","TutorProfile.updateMany","TutorProfile.updateManyAndReturn","TutorProfile.upsertOne","TutorProfile.deleteOne","TutorProfile.deleteMany","_avg","_sum","TutorProfile.groupBy","TutorProfile.aggregate","Category.findUnique","Category.findUniqueOrThrow","Category.findFirst","Category.findFirstOrThrow","Category.findMany","Category.createOne","Category.createMany","Category.createManyAndReturn","Category.updateOne","Category.updateMany","Category.updateManyAndReturn","Category.upsertOne","Category.deleteOne","Category.deleteMany","Category.groupBy","Category.aggregate","TutorCategory.findUnique","TutorCategory.findUniqueOrThrow","TutorCategory.findFirst","TutorCategory.findFirstOrThrow","TutorCategory.findMany","TutorCategory.createOne","TutorCategory.createMany","TutorCategory.createManyAndReturn","TutorCategory.updateOne","TutorCategory.updateMany","TutorCategory.updateManyAndReturn","TutorCategory.upsertOne","TutorCategory.deleteOne","TutorCategory.deleteMany","TutorCategory.groupBy","TutorCategory.aggregate","Availability.findUnique","Availability.findUniqueOrThrow","Availability.findFirst","Availability.findFirstOrThrow","Availability.findMany","Availability.createOne","Availability.createMany","Availability.createManyAndReturn","Availability.updateOne","Availability.updateMany","Availability.updateManyAndReturn","Availability.upsertOne","Availability.deleteOne","Availability.deleteMany","Availability.groupBy","Availability.aggregate","Booking.findUnique","Booking.findUniqueOrThrow","Booking.findFirst","Booking.findFirstOrThrow","Booking.findMany","Booking.createOne","Booking.createMany","Booking.createManyAndReturn","Booking.updateOne","Booking.updateMany","Booking.updateManyAndReturn","Booking.upsertOne","Booking.deleteOne","Booking.deleteMany","Booking.groupBy","Booking.aggregate","SessionResource.findUnique","SessionResource.findUniqueOrThrow","SessionResource.findFirst","SessionResource.findFirstOrThrow","SessionResource.findMany","SessionResource.createOne","SessionResource.createMany","SessionResource.createManyAndReturn","SessionResource.updateOne","SessionResource.updateMany","SessionResource.updateManyAndReturn","SessionResource.upsertOne","SessionResource.deleteOne","SessionResource.deleteMany","SessionResource.groupBy","SessionResource.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","Payment.groupBy","Payment.aggregate","Review.findUnique","Review.findUniqueOrThrow","Review.findFirst","Review.findFirstOrThrow","Review.findMany","Review.createOne","Review.createMany","Review.createManyAndReturn","Review.updateOne","Review.updateMany","Review.updateManyAndReturn","Review.upsertOne","Review.deleteOne","Review.deleteMany","Review.groupBy","Review.aggregate","AND","OR","NOT","id","bookingId","studentId","tutorId","rating","comment","createdAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","stripeSessionId","amount","status","updatedAt","transcriptText","quizData","string_contains","string_starts_with","string_ends_with","array_starts_with","array_ends_with","array_contains","availabilityId","meetingLink","BookingStatus","startTime","endTime","isBooked","categoryId","name","description","every","some","none","userId","bio","experience","pricePerHour","isFeatured","bankAccountNumber","identifier","value","expiresAt","accountId","providerId","accessToken","refreshToken","idToken","accessTokenExpiresAt","refreshTokenExpiresAt","scope","password","token","ipAddress","userAgent","email","emailVerified","image","role","tutorId_categoryId","is","isNot","connectOrCreate","upsert","disconnect","delete","connect","createMany","set","updateMany","deleteMany","increment","decrement","multiply","divide"]'),
+  graph: "1AVqwAERCAAA8wIAIBEAAPICACASAAD-AgAgEwAA_wIAIBQAAIADACDdAQAA_QIAMN4BAAAwABDfAQAA_QIAMOABAQAAAAHmAUAA2QIAIfQBAQDYAgAh9QFAANkCACGFAgEA2AIAIZ8CAQAAAAGgAiAA8AIAIaECAQDrAgAhogIBANgCACEBAAAAAQAgEAMAAI0DACAGAAD0AgAgBwAAhwMAIA4AAI4DACAPAACPAwAgEAAAkAMAIN0BAACLAwAw3gEAAAMAEN8BAACLAwAw4AEBANgCACHiAQEA2AIAIeMBAQDYAgAh5gFAANkCACH0AQAAjAOBAiL-AQEA2AIAIf8BAQDrAgAhBwMAAIIFACAGAACzBAAgBwAA_gQAIA4AAIMFACAPAACEBQAgEAAAhQUAIP8BAACRAwAgEAMAAI0DACAGAAD0AgAgBwAAhwMAIA4AAI4DACAPAACPAwAgEAAAkAMAIN0BAACLAwAw3gEAAAMAEN8BAACLAwAw4AEBAAAAAeIBAQDYAgAh4wEBANgCACHmAUAA2QIAIfQBAACMA4ECIv4BAQAAAAH_AQEA6wIAIQMAAAADACABAAAEADACAAAFACALBQAAigMAIAcAAIcDACDdAQAAiQMAMN4BAAAHABDfAQAAiQMAMOABAQDYAgAh4wEBANgCACHmAUAA2QIAIYECQADZAgAhggJAANkCACGDAiAA8AIAIQIFAACpAwAgBwAA_gQAIAsFAACKAwAgBwAAhwMAIN0BAACJAwAw3gEAAAcAEN8BAACJAwAw4AEBAAAAAeMBAQDYAgAh5gFAANkCACGBAkAA2QIAIYICQADZAgAhgwIgAPACACEDAAAABwAgAQAACAAwAgAACQAgAwAAAAMAIAEAAAQAMAIAAAUAIA0FAADaAgAgBgAA9AIAIAcAAIcDACDdAQAAiAMAMN4BAAAMABDfAQAAiAMAMOABAQDYAgAh4QEBANgCACHiAQEA2AIAIeMBAQDYAgAh5AECAO8CACHlAQEA6wIAIeYBQADZAgAhBAUAAKkDACAGAACzBAAgBwAA_gQAIOUBAACRAwAgDQUAANoCACAGAAD0AgAgBwAAhwMAIN0BAACIAwAw3gEAAAwAEN8BAACIAwAw4AEBAAAAAeEBAQAAAAHiAQEA2AIAIeMBAQDYAgAh5AECAO8CACHlAQEA6wIAIeYBQADZAgAhAwAAAAwAIAEAAA0AMAIAAA4AIAcHAACHAwAgCwAAhgMAIN0BAACFAwAw3gEAABAAEN8BAACFAwAw4wEBANgCACGEAgEA2AIAIQIHAAD-BAAgCwAAgQUAIAgHAACHAwAgCwAAhgMAIN0BAACFAwAw3gEAABAAEN8BAACFAwAw4wEBANgCACGEAgEA2AIAIaMCAACEAwAgAwAAABAAIAEAABEAMAIAABIAIAMAAAAQACABAAARADACAAASACABAAAAEAAgAQAAAAcAIAEAAAADACABAAAADAAgAQAAABAAIAEAAAADACALBQAA2gIAIN0BAADWAgAw3gEAABsAEN8BAADWAgAw4AEBANgCACHhAQEA2AIAIeYBQADZAgAh8gEBANgCACHzAQgA1wIAIfQBAQDYAgAh9QFAANkCACEBAAAAGwAgAQAAAAwAIAkFAADaAgAg3QEAAN4CADDeAQAAHgAQ3wEAAN4CADDgAQEA2AIAIeEBAQDYAgAh9QFAANkCACH2AQEA2AIAIfcBAADfAgAgAQAAAB4AIAMAAAAMACABAAANADACAAAOACARAwAA8QIAIAQAAPICACAIAADzAgAgDAAA7AIAIA0AAPQCACDdAQAA7gIAMN4BAAAhABDfAQAA7gIAMOABAQDYAgAh5gFAANkCACH1AUAA2QIAIYoCAQDYAgAhiwIBANgCACGMAgIA7wIAIY0CCADXAgAhjgIgAPACACGPAgEA6wIAIQEAAAAhACARDQAA9AIAIN0BAACCAwAw3gEAACMAEN8BAACCAwAw4AEBANgCACHmAUAA2QIAIfUBQADZAgAhigIBANgCACGTAgEA2AIAIZQCAQDYAgAhlQIBAOsCACGWAgEA6wIAIZcCAQDrAgAhmAJAAIMDACGZAkAAgwMAIZoCAQDrAgAhmwIBAOsCACEIDQAAswQAIJUCAACRAwAglgIAAJEDACCXAgAAkQMAIJgCAACRAwAgmQIAAJEDACCaAgAAkQMAIJsCAACRAwAgEQ0AAPQCACDdAQAAggMAMN4BAAAjABDfAQAAggMAMOABAQAAAAHmAUAA2QIAIfUBQADZAgAhigIBANgCACGTAgEA2AIAIZQCAQDYAgAhlQIBAOsCACGWAgEA6wIAIZcCAQDrAgAhmAJAAIMDACGZAkAAgwMAIZoCAQDrAgAhmwIBAOsCACEDAAAAIwAgAQAAJAAwAgAAJQAgDA0AAPQCACDdAQAAgQMAMN4BAAAnABDfAQAAgQMAMOABAQDYAgAh5gFAANkCACH1AUAA2QIAIYoCAQDYAgAhkgJAANkCACGcAgEA2AIAIZ0CAQDrAgAhngIBAOsCACEDDQAAswQAIJ0CAACRAwAgngIAAJEDACAMDQAA9AIAIN0BAACBAwAw3gEAACcAEN8BAACBAwAw4AEBAAAAAeYBQADZAgAh9QFAANkCACGKAgEA2AIAIZICQADZAgAhnAIBAAAAAZ0CAQDrAgAhngIBAOsCACEDAAAAJwAgAQAAKAAwAgAAKQAgAQAAAAMAIAEAAAAMACABAAAAIwAgAQAAACcAIAEAAAABACARCAAA8wIAIBEAAPICACASAAD-AgAgEwAA_wIAIBQAAIADACDdAQAA_QIAMN4BAAAwABDfAQAA_QIAMOABAQDYAgAh5gFAANkCACH0AQEA2AIAIfUBQADZAgAhhQIBANgCACGfAgEA2AIAIaACIADwAgAhoQIBAOsCACGiAgEA2AIAIQYIAACyBAAgEQAAsQQAIBIAAP4EACATAAD_BAAgFAAAgAUAIKECAACRAwAgAwAAADAAIAEAADEAMAIAAAEAIAMAAAAwACABAAAxADACAAABACADAAAAMAAgAQAAMQAwAgAAAQAgDggAAPoEACARAAD5BAAgEgAA-wQAIBMAAPwEACAUAAD9BAAg4AEBAAAAAeYBQAAAAAH0AQEAAAAB9QFAAAAAAYUCAQAAAAGfAgEAAAABoAIgAAAAAaECAQAAAAGiAgEAAAABARoAADUAIAngAQEAAAAB5gFAAAAAAfQBAQAAAAH1AUAAAAABhQIBAAAAAZ8CAQAAAAGgAiAAAAABoQIBAAAAAaICAQAAAAEBGgAANwAwARoAADcAMA4IAADGBAAgEQAAxQQAIBIAAMcEACATAADIBAAgFAAAyQQAIOABAQCXAwAh5gFAAJoDACH0AQEAlwMAIfUBQACaAwAhhQIBAJcDACGfAgEAlwMAIaACIADRAwAhoQIBAJkDACGiAgEAlwMAIQIAAAABACAaAAA6ACAJ4AEBAJcDACHmAUAAmgMAIfQBAQCXAwAh9QFAAJoDACGFAgEAlwMAIZ8CAQCXAwAhoAIgANEDACGhAgEAmQMAIaICAQCXAwAhAgAAADAAIBoAADwAIAIAAAAwACAaAAA8ACADAAAAAQAgIQAANQAgIgAAOgAgAQAAAAEAIAEAAAAwACAECgAAwgQAICcAAMQEACAoAADDBAAgoQIAAJEDACAM3QEAAPwCADDeAQAAQwAQ3wEAAPwCADDgAQEAxQIAIeYBQADIAgAh9AEBAMUCACH1AUAAyAIAIYUCAQDFAgAhnwIBAMUCACGgAiAA5QIAIaECAQDHAgAhogIBAMUCACEDAAAAMAAgAQAAQgAwJgAAQwAgAwAAADAAIAEAADEAMAIAAAEAIAEAAAApACABAAAAKQAgAwAAACcAIAEAACgAMAIAACkAIAMAAAAnACABAAAoADACAAApACADAAAAJwAgAQAAKAAwAgAAKQAgCQ0AAMEEACDgAQEAAAAB5gFAAAAAAfUBQAAAAAGKAgEAAAABkgJAAAAAAZwCAQAAAAGdAgEAAAABngIBAAAAAQEaAABLACAI4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAZICQAAAAAGcAgEAAAABnQIBAAAAAZ4CAQAAAAEBGgAATQAwARoAAE0AMAkNAADABAAg4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhigIBAJcDACGSAkAAmgMAIZwCAQCXAwAhnQIBAJkDACGeAgEAmQMAIQIAAAApACAaAABQACAI4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhigIBAJcDACGSAkAAmgMAIZwCAQCXAwAhnQIBAJkDACGeAgEAmQMAIQIAAAAnACAaAABSACACAAAAJwAgGgAAUgAgAwAAACkAICEAAEsAICIAAFAAIAEAAAApACABAAAAJwAgBQoAAL0EACAnAAC_BAAgKAAAvgQAIJ0CAACRAwAgngIAAJEDACAL3QEAAPsCADDeAQAAWQAQ3wEAAPsCADDgAQEAxQIAIeYBQADIAgAh9QFAAMgCACGKAgEAxQIAIZICQADIAgAhnAIBAMUCACGdAgEAxwIAIZ4CAQDHAgAhAwAAACcAIAEAAFgAMCYAAFkAIAMAAAAnACABAAAoADACAAApACABAAAAJQAgAQAAACUAIAMAAAAjACABAAAkADACAAAlACADAAAAIwAgAQAAJAAwAgAAJQAgAwAAACMAIAEAACQAMAIAACUAIA4NAAC8BAAg4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAZMCAQAAAAGUAgEAAAABlQIBAAAAAZYCAQAAAAGXAgEAAAABmAJAAAAAAZkCQAAAAAGaAgEAAAABmwIBAAAAAQEaAABhACAN4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAZMCAQAAAAGUAgEAAAABlQIBAAAAAZYCAQAAAAGXAgEAAAABmAJAAAAAAZkCQAAAAAGaAgEAAAABmwIBAAAAAQEaAABjADABGgAAYwAwDg0AALsEACDgAQEAlwMAIeYBQACaAwAh9QFAAJoDACGKAgEAlwMAIZMCAQCXAwAhlAIBAJcDACGVAgEAmQMAIZYCAQCZAwAhlwIBAJkDACGYAkAAugQAIZkCQAC6BAAhmgIBAJkDACGbAgEAmQMAIQIAAAAlACAaAABmACAN4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhigIBAJcDACGTAgEAlwMAIZQCAQCXAwAhlQIBAJkDACGWAgEAmQMAIZcCAQCZAwAhmAJAALoEACGZAkAAugQAIZoCAQCZAwAhmwIBAJkDACECAAAAIwAgGgAAaAAgAgAAACMAIBoAAGgAIAMAAAAlACAhAABhACAiAABmACABAAAAJQAgAQAAACMAIAoKAAC3BAAgJwAAuQQAICgAALgEACCVAgAAkQMAIJYCAACRAwAglwIAAJEDACCYAgAAkQMAIJkCAACRAwAgmgIAAJEDACCbAgAAkQMAIBDdAQAA9wIAMN4BAABvABDfAQAA9wIAMOABAQDFAgAh5gFAAMgCACH1AUAAyAIAIYoCAQDFAgAhkwIBAMUCACGUAgEAxQIAIZUCAQDHAgAhlgIBAMcCACGXAgEAxwIAIZgCQAD4AgAhmQJAAPgCACGaAgEAxwIAIZsCAQDHAgAhAwAAACMAIAEAAG4AMCYAAG8AIAMAAAAjACABAAAkADACAAAlACAJ3QEAAPYCADDeAQAAdQAQ3wEAAPYCADDgAQEAAAAB5gFAANkCACH1AUAA2QIAIZACAQDYAgAhkQIBANgCACGSAkAA2QIAIQEAAAByACABAAAAcgAgCd0BAAD2AgAw3gEAAHUAEN8BAAD2AgAw4AEBANgCACHmAUAA2QIAIfUBQADZAgAhkAIBANgCACGRAgEA2AIAIZICQADZAgAhAAMAAAB1ACABAAB2ADACAAByACADAAAAdQAgAQAAdgAwAgAAcgAgAwAAAHUAIAEAAHYAMAIAAHIAIAbgAQEAAAAB5gFAAAAAAfUBQAAAAAGQAgEAAAABkQIBAAAAAZICQAAAAAEBGgAAegAgBuABAQAAAAHmAUAAAAAB9QFAAAAAAZACAQAAAAGRAgEAAAABkgJAAAAAAQEaAAB8ADABGgAAfAAwBuABAQCXAwAh5gFAAJoDACH1AUAAmgMAIZACAQCXAwAhkQIBAJcDACGSAkAAmgMAIQIAAAByACAaAAB_ACAG4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhkAIBAJcDACGRAgEAlwMAIZICQACaAwAhAgAAAHUAIBoAAIEBACACAAAAdQAgGgAAgQEAIAMAAAByACAhAAB6ACAiAAB_ACABAAAAcgAgAQAAAHUAIAMKAAC0BAAgJwAAtgQAICgAALUEACAJ3QEAAPUCADDeAQAAiAEAEN8BAAD1AgAw4AEBAMUCACHmAUAAyAIAIfUBQADIAgAhkAIBAMUCACGRAgEAxQIAIZICQADIAgAhAwAAAHUAIAEAAIcBADAmAACIAQAgAwAAAHUAIAEAAHYAMAIAAHIAIBEDAADxAgAgBAAA8gIAIAgAAPMCACAMAADsAgAgDQAA9AIAIN0BAADuAgAw3gEAACEAEN8BAADuAgAw4AEBAAAAAeYBQADZAgAh9QFAANkCACGKAgEAAAABiwIBANgCACGMAgIA7wIAIY0CCADXAgAhjgIgAPACACGPAgEA6wIAIQEAAACLAQAgAQAAAIsBACAGAwAAsAQAIAQAALEEACAIAACyBAAgDAAA8wMAIA0AALMEACCPAgAAkQMAIAMAAAAhACABAACOAQAwAgAAiwEAIAMAAAAhACABAACOAQAwAgAAiwEAIAMAAAAhACABAACOAQAwAgAAiwEAIA4DAACrBAAgBAAArAQAIAgAAK0EACAMAACuBAAgDQAArwQAIOABAQAAAAHmAUAAAAAB9QFAAAAAAYoCAQAAAAGLAgEAAAABjAICAAAAAY0CCAAAAAGOAiAAAAABjwIBAAAAAQEaAACSAQAgCeABAQAAAAHmAUAAAAAB9QFAAAAAAYoCAQAAAAGLAgEAAAABjAICAAAAAY0CCAAAAAGOAiAAAAABjwIBAAAAAQEaAACUAQAwARoAAJQBADAOAwAA-QMAIAQAAPoDACAIAAD7AwAgDAAA_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_gEBAAAAAf8BAQAAAAEBGgAA7QEAIAfgAQEAAAAB4gEBAAAAAeMBAQAAAAHmAUAAAAAB9AEAAACBAgL-AQEAAAAB_wEBAAAAAQEaAADvAQAwARoAAO8BADANAwAAswMAIAYAALQDACAHAAC1AwAgDgAAtgMAIA8AALcDACAQAAC4AwAg4AEBAJcDACHiAQEAlwMAIeMBAQCXAwAh5gFAAJoDACH0AQAAsgOBAiL-AQEAlwMAIf8BAQCZAwAhAgAAAAUAIBoAAPIBACAH4AEBAJcDACHiAQEAlwMAIeMBAQCXAwAh5gFAAJoDACH0AQAAsgOBAiL-AQEAlwMAIf8BAQCZAwAhAgAAAAMAIBoAAPQBACACAAAAAwAgGgAA9AEAIAMAAAAFACAhAADtAQAgIgAA8gEAIAEAAAAFACABAAAAAwAgBAoAAK8DACAnAACxAwAgKAAAsAMAIP8BAACRAwAgCt0BAADgAgAw3gEAAPsBABDfAQAA4AIAMOABAQDFAgAh4gEBAMUCACHjAQEAxQIAIeYBQADIAgAh9AEAAOECgQIi_gEBAMUCACH_AQEAxwIAIQMAAAADACABAAD6AQAwJgAA-wEAIAMAAAADACABAAAEADACAAAFACAJBQAA2gIAIN0BAADeAgAw3gEAAB4AEN8BAADeAgAw4AEBAAAAAeEBAQAAAAH1AUAA2QIAIfYBAQDYAgAh9wEAAN8CACABAAAA_gEAIAEAAAD-AQAgAgUAAKkDACD3AQAAkQMAIAMAAAAeACABAACBAgAwAgAA_gEAIAMAAAAeACABAACBAgAwAgAA_gEAIAMAAAAeACABAACBAgAwAgAA_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_gEBANgCACH_AQEA6wIAIaQCAAADACClAgAAAwAgCN0BAADbAgAw3gEAAJMCABDfAQAA2wIAMOABAQDFAgAh4QEBAMUCACH1AUAAyAIAIfYBAQDFAgAh9wEAANwCACAPCgAAzQIAICcAAN0CACAoAADdAgAg5wGAAAAAAeoBgAAAAAHrAYAAAAAB7AGAAAAAAe0BgAAAAAHuAYAAAAAB-AEBAAAAAfkBAQAAAAH6AQEAAAAB-wGAAAAAAfwBgAAAAAH9AYAAAAABDOcBgAAAAAHqAYAAAAAB6wGAAAAAAewBgAAAAAHtAYAAAAAB7gGAAAAAAfgBAQAAAAH5AQEAAAAB-gEBAAAAAfsBgAAAAAH8AYAAAAAB_QGAAAAAAQkFAADaAgAg3QEAAN4CADDeAQAAHgAQ3wEAAN4CADDgAQEA2AIAIeEBAQDYAgAh9QFAANkCACH2AQEA2AIAIfcBAADfAgAgDOcBgAAAAAHqAYAAAAAB6wGAAAAAAewBgAAAAAHtAYAAAAAB7gGAAAAAAfgBAQAAAAH5AQEAAAAB-gEBAAAAAfsBgAAAAAH8AYAAAAAB_QGAAAAAAQrdAQAA4AIAMN4BAAD7AQAQ3wEAAOACADDgAQEAxQIAIeIBAQDFAgAh4wEBAMUCACHmAUAAyAIAIfQBAADhAoECIv4BAQDFAgAh_wEBAMcCACEHCgAAygIAICcAAOMCACAoAADjAgAg5wEAAACBAgLoAQAAAIECCOkBAAAAgQII7gEAAOICgQIiBwoAAMoCACAnAADjAgAgKAAA4wIAIOcBAAAAgQIC6AEAAACBAgjpAQAAAIECCO4BAADiAoECIgTnAQAAAIECAugBAAAAgQII6QEAAACBAgjuAQAA4wKBAiIJ3QEAAOQCADDeAQAA5QEAEN8BAADkAgAw4AEBAMUCACHjAQEAxQIAIeYBQADIAgAhgQJAAMgCACGCAkAAyAIAIYMCIADlAgAhBQoAAMoCACAnAADnAgAgKAAA5wIAIOcBIAAAAAHuASAA5gIAIQUKAADKAgAgJwAA5wIAICgAAOcCACDnASAAAAAB7gEgAOYCACEC5wEgAAAAAe4BIADnAgAhBd0BAADoAgAw3gEAAM8BABDfAQAA6AIAMOMBAQDFAgAhhAIBAMUCACEH3QEAAOkCADDeAQAAuQEAEN8BAADpAgAw4AEBAMUCACHmAUAAyAIAIYUCAQDFAgAhhgIBAMcCACEICQAA7AIAIN0BAADqAgAw3gEAAKYBABDfAQAA6gIAMOABAQDYAgAh5gFAANkCACGFAgEA2AIAIYYCAQDrAgAhC-cBAQAAAAHoAQEAAAAF6QEBAAAABeoBAQAAAAHrAQEAAAAB7AEBAAAAAe0BAQAAAAHuAQEAzgIAIe8BAQAAAAHwAQEAAAAB8QEBAAAAAQOHAgAAEAAgiAIAABAAIIkCAAAQACAM3QEAAO0CADDeAQAAoAEAEN8BAADtAgAw4AEBAMUCACHmAUAAyAIAIfUBQADIAgAhigIBAMUCACGLAgEAxQIAIYwCAgDGAgAhjQIIANQCACGOAiAA5QIAIY8CAQDHAgAhEQMAAPECACAEAADyAgAgCAAA8wIAIAwAAOwCACANAAD0AgAg3QEAAO4CADDeAQAAIQAQ3wEAAO4CADDgAQEA2AIAIeYBQADZAgAh9QFAANkCACGKAgEA2AIAIYsCAQDYAgAhjAICAO8CACGNAggA1wIAIY4CIADwAgAhjwIBAOsCACEI5wECAAAAAegBAgAAAATpAQIAAAAE6gECAAAAAesBAgAAAAHsAQIAAAAB7QECAAAAAe4BAgDKAgAhAucBIAAAAAHuASAA5wIAIQOHAgAABwAgiAIAAAcAIIkCAAAHACADhwIAAAMAIIgCAAADACCJAgAAAwAgA4cCAAAMACCIAgAADAAgiQIAAAwAIBMIAADzAgAgEQAA8gIAIBIAAP4CACATAAD_AgAgFAAAgAMAIN0BAAD9AgAw3gEAADAAEN8BAAD9AgAw4AEBANgCACHmAUAA2QIAIfQBAQDYAgAh9QFAANkCACGFAgEA2AIAIZ8CAQDYAgAhoAIgAPACACGhAgEA6wIAIaICAQDYAgAhpAIAADAAIKUCAAAwACAJ3QEAAPUCADDeAQAAiAEAEN8BAAD1AgAw4AEBAMUCACHmAUAAyAIAIfUBQADIAgAhkAIBAMUCACGRAgEAxQIAIZICQADIAgAhCd0BAAD2AgAw3gEAAHUAEN8BAAD2AgAw4AEBANgCACHmAUAA2QIAIfUBQADZAgAhkAIBANgCACGRAgEA2AIAIZICQADZAgAhEN0BAAD3AgAw3gEAAG8AEN8BAAD3AgAw4AEBAMUCACHmAUAAyAIAIfUBQADIAgAhigIBAMUCACGTAgEAxQIAIZQCAQDFAgAhlQIBAMcCACGWAgEAxwIAIZcCAQDHAgAhmAJAAPgCACGZAkAA-AIAIZoCAQDHAgAhmwIBAMcCACELCgAAzQIAICcAAPoCACAoAAD6AgAg5wFAAAAAAegBQAAAAAXpAUAAAAAF6gFAAAAAAesBQAAAAAHsAUAAAAAB7QFAAAAAAe4BQAD5AgAhCwoAAM0CACAnAAD6AgAgKAAA-gIAIOcBQAAAAAHoAUAAAAAF6QFAAAAABeoBQAAAAAHrAUAAAAAB7AFAAAAAAe0BQAAAAAHuAUAA-QIAIQjnAUAAAAAB6AFAAAAABekBQAAAAAXqAUAAAAAB6wFAAAAAAewBQAAAAAHtAUAAAAAB7gFAAPoCACEL3QEAAPsCADDeAQAAWQAQ3wEAAPsCADDgAQEAxQIAIeYBQADIAgAh9QFAAMgCACGKAgEAxQIAIZICQADIAgAhnAIBAMUCACGdAgEAxwIAIZ4CAQDHAgAhDN0BAAD8AgAw3gEAAEMAEN8BAAD8AgAw4AEBAMUCACHmAUAAyAIAIfQBAQDFAgAh9QFAAMgCACGFAgEAxQIAIZ8CAQDFAgAhoAIgAOUCACGhAgEAxwIAIaICAQDFAgAhEQgAAPMCACARAADyAgAgEgAA_gIAIBMAAP8CACAUAACAAwAg3QEAAP0CADDeAQAAMAAQ3wEAAP0CADDgAQEA2AIAIeYBQADZAgAh9AEBANgCACH1AUAA2QIAIYUCAQDYAgAhnwIBANgCACGgAiAA8AIAIaECAQDrAgAhogIBANgCACETAwAA8QIAIAQAAPICACAIAADzAgAgDAAA7AIAIA0AAPQCACDdAQAA7gIAMN4BAAAhABDfAQAA7gIAMOABAQDYAgAh5gFAANkCACH1AUAA2QIAIYoCAQDYAgAhiwIBANgCACGMAgIA7wIAIY0CCADXAgAhjgIgAPACACGPAgEA6wIAIaQCAAAhACClAgAAIQAgA4cCAAAjACCIAgAAIwAgiQIAACMAIAOHAgAAJwAgiAIAACcAIIkCAAAnACAMDQAA9AIAIN0BAACBAwAw3gEAACcAEN8BAACBAwAw4AEBANgCACHmAUAA2QIAIfUBQADZAgAhigIBANgCACGSAkAA2QIAIZwCAQDYAgAhnQIBAOsCACGeAgEA6wIAIRENAAD0AgAg3QEAAIIDADDeAQAAIwAQ3wEAAIIDADDgAQEA2AIAIeYBQADZAgAh9QFAANkCACGKAgEA2AIAIZMCAQDYAgAhlAIBANgCACGVAgEA6wIAIZYCAQDrAgAhlwIBAOsCACGYAkAAgwMAIZkCQACDAwAhmgIBAOsCACGbAgEA6wIAIQjnAUAAAAAB6AFAAAAABekBQAAAAAXqAUAAAAAB6wFAAAAAAewBQAAAAAHtAUAAAAAB7gFAAPoCACEC4wEBAAAAAYQCAQAAAAEHBwAAhwMAIAsAAIYDACDdAQAAhQMAMN4BAAAQABDfAQAAhQMAMOMBAQDYAgAhhAIBANgCACEKCQAA7AIAIN0BAADqAgAw3gEAAKYBABDfAQAA6gIAMOABAQDYAgAh5gFAANkCACGFAgEA2AIAIYYCAQDrAgAhpAIAAKYBACClAgAApgEAIBMDAADxAgAgBAAA8gIAIAgAAPMCACAMAADsAgAgDQAA9AIAIN0BAADuAgAw3gEAACEAEN8BAADuAgAw4AEBANgCACHmAUAA2QIAIfUBQADZAgAhigIBANgCACGLAgEA2AIAIYwCAgDvAgAhjQIIANcCACGOAiAA8AIAIY8CAQDrAgAhpAIAACEAIKUCAAAhACANBQAA2gIAIAYAAPQCACAHAACHAwAg3QEAAIgDADDeAQAADAAQ3wEAAIgDADDgAQEA2AIAIeEBAQDYAgAh4gEBANgCACHjAQEA2AIAIeQBAgDvAgAh5QEBAOsCACHmAUAA2QIAIQsFAACKAwAgBwAAhwMAIN0BAACJAwAw3gEAAAcAEN8BAACJAwAw4AEBANgCACHjAQEA2AIAIeYBQADZAgAhgQJAANkCACGCAkAA2QIAIYMCIADwAgAhEgMAAI0DACAGAAD0AgAgBwAAhwMAIA4AAI4DACAPAACPAwAgEAAAkAMAIN0BAACLAwAw3gEAAAMAEN8BAACLAwAw4AEBANgCACHiAQEA2AIAIeMBAQDYAgAh5gFAANkCACH0AQAAjAOBAiL-AQEA2AIAIf8BAQDrAgAhpAIAAAMAIKUCAAADACAQAwAAjQMAIAYAAPQCACAHAACHAwAgDgAAjgMAIA8AAI8DACAQAACQAwAg3QEAAIsDADDeAQAAAwAQ3wEAAIsDADDgAQEA2AIAIeIBAQDYAgAh4wEBANgCACHmAUAA2QIAIfQBAACMA4ECIv4BAQDYAgAh_wEBAOsCACEE5wEAAACBAgLoAQAAAIECCOkBAAAAgQII7gEAAOMCgQIiDQUAAIoDACAHAACHAwAg3QEAAIkDADDeAQAABwAQ3wEAAIkDADDgAQEA2AIAIeMBAQDYAgAh5gFAANkCACGBAkAA2QIAIYICQADZAgAhgwIgAPACACGkAgAABwAgpQIAAAcAIA0FAADaAgAg3QEAANYCADDeAQAAGwAQ3wEAANYCADDgAQEA2AIAIeEBAQDYAgAh5gFAANkCACHyAQEA2AIAIfMBCADXAgAh9AEBANgCACH1AUAA2QIAIaQCAAAbACClAgAAGwAgDwUAANoCACAGAAD0AgAgBwAAhwMAIN0BAACIAwAw3gEAAAwAEN8BAACIAwAw4AEBANgCACHhAQEA2AIAIeIBAQDYAgAh4wEBANgCACHkAQIA7wIAIeUBAQDrAgAh5gFAANkCACGkAgAADAAgpQIAAAwAIAsFAADaAgAg3QEAAN4CADDeAQAAHgAQ3wEAAN4CADDgAQEA2AIAIeEBAQDYAgAh9QFAANkCACH2AQEA2AIAIfcBAADfAgAgpAIAAB4AIKUCAAAeACAAAAAAAAABrAIBAAAAAQWsAgIAAAABrwICAAAAAbACAgAAAAGxAgIAAAABsgICAAAAAQGsAgEAAAABAawCQAAAAAEFIQAAygUAICIAANMFACCmAgAAywUAIKcCAADSBQAgqgIAAAUAIAUhAADIBQAgIgAA0AUAIKYCAADJBQAgpwIAAM8FACCqAgAAAQAgBSEAAMYFACAiAADNBQAgpgIAAMcFACCnAgAAzAUAIKoCAACLAQAgAyEAAMoFACCmAgAAywUAIKoCAAAFACADIQAAyAUAIKYCAADJBQAgqgIAAAEAIAMhAADGBQAgpgIAAMcFACCqAgAAiwEAIAAAAAAABawCCAAAAAGvAggAAAABsAIIAAAAAbECCAAAAAGyAggAAAABBSEAAMEFACAiAADEBQAgpgIAAMIFACCnAgAAwwUAIKoCAAAFACADIQAAwQUAIKYCAADCBQAgqgIAAAUAIAcDAACCBQAgBgAAswQAIAcAAP4EACAOAACDBQAgDwAAhAUAIBAAAIUFACD_AQAAkQMAIAAAAAUhAAC8BQAgIgAAvwUAIKYCAAC9BQAgpwIAAL4FACCqAgAABQAgAyEAALwFACCmAgAAvQUAIKoCAAAFACAAAAABrAIAAACBAgIFIQAAsQUAICIAALoFACCmAgAAsgUAIKcCAAC5BQAgqgIAAAkAIAUhAACvBQAgIgAAtwUAIKYCAACwBQAgpwIAALYFACCqAgAAAQAgBSEAAK0FACAiAAC0BQAgpgIAAK4FACCnAgAAswUAIKoCAACLAQAgByEAAMMDACAiAADGAwAgpgIAAMQDACCnAgAAxQMAIKgCAAAbACCpAgAAGwAgqgIAAJYCACAHIQAAvgMAICIAAMEDACCmAgAAvwMAIKcCAADAAwAgqAIAAAwAIKkCAAAMACCqAgAADgAgByEAALkDACAiAAC8AwAgpgIAALoDACCnAgAAuwMAIKgCAAAeACCpAgAAHgAgqgIAAP4BACAE4AEBAAAAAfUBQAAAAAH2AQEAAAAB9wGAAAAAAQIAAAD-AQAgIQAAuQMAIAMAAAAeACAhAAC5AwAgIgAAvQMAIAYAAAAeACAaAAC9AwAg4AEBAJcDACH1AUAAmgMAIfYBAQCXAwAh9wGAAAAAAQTgAQEAlwMAIfUBQACaAwAh9gEBAJcDACH3AYAAAAABCAYAAJ8DACAHAACgAwAg4AEBAAAAAeIBAQAAAAHjAQEAAAAB5AECAAAAAeUBAQAAAAHmAUAAAAABAgAAAA4AICEAAL4DACADAAAADAAgIQAAvgMAICIAAMIDACAKAAAADAAgBgAAnAMAIAcAAJ0DACAaAADCAwAg4AEBAJcDACHiAQEAlwMAIeMBAQCXAwAh5AECAJgDACHlAQEAmQMAIeYBQACaAwAhCAYAAJwDACAHAACdAwAg4AEBAJcDACHiAQEAlwMAIeMBAQCXAwAh5AECAJgDACHlAQEAmQMAIeYBQACaAwAhBuABAQAAAAHmAUAAAAAB8gEBAAAAAfMBCAAAAAH0AQEAAAAB9QFAAAAAAQIAAACWAgAgIQAAwwMAIAMAAAAbACAhAADDAwAgIgAAxwMAIAgAAAAbACAaAADHAwAg4AEBAJcDACHmAUAAmgMAIfIBAQCXAwAh8wEIAKYDACH0AQEAlwMAIfUBQACaAwAhBuABAQCXAwAh5gFAAJoDACHyAQEAlwMAIfMBCACmAwAh9AEBAJcDACH1AUAAmgMAIQMhAACxBQAgpgIAALIFACCqAgAACQAgAyEAAK8FACCmAgAAsAUAIKoCAAABACADIQAArQUAIKYCAACuBQAgqgIAAIsBACADIQAAwwMAIKYCAADEAwAgqgIAAJYCACADIQAAvgMAIKYCAAC_AwAgqgIAAA4AIAMhAAC5AwAgpgIAALoDACCqAgAA_gEAIAAAAAGsAiAAAAABBSEAAKgFACAiAACrBQAgpgIAAKkFACCnAgAAqgUAIKoCAACLAQAgByEAANQDACAiAADXAwAgpgIAANUDACCnAgAA1gMAIKgCAAADACCpAgAAAwAgqgIAAAUAIAsGAADJAwAgBwAAygMAIA4AAMsDACAPAADMAwAgEAAAzQMAIOABAQAAAAHiAQEAAAAB4wEBAAAAAeYBQAAAAAH0AQAAAIECAv8BAQAAAAECAAAABQAgIQAA1AMAIAMAAAADACAhAADUAwAgIgAA2AMAIA0AAAADACAGAAC0AwAgBwAAtQMAIA4AALYDACAPAAC3AwAgEAAAuAMAIBoAANgDACDgAQEAlwMAIeIBAQCXAwAh4wEBAJcDACHmAUAAmgMAIfQBAACyA4ECIv8BAQCZAwAhCwYAALQDACAHAAC1AwAgDgAAtgMAIA8AALcDACAQAAC4AwAg4AEBAJcDACHiAQEAlwMAIeMBAQCXAwAh5gFAAJoDACH0AQAAsgOBAiL_AQEAmQMAIQMhAACoBQAgpgIAAKkFACCqAgAAiwEAIAMhAADUAwAgpgIAANUDACCqAgAABQAgAAAABSEAAKAFACAiAACmBQAgpgIAAKEFACCnAgAApQUAIKoCAACjAQAgBSEAAJ4FACAiAACjBQAgpgIAAJ8FACCnAgAAogUAIKoCAACLAQAgAyEAAKAFACCmAgAAoQUAIKoCAACjAQAgAyEAAJ4FACCmAgAAnwUAIKoCAACLAQAgAAAACyEAAOYDADAiAADrAwAwpgIAAOcDADCnAgAA6AMAMKgCAADqAwAwqQIAAOoDADCqAgAA6gMAMKsCAADpAwAgrAIAAOoDADCtAgAA7AMAMK4CAADtAwAwAgcAAOEDACDjAQEAAAABAgAAABIAICEAAPEDACADAAAAEgAgIQAA8QMAICIAAPADACABGgAAnQUAMAgHAACHAwAgCwAAhgMAIN0BAACFAwAw3gEAABAAEN8BAACFAwAw4wEBANgCACGEAgEA2AIAIaMCAACEAwAgAgAAABIAIBoAAPADACACAAAA7gMAIBoAAO8DACAF3QEAAO0DADDeAQAA7gMAEN8BAADtAwAw4wEBANgCACGEAgEA2AIAIQXdAQAA7QMAMN4BAADuAwAQ3wEAAO0DADDjAQEA2AIAIYQCAQDYAgAhAeMBAQCXAwAhAgcAAN8DACDjAQEAlwMAIQIHAADhAwAg4wEBAAAAAQQhAADmAwAwpgIAAOcDADCqAgAA6gMAMKsCAADpAwAgAAAAAAAACyEAAJ8EADAiAACkBAAwpgIAAKAEADCnAgAAoQQAMKgCAACjBAAwqQIAAKMEADCqAgAAowQAMKsCAACiBAAgrAIAAKMEADCtAgAApQQAMK4CAACmBAAwCyEAAJMEADAiAACYBAAwpgIAAJQEADCnAgAAlQQAMKgCAACXBAAwqQIAAJcEADCqAgAAlwQAMKsCAACWBAAgrAIAAJcEADCtAgAAmQQAMK4CAACaBAAwCyEAAIcEADAiAACMBAAwpgIAAIgEADCnAgAAiQQAMKgCAACLBAAwqQIAAIsEADCqAgAAiwQAMKsCAACKBAAgrAIAAIsEADCtAgAAjQQAMK4CAACOBAAwCyEAAP4DADAiAACCBAAwpgIAAP8DADCnAgAAgAQAMKgCAADqAwAwqQIAAOoDADCqAgAA6gMAMKsCAACBBAAgrAIAAOoDADCtAgAAgwQAMK4CAADtAwAwBSEAAJQFACAiAACbBQAgpgIAAJUFACCnAgAAmgUAIKoCAAABACACCwAA4AMAIIQCAQAAAAECAAAAEgAgIQAAhgQAIAMAAAASACAhAACGBAAgIgAAhQQAIAEaAACZBQAwAgAAABIAIBoAAIUEACACAAAA7gMAIBoAAIQEACABhAIBAJcDACECCwAA3gMAIIQCAQCXAwAhAgsAAOADACCEAgEAAAABCAUAAJ4DACAGAACfAwAg4AEBAAAAAeEBAQAAAAHiAQEAAAAB5AECAAAAAeUBAQAAAAHmAUAAAAABAgAAAA4AICEAAJIEACADAAAADgAgIQAAkgQAICIAAJEEACABGgAAmAUAMA0FAADaAgAgBgAA9AIAIAcAAIcDACDdAQAAiAMAMN4BAAAMABDfAQAAiAMAMOABAQAAAAHhAQEAAAAB4gEBANgCACHjAQEA2AIAIeQBAgDvAgAh5QEBAOsCACHmAUAA2QIAIQIAAAAOACAaAACRBAAgAgAAAI8EACAaAACQBAAgCt0BAACOBAAw3gEAAI8EABDfAQAAjgQAMOABAQDYAgAh4QEBANgCACHiAQEA2AIAIeMBAQDYAgAh5AECAO8CACHlAQEA6wIAIeYBQADZAgAhCt0BAACOBAAw3gEAAI8EABDfAQAAjgQAMOABAQDYAgAh4QEBANgCACHiAQEA2AIAIeMBAQDYAgAh5AECAO8CACHlAQEA6wIAIeYBQADZAgAhBuABAQCXAwAh4QEBAJcDACHiAQEAlwMAIeQBAgCYAwAh5QEBAJkDACHmAUAAmgMAIQgFAACbAwAgBgAAnAMAIOABAQCXAwAh4QEBAJcDACHiAQEAlwMAIeQBAgCYAwAh5QEBAJkDACHmAUAAmgMAIQgFAACeAwAgBgAAnwMAIOABAQAAAAHhAQEAAAAB4gEBAAAAAeQBAgAAAAHlAQEAAAAB5gFAAAAAAQsDAADIAwAgBgAAyQMAIA4AAMsDACAPAADMAwAgEAAAzQMAIOABAQAAAAHiAQEAAAAB5gFAAAAAAfQBAAAAgQIC_gEBAAAAAf8BAQAAAAECAAAABQAgIQAAngQAIAMAAAAFACAhAACeBAAgIgAAnQQAIAEaAACXBQAwEAMAAI0DACAGAAD0AgAgBwAAhwMAIA4AAI4DACAPAACPAwAgEAAAkAMAIN0BAACLAwAw3gEAAAMAEN8BAACLAwAw4AEBAAAAAeIBAQDYAgAh4wEBANgCACHmAUAA2QIAIfQBAACMA4ECIv4BAQAAAAH_AQEA6wIAIQIAAAAFACAaAACdBAAgAgAAAJsEACAaAACcBAAgCt0BAACaBAAw3gEAAJsEABDfAQAAmgQAMOABAQDYAgAh4gEBANgCACHjAQEA2AIAIeYBQADZAgAh9AEAAIwDgQIi_gEBANgCACH_AQEA6wIAIQrdAQAAmgQAMN4BAACbBAAQ3wEAAJoEADDgAQEA2AIAIeIBAQDYAgAh4wEBANgCACHmAUAA2QIAIfQBAACMA4ECIv4BAQDYAgAh_wEBAOsCACEG4AEBAJcDACHiAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQsDAACzAwAgBgAAtAMAIA4AALYDACAPAAC3AwAgEAAAuAMAIOABAQCXAwAh4gEBAJcDACHmAUAAmgMAIfQBAACyA4ECIv4BAQCXAwAh_wEBAJkDACELAwAAyAMAIAYAAMkDACAOAADLAwAgDwAAzAMAIBAAAM0DACDgAQEAAAAB4gEBAAAAAeYBQAAAAAH0AQAAAIECAv4BAQAAAAH_AQEAAAABBgUAANoDACDgAQEAAAAB5gFAAAAAAYECQAAAAAGCAkAAAAABgwIgAAAAAQIAAAAJACAhAACqBAAgAwAAAAkAICEAAKoEACAiAACpBAAgARoAAJYFADALBQAAigMAIAcAAIcDACDdAQAAiQMAMN4BAAAHABDfAQAAiQMAMOABAQAAAAHjAQEA2AIAIeYBQADZAgAhgQJAANkCACGCAkAA2QIAIYMCIADwAgAhAgAAAAkAIBoAAKkEACACAAAApwQAIBoAAKgEACAJ3QEAAKYEADDeAQAApwQAEN8BAACmBAAw4AEBANgCACHjAQEA2AIAIeYBQADZAgAhgQJAANkCACGCAkAA2QIAIYMCIADwAgAhCd0BAACmBAAw3gEAAKcEABDfAQAApgQAMOABAQDYAgAh4wEBANgCACHmAUAA2QIAIYECQADZAgAhggJAANkCACGDAiAA8AIAIQXgAQEAlwMAIeYBQACaAwAhgQJAAJoDACGCAkAAmgMAIYMCIADRAwAhBgUAANMDACDgAQEAlwMAIeYBQACaAwAhgQJAAJoDACGCAkAAmgMAIYMCIADRAwAhBgUAANoDACDgAQEAAAAB5gFAAAAAAYECQAAAAAGCAkAAAAABgwIgAAAAAQQhAACfBAAwpgIAAKAEADCqAgAAowQAMKsCAACiBAAgBCEAAJMEADCmAgAAlAQAMKoCAACXBAAwqwIAAJYEACAEIQAAhwQAMKYCAACIBAAwqgIAAIsEADCrAgAAigQAIAQhAAD-AwAwpgIAAP8DADCqAgAA6gMAMKsCAACBBAAgAyEAAJQFACCmAgAAlQUAIKoCAAABACAAAAAGCAAAsgQAIBEAALEEACASAAD-BAAgEwAA_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-QMAIAQAAPoDACAIAAD7AwAgDAAA_AMAIOABAQCXAwAh5gFAAJoDACH1AUAAmgMAIYsCAQCXAwAhjAICAJgDACGNAggApgMAIY4CIADRAwAhjwIBAJkDACEIBQAAngMAIAcAAKADACDgAQEAAAAB4QEBAAAAAeMBAQAAAAHkAQIAAAAB5QEBAAAAAeYBQAAAAAECAAAADgAgIQAA7wQAIAMAAAAOACAhAADvBAAgIgAA7gQAIAEaAACHBQAwAgAAAA4AIBoAAO4EACACAAAAjwQAIBoAAO0EACAG4AEBAJcDACHhAQEAlwMAIeMBAQCXAwAh5AECAJgDACHlAQEAmQMAIeYBQACaAwAhCAUAAJsDACAHAACdAwAg4AEBAJcDACHhAQEAlwMAIeMBAQCXAwAh5AECAJgDACHlAQEAmQMAIeYBQACaAwAhCAUAAJ4DACAHAACgAwAg4AEBAAAAAeEBAQAAAAHjAQEAAAAB5AECAAAAAeUBAQAAAAHmAUAAAAABCwMAAMgDACAHAADKAwAgDgAAywMAIA8AAMwDACAQAADNAwAg4AEBAAAAAeMBAQAAAAHmAUAAAAAB9AEAAACBAgL-AQEAAAAB_wEBAAAAAQIAAAAFACAhAAD4BAAgAwAAAAUAICEAAPgEACAiAAD3BAAgARoAAIYFADACAAAABQAgGgAA9wQAIAIAAACbBAAgGgAA9gQAIAbgAQEAlwMAIeMBAQCXAwAh5gFAAJoDACH0AQAAsgOBAiL-AQEAlwMAIf8BAQCZAwAhCwMAALMDACAHAAC1AwAgDgAAtgMAIA8AALcDACAQAAC4AwAg4AEBAJcDACHjAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQsDAADIAwAgBwAAygMAIA4AAMsDACAPAADMAwAgEAAAzQMAIOABAQAAAAHjAQEAAAAB5gFAAAAAAfQBAAAAgQIC_gEBAAAAAf8BAQAAAAEEIQAA8AQAMKYCAADxBAAwqgIAAJcEADCrAgAA8wQAIAQhAADnBAAwpgIAAOgEADCqAgAAiwQAMKsCAADqBAAgAyEAAOIEACCmAgAA4wQAIKoCAACLAQAgBCEAANYEADCmAgAA1wQAMKoCAADaBAAwqwIAANkEACAEIQAAygQAMKYCAADLBAAwqgIAAM4EADCrAgAAzQQAIAYDAACwBAAgBAAAsQQAIAgAALIEACAMAADzAwAgDQAAswQAII8CAACRAwAgAAACCQAA8wMAIIYCAACRAwAgAgUAAKkDACAHAAD-BAAgAQUAAKkDACAEBQAAqQMAIAYAALMEACAHAAD-BAAg5QEAAJEDACACBQAAqQMAIPcBAACRAwAgBuABAQAAAAHjAQEAAAAB5gFAAAAAAfQBAAAAgQIC_gEBAAAAAf8BAQAAAAEG4AEBAAAAAeEBAQAAAAHjAQEAAAAB5AECAAAAAeUBAQAAAAHmAUAAAAABDOABAQAAAAHmAUAAAAAB9QFAAAAAAZMCAQAAAAGUAgEAAAABlQIBAAAAAZYCAQAAAAGXAgEAAAABmAJAAAAAAZkCQAAAAAGaAgEAAAABmwIBAAAAAQfgAQEAAAAB5gFAAAAAAfUBQAAAAAGSAkAAAAABnAIBAAAAAZ0CAQAAAAGeAgEAAAABDQgAAPoEACARAAD5BAAgEgAA-wQAIBMAAPwEACDgAQEAAAAB5gFAAAAAAfQBAQAAAAH1AUAAAAABhQIBAAAAAZ8CAQAAAAGgAiAAAAABoQIBAAAAAaICAQAAAAECAAAAAQAgIQAAigUAIAMAAAAwACAhAACKBQAgIgAAjgUAIA8AAAAwACAIAADGBAAgEQAAxQQAIBIAAMcEACATAADIBAAgGgAAjgUAIOABAQCXAwAh5gFAAJoDACH0AQEAlwMAIfUBQACaAwAhhQIBAJcDACGfAgEAlwMAIaACIADRAwAhoQIBAJkDACGiAgEAlwMAIQ0IAADGBAAgEQAAxQQAIBIAAMcEACATAADIBAAg4AEBAJcDACHmAUAAmgMAIfQBAQCXAwAh9QFAAJoDACGFAgEAlwMAIZ8CAQCXAwAhoAIgANEDACGhAgEAmQMAIaICAQCXAwAhDQgAAPoEACARAAD5BAAgEgAA-wQAIBQAAP0EACDgAQEAAAAB5gFAAAAAAfQBAQAAAAH1AUAAAAABhQIBAAAAAZ8CAQAAAAGgAiAAAAABoQIBAAAAAaICAQAAAAECAAAAAQAgIQAAjwUAIAMAAAAwACAhAACPBQAgIgAAkwUAIA8AAAAwACAIAADGBAAgEQAAxQQAIBIAAMcEACAUAADJBAAgGgAAkwUAIOABAQCXAwAh5gFAAJoDACH0AQEAlwMAIfUBQACaAwAhhQIBAJcDACGfAgEAlwMAIaACIADRAwAhoQIBAJkDACGiAgEAlwMAIQ0IAADGBAAgEQAAxQQAIBIAAMcEACAUAADJBAAg4AEBAJcDACHmAUAAmgMAIfQBAQCXAwAh9QFAAJoDACGFAgEAlwMAIZ8CAQCXAwAhoAIgANEDACGhAgEAmQMAIaICAQCXAwAhDQgAAPoEACARAAD5BAAgEwAA_AQAIBQAAP0EACDgAQEAAAAB5gFAAAAAAfQBAQAAAAH1AUAAAAABhQIBAAAAAZ8CAQAAAAGgAiAAAAABoQIBAAAAAaICAQAAAAECAAAAAQAgIQAAlAUAIAXgAQEAAAAB5gFAAAAAAYECQAAAAAGCAkAAAAABgwIgAAAAAQbgAQEAAAAB4gEBAAAAAeYBQAAAAAH0AQAAAIECAv4BAQAAAAH_AQEAAAABBuABAQAAAAHhAQEAAAAB4gEBAAAAAeQBAgAAAAHlAQEAAAAB5gFAAAAAAQGEAgEAAAABAwAAADAAICEAAJQFACAiAACcBQAgDwAAADAAIAgAAMYEACARAADFBAAgEwAAyAQAIBQAAMkEACAaAACcBQAg4AEBAJcDACHmAUAAmgMAIfQBAQCXAwAh9QFAAJoDACGFAgEAlwMAIZ8CAQCXAwAhoAIgANEDACGhAgEAmQMAIaICAQCXAwAhDQgAAMYEACARAADFBAAgEwAAyAQAIBQAAMkEACDgAQEAlwMAIeYBQACaAwAh9AEBAJcDACH1AUAAmgMAIYUCAQCXAwAhnwIBAJcDACGgAiAA0QMAIaECAQCZAwAhogIBAJcDACEB4wEBAAAAAQ0DAACrBAAgBAAArAQAIAgAAK0EACANAACvBAAg4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAYsCAQAAAAGMAgIAAAABjQIIAAAAAY4CIAAAAAGPAgEAAAABAgAAAIsBACAhAACeBQAgBOABAQAAAAHmAUAAAAABhQIBAAAAAYYCAQAAAAECAAAAowEAICEAAKAFACADAAAAIQAgIQAAngUAICIAAKQFACAPAAAAIQAgAwAA-QMAIAQAAPoDACAIAAD7AwAgDQAA_QMAIBoAAKQFACDgAQEAlwMAIeYBQACaAwAh9QFAAJoDACGKAgEAlwMAIYsCAQCXAwAhjAICAJgDACGNAggApgMAIY4CIADRAwAhjwIBAJkDACENAwAA-QMAIAQAAPoDACAIAAD7AwAgDQAA_QMAIOABAQCXAwAh5gFAAJoDACH1AUAAmgMAIYoCAQCXAwAhiwIBAJcDACGMAgIAmAMAIY0CCACmAwAhjgIgANEDACGPAgEAmQMAIQMAAACmAQAgIQAAoAUAICIAAKcFACAGAAAApgEAIBoAAKcFACDgAQEAlwMAIeYBQACaAwAhhQIBAJcDACGGAgEAmQMAIQTgAQEAlwMAIeYBQACaAwAhhQIBAJcDACGGAgEAmQMAIQ0EAACsBAAgCAAArQQAIAwAAK4EACANAACvBAAg4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAYsCAQAAAAGMAgIAAAABjQIIAAAAAY4CIAAAAAGPAgEAAAABAgAAAIsBACAhAACoBQAgAwAAACEAICEAAKgFACAiAACsBQAgDwAAACEAIAQAAPoDACAIAAD7AwAgDAAA_AMAIA0AAP0DACAaAACsBQAg4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhigIBAJcDACGLAgEAlwMAIYwCAgCYAwAhjQIIAKYDACGOAiAA0QMAIY8CAQCZAwAhDQQAAPoDACAIAAD7AwAgDAAA_AMAIA0AAP0DACDgAQEAlwMAIeYBQACaAwAh9QFAAJoDACGKAgEAlwMAIYsCAQCXAwAhjAICAJgDACGNAggApgMAIY4CIADRAwAhjwIBAJkDACENAwAAqwQAIAgAAK0EACAMAACuBAAgDQAArwQAIOABAQAAAAHmAUAAAAAB9QFAAAAAAYoCAQAAAAGLAgEAAAABjAICAAAAAY0CCAAAAAGOAiAAAAABjwIBAAAAAQIAAACLAQAgIQAArQUAIA0IAAD6BAAgEgAA-wQAIBMAAPwEACAUAAD9BAAg4AEBAAAAAeYBQAAAAAH0AQEAAAAB9QFAAAAAAYUCAQAAAAGfAgEAAAABoAIgAAAAAaECAQAAAAGiAgEAAAABAgAAAAEAICEAAK8FACAHBwAA2QMAIOABAQAAAAHjAQEAAAAB5gFAAAAAAYECQAAAAAGCAkAAAAABgwIgAAAAAQIAAAAJACAhAACxBQAgAwAAACEAICEAAK0FACAiAAC1BQAgDwAAACEAIAMAAPkDACAIAAD7AwAgDAAA_AMAIA0AAP0DACAaAAC1BQAg4AEBAJcDACHmAUAAmgMAIfUBQACaAwAhigIBAJcDACGLAgEAlwMAIYwCAgCYAwAhjQIIAKYDACGOAiAA0QMAIY8CAQCZAwAhDQMAAPkDACAIAAD7AwAgDAAA_AMAIA0AAP0DACDgAQEAlwMAIeYBQACaAwAh9QFAAJoDACGKAgEAlwMAIYsCAQCXAwAhjAICAJgDACGNAggApgMAIY4CIADRAwAhjwIBAJkDACEDAAAAMAAgIQAArwUAICIAALgFACAPAAAAMAAgCAAAxgQAIBIAAMcEACATAADIBAAgFAAAyQQAIBoAALgFACDgAQEAlwMAIeYBQACaAwAh9AEBAJcDACH1AUAAmgMAIYUCAQCXAwAhnwIBAJcDACGgAiAA0QMAIaECAQCZAwAhogIBAJcDACENCAAAxgQAIBIAAMcEACATAADIBAAgFAAAyQQAIOABAQCXAwAh5gFAAJoDACH0AQEAlwMAIfUBQACaAwAhhQIBAJcDACGfAgEAlwMAIaACIADRAwAhoQIBAJkDACGiAgEAlwMAIQMAAAAHACAhAACxBQAgIgAAuwUAIAkAAAAHACAHAADSAwAgGgAAuwUAIOABAQCXAwAh4wEBAJcDACHmAUAAmgMAIYECQACaAwAhggJAAJoDACGDAiAA0QMAIQcHAADSAwAg4AEBAJcDACHjAQEAlwMAIeYBQACaAwAhgQJAAJoDACGCAkAAmgMAIYMCIADRAwAhDAMAAMgDACAGAADJAwAgBwAAygMAIA4AAMsDACAPAADMAwAg4AEBAAAAAeIBAQAAAAHjAQEAAAAB5gFAAAAAAfQBAAAAgQIC_gEBAAAAAf8BAQAAAAECAAAABQAgIQAAvAUAIAMAAAADACAhAAC8BQAgIgAAwAUAIA4AAAADACADAACzAwAgBgAAtAMAIAcAALUDACAOAAC2AwAgDwAAtwMAIBoAAMAFACDgAQEAlwMAIeIBAQCXAwAh4wEBAJcDACHmAUAAmgMAIfQBAACyA4ECIv4BAQCXAwAh_wEBAJkDACEMAwAAswMAIAYAALQDACAHAAC1AwAgDgAAtgMAIA8AALcDACDgAQEAlwMAIeIBAQCXAwAh4wEBAJcDACHmAUAAmgMAIfQBAACyA4ECIv4BAQCXAwAh_wEBAJkDACEMAwAAyAMAIAYAAMkDACAHAADKAwAgDwAAzAMAIBAAAM0DACDgAQEAAAAB4gEBAAAAAeMBAQAAAAHmAUAAAAAB9AEAAACBAgL-AQEAAAAB_wEBAAAAAQIAAAAFACAhAADBBQAgAwAAAAMAICEAAMEFACAiAADFBQAgDgAAAAMAIAMAALMDACAGAAC0AwAgBwAAtQMAIA8AALcDACAQAAC4AwAgGgAAxQUAIOABAQCXAwAh4gEBAJcDACHjAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQwDAACzAwAgBgAAtAMAIAcAALUDACAPAAC3AwAgEAAAuAMAIOABAQCXAwAh4gEBAJcDACHjAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQ0DAACrBAAgBAAArAQAIAwAAK4EACANAACvBAAg4AEBAAAAAeYBQAAAAAH1AUAAAAABigIBAAAAAYsCAQAAAAGMAgIAAAABjQIIAAAAAY4CIAAAAAGPAgEAAAABAgAAAIsBACAhAADGBQAgDREAAPkEACASAAD7BAAgEwAA_AQAIBQAAP0EACDgAQEAAAAB5gFAAAAAAfQBAQAAAAH1AUAAAAABhQIBAAAAAZ8CAQAAAAGgAiAAAAABoQIBAAAAAaICAQAAAAECAAAAAQAgIQAAyAUAIAwDAADIAwAgBgAAyQMAIAcAAMoDACAOAADLAwAgEAAAzQMAIOABAQAAAAHiAQEAAAAB4wEBAAAAAeYBQAAAAAH0AQAAAIECAv4BAQAAAAH_AQEAAAABAgAAAAUAICEAAMoFACADAAAAIQAgIQAAxgUAICIAAM4FACAPAAAAIQAgAwAA-QMAIAQAAPoDACAMAAD8AwAgDQAA_QMAIBoAAM4FACDgAQEAlwMAIeYBQACaAwAh9QFAAJoDACGKAgEAlwMAIYsCAQCXAwAhjAICAJgDACGNAggApgMAIY4CIADRAwAhjwIBAJkDACENAwAA-QMAIAQAAPoDACAMAAD8AwAgDQAA_QMAIOABAQCXAwAh5gFAAJoDACH1AUAAmgMAIYoCAQCXAwAhiwIBAJcDACGMAgIAmAMAIY0CCACmAwAhjgIgANEDACGPAgEAmQMAIQMAAAAwACAhAADIBQAgIgAA0QUAIA8AAAAwACARAADFBAAgEgAAxwQAIBMAAMgEACAUAADJBAAgGgAA0QUAIOABAQCXAwAh5gFAAJoDACH0AQEAlwMAIfUBQACaAwAhhQIBAJcDACGfAgEAlwMAIaACIADRAwAhoQIBAJkDACGiAgEAlwMAIQ0RAADFBAAgEgAAxwQAIBMAAMgEACAUAADJBAAg4AEBAJcDACHmAUAAmgMAIfQBAQCXAwAh9QFAAJoDACGFAgEAlwMAIZ8CAQCXAwAhoAIgANEDACGhAgEAmQMAIaICAQCXAwAhAwAAAAMAICEAAMoFACAiAADUBQAgDgAAAAMAIAMAALMDACAGAAC0AwAgBwAAtQMAIA4AALYDACAQAAC4AwAgGgAA1AUAIOABAQCXAwAh4gEBAJcDACHjAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQwDAACzAwAgBgAAtAMAIAcAALUDACAOAAC2AwAgEAAAuAMAIOABAQCXAwAh4gEBAJcDACHjAQEAlwMAIeYBQACaAwAh9AEAALIDgQIi_gEBAJcDACH_AQEAmQMAIQYIIAUKAA4RBgISIgQTJgwUKg0GAwADBgABBwAEDhwKDx0FEB8LAgUaAgcABAYDCgMECwIIDwUKAAkMEwYNAAEDBQACBgABBwAEAgcABAsABwIJFAYKAAgBCRUABAMWAAQXAAgYAAwZAAEFAAIBBQACAQ0AAQENAAEECCwAESsAEy0AFC4AAAAAAwoAEycAFCgAFQAAAAMKABMnABQoABUBDQABAQ0AAQMKABonABsoABwAAAADCgAaJwAbKAAcAQ0AAQENAAEDCgAhJwAiKAAjAAAAAwoAIScAIigAIwAAAAMKACknACooACsAAAADCgApJwAqKAArAQ0AAQENAAEFCgAwJwAzKAA0aQAxagAyAAAAAAAFCgAwJwAzKAA0aQAxagAyAAADCgA5JwA6KAA7AAAAAwoAOScAOigAOwIHAAQLAAcCBwAECwAHAwoAQCcAQSgAQgAAAAMKAEAnAEEoAEIBBwAEAQcABAMKAEcnAEgoAEkAAAADCgBHJwBIKABJAwMAAwYAAQcABAMDAAMGAAEHAAQDCgBOJwBPKABQAAAAAwoATicATygAUAEFAAIBBQACAwoAVScAVigAVwAAAAMKAFUnAFYoAFcBBQACAQUAAgUKAFwnAF8oAGBpAF1qAF4AAAAAAAUKAFwnAF8oAGBpAF1qAF4DBQACBgABBwAEAwUAAgYAAQcABAUKAGUnAGgoAGlpAGZqAGcAAAAAAAUKAGUnAGgoAGlpAGZqAGcVAgEWLwEXMgEYMwEZNAEbNgEcOA8dORAeOwEfPQ8gPhEjPwEkQAElQQ8pRBIqRRYrRg0sRw0tSA0uSQ0vSg0wTA0xTg8yTxczUQ00Uw81VBg2VQ03Vg04Vw85Whk6Wx07XAw8XQw9Xgw-Xww_YAxAYgxBZA9CZR5DZwxEaQ9Fah9GawxHbAxIbQ9JcCBKcSRLcyVMdCVNdyVOeCVPeSVQeyVRfQ9SfiZTgAElVIIBD1WDASdWhAElV4UBJViGAQ9ZiQEoWooBLFuMAQRcjQEEXY8BBF6QAQRfkQEEYJMBBGGVAQ9ilgEtY5gBBGSaAQ9lmwEuZpwBBGedAQRongEPa6EBL2yiATVtpAEHbqUBB2-oAQdwqQEHcaoBB3KsAQdzrgEPdK8BNnWxAQd2swEPd7QBN3i1AQd5tgEHercBD3u6ATh8uwE8fbwBBn69AQZ_vgEGgAG_AQaBAcABBoIBwgEGgwHEAQ-EAcUBPYUBxwEGhgHJAQ-HAcoBPogBywEGiQHMAQaKAc0BD4sB0AE_jAHRAUONAdIBA44B0wEDjwHUAQOQAdUBA5EB1gEDkgHYAQOTAdoBD5QB2wFElQHdAQOWAd8BD5cB4AFFmAHhAQOZAeIBA5oB4wEPmwHmAUacAecBSp0B6AECngHpAQKfAeoBAqAB6wECoQHsAQKiAe4BAqMB8AEPpAHxAUulAfMBAqYB9QEPpwH2AUyoAfcBAqkB-AECqgH5AQ-rAfwBTawB_QFRrQH_AQuuAYACC68BggILsAGDAguxAYQCC7IBhgILswGIAg-0AYkCUrUBiwILtgGNAg-3AY4CU7gBjwILuQGQAgu6AZECD7sBlAJUvAGVAli9AZcCCr4BmAIKvwGaAgrAAZsCCsEBnAIKwgGeAgrDAaACD8QBoQJZxQGjAgrGAaUCD8cBpgJayAGnAgrJAagCCsoBqQIPywGsAlvMAa0CYc0BrgIFzgGvAgXPAbACBdABsQIF0QGyAgXSAbQCBdMBtgIP1AG3AmLVAbkCBdYBuwIP1wG8AmPYAb0CBdkBvgIF2gG_Ag_bAcICZNwBwwJq"
 };
 async function decodeBase64AsWasm(wasmBase64) {
   const { Buffer: Buffer2 } = await import("buffer");
@@ -73,8 +73,10 @@ __export(prismaNamespace_exports, {
   DbNull: () => DbNull2,
   Decimal: () => Decimal2,
   JsonNull: () => JsonNull2,
+  JsonNullValueFilter: () => JsonNullValueFilter,
   ModelName: () => ModelName,
   NullTypes: () => NullTypes2,
+  NullableJsonNullValueInput: () => NullableJsonNullValueInput,
   NullsOrder: () => NullsOrder,
   PaymentScalarFieldEnum: () => PaymentScalarFieldEnum,
   PrismaClientInitializationError: () => PrismaClientInitializationError2,
@@ -84,6 +86,7 @@ __export(prismaNamespace_exports, {
   PrismaClientValidationError: () => PrismaClientValidationError2,
   QueryMode: () => QueryMode,
   ReviewScalarFieldEnum: () => ReviewScalarFieldEnum,
+  SessionResourceScalarFieldEnum: () => SessionResourceScalarFieldEnum,
   SessionScalarFieldEnum: () => SessionScalarFieldEnum,
   SortOrder: () => SortOrder,
   Sql: () => Sql2,
@@ -135,6 +138,7 @@ var ModelName = {
   TutorCategory: "TutorCategory",
   Availability: "Availability",
   Booking: "Booking",
+  SessionResource: "SessionResource",
   Payment: "Payment",
   Review: "Review"
 };
@@ -226,6 +230,13 @@ var BookingScalarFieldEnum = {
   status: "status",
   createdAt: "createdAt"
 };
+var SessionResourceScalarFieldEnum = {
+  id: "id",
+  bookingId: "bookingId",
+  transcriptText: "transcriptText",
+  quizData: "quizData",
+  updatedAt: "updatedAt"
+};
 var PaymentScalarFieldEnum = {
   id: "id",
   bookingId: "bookingId",
@@ -248,6 +259,10 @@ var SortOrder = {
   asc: "asc",
   desc: "desc"
 };
+var NullableJsonNullValueInput = {
+  DbNull: DbNull2,
+  JsonNull: JsonNull2
+};
 var QueryMode = {
   default: "default",
   insensitive: "insensitive"
@@ -255,6 +270,11 @@ var QueryMode = {
 var NullsOrder = {
   first: "first",
   last: "last"
+};
+var JsonNullValueFilter = {
+  DbNull: DbNull2,
+  JsonNull: JsonNull2,
+  AnyNull: AnyNull2
 };
 var defineExtension = runtime2.Extensions.defineExtension;
 
@@ -462,7 +482,7 @@ var genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 router.post("/chat", async (req, res) => {
   try {
     const { message, userRole = "guest", userName = "User" } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+    const model2 = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
     const context = `
       You are SKILLBOT, the exclusive AI guide for SkillBridge.
       
@@ -490,7 +510,7 @@ router.post("/chat", async (req, res) => {
       - Constraint: NEVER exceed 4 sentences. Use emojis (\u{1F680}, \u2728, \u{1F4B3}).
       - Formatting: Use bullet points for steps.
     `;
-    const result = await model.generateContent(`${context}
+    const result = await model2.generateContent(`${context}
 
 User: ${message}`);
     const text = result.response.text();
@@ -521,16 +541,36 @@ var getCategoryById = async (id) => {
   });
   return category;
 };
-var getAllCategories = async () => {
-  return await prisma.category.findMany({
+var getAllCategories = async (page, limit) => {
+  const queryOptions = {
     include: {
       _count: {
         select: {
           tutors: true
         }
       }
+    },
+    orderBy: {
+      name: "asc"
     }
-  });
+  };
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+  const [data, totalCount] = await Promise.all([
+    prisma.category.findMany(queryOptions),
+    prisma.category.count()
+  ]);
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page,
+      limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+    }
+  };
 };
 var updateCategory = async (id, data) => {
   const updated = await prisma.category.update({
@@ -576,10 +616,12 @@ var getCategoryByIdController = async (req, res, next) => {
     next(error);
   }
 };
-var getAllCategoriesController = async (_req, res, next) => {
+var getAllCategoriesController = async (req, res, next) => {
   try {
-    const categories = await categoryService.getAllCategories();
-    res.json(categories);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
+    const result = await categoryService.getAllCategories(page, limit);
+    res.json(result);
   } catch (error) {
     next(error);
   }
@@ -679,15 +721,29 @@ var getTutorProfileById = async (id) => {
   return prisma.tutorProfile.findUnique({
     where: { id },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       bookings: true,
       reviews: {
-        // 1st Level: Get the reviews for this tutor
         include: {
-          student: true
-          // 2nd Level: Get the student details for EACH review
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true
+            }
+          }
         }
       }
     }
@@ -700,26 +756,62 @@ var findTutorIdByUserId = async (userId) => {
   });
   return profile;
 };
-var getFeaturedTutors = async () => {
-  return await prisma.tutorProfile.findMany({
+var getFeaturedTutors = async (page, limit) => {
+  const queryOptions = {
     where: {
       isFeatured: true
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true
+        }
+      },
       categories: {
         include: {
           category: true
         }
       },
       reviews: true
+    },
+    orderBy: {
+      createdAt: "desc"
     }
-  });
+  };
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+  const [data, totalCount] = await Promise.all([
+    prisma.tutorProfile.findMany(queryOptions),
+    prisma.tutorProfile.count({ where: { isFeatured: true } })
+  ]);
+  return {
+    data,
+    meta: {
+      total: totalCount,
+      page,
+      limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+    }
+  };
 };
 var getAllTutorProfiles = async (page, limit) => {
   const queryOptions = {
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       reviews: true
@@ -778,7 +870,15 @@ var updateTutorProfile = async (id, data) => {
     where: { id },
     data: updateData,
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true
+        }
+      },
       categories: { include: { category: true } },
       availability: true,
       bookings: true,
@@ -804,7 +904,9 @@ var getAllsearchTutors = async ({
   categories = [],
   minPrice,
   maxPrice,
-  minRating
+  minRating,
+  page = 1,
+  limit = 10
 }) => {
   const andConditions = [];
   if (search && search.trim() !== "") {
@@ -832,21 +934,47 @@ var getAllsearchTutors = async ({
   if (typeof maxPrice === "number" && !isNaN(maxPrice)) {
     andConditions.push({ pricePerHour: { lte: maxPrice } });
   }
-  const tutors = await prisma.tutorProfile.findMany({
-    where: andConditions.length > 0 ? { AND: andConditions } : {},
+  const where = andConditions.length > 0 ? { AND: andConditions } : {};
+  const queryOptions = {
+    where,
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true
+        }
+      },
       categories: { include: { category: true } },
       reviews: true
+    },
+    orderBy: {
+      createdAt: "desc"
     }
-  });
+  };
+  if (limit > 0) {
+    queryOptions.take = limit;
+    queryOptions.skip = (page - 1) * limit;
+  }
+  let tutors = await prisma.tutorProfile.findMany(queryOptions);
+  let totalCount = await prisma.tutorProfile.count({ where });
   if (typeof minRating === "number" && minRating > 0) {
-    return tutors.filter((tutor) => {
+    tutors = tutors.filter((tutor) => {
       const avgRating = tutor.reviews.length > 0 ? tutor.reviews.reduce((sum, r) => sum + r.rating, 0) / tutor.reviews.length : 0;
       return avgRating >= minRating;
     });
   }
-  return tutors;
+  return {
+    data: tutors,
+    meta: {
+      total: totalCount,
+      page,
+      limit,
+      lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+    }
+  };
 };
 var tutorProfileService = {
   createTutorProfile,
@@ -943,12 +1071,16 @@ var getAllsearchTutors2 = async (req, res, next) => {
     const minPrice = req.query.minPrice ? Number(req.query.minPrice) : void 0;
     const maxPrice = req.query.maxPrice ? Number(req.query.maxPrice) : void 0;
     const minRating = req.query.minRating ? Number(req.query.minRating) : void 0;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
     const result = await tutorProfileService.getAllsearchTutors({
       search,
       categories,
       minPrice,
       maxPrice,
-      minRating
+      minRating,
+      page,
+      limit
     });
     return res.status(200).json(result);
   } catch (error) {
@@ -970,8 +1102,10 @@ var getTutorProfileByIdController = async (req, res, next) => {
 };
 var getFeaturedTutorsController = async (req, res, next) => {
   try {
-    const result = await tutorProfileService.getFeaturedTutors();
-    return res.status(200).json(result || []);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 4;
+    const result = await tutorProfileService.getFeaturedTutors(page, limit);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -979,7 +1113,7 @@ var getFeaturedTutorsController = async (req, res, next) => {
 var getAllTutorsController = async (req, res, next) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 0;
+    const limit = req.query.limit !== void 0 ? Number(req.query.limit) : 8;
     const result = await tutorProfileService.getAllTutorProfiles(page, limit);
     res.status(200).json({
       success: true,
@@ -1189,11 +1323,15 @@ import { Router as Router5 } from "express";
 // src/bookings/bookings.service.ts
 var studentBookingService = {
   // Logic to get the student's classes + Teacher's User Name
-  async fetchStudentSchedule(studentUserId) {
-    return await prisma.booking.findMany({
-      where: {
-        studentId: studentUserId
-      },
+  async fetchStudentSchedule(studentUserId, statusFilter, page = 1, limit = 4) {
+    const whereClause = { studentId: studentUserId };
+    if (statusFilter === "upcoming") {
+      whereClause.status = { in: ["PENDING", "CONFIRMED"] };
+    } else if (statusFilter === "completed") {
+      whereClause.status = "COMPLETED";
+    }
+    const queryOptions = {
+      where: whereClause,
       include: {
         availability: true,
         // For dates and times
@@ -1212,7 +1350,24 @@ var studentBookingService = {
       orderBy: {
         createdAt: "desc"
       }
-    });
+    };
+    if (limit > 0) {
+      queryOptions.take = limit;
+      queryOptions.skip = (page - 1) * limit;
+    }
+    const [bookings, totalCount] = await Promise.all([
+      prisma.booking.findMany(queryOptions),
+      prisma.booking.count({ where: whereClause })
+    ]);
+    return {
+      bookings,
+      meta: {
+        total: totalCount,
+        page,
+        limit,
+        lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+      }
+    };
   },
   // Logic to change status to CANCELLED
   async cancelBooking(bookingId) {
@@ -1259,7 +1414,7 @@ var createBookingService = async (studentId, tutorId, availabilityId, meetingLin
   });
 };
 var BookingService = {
-  async getTeacherBookings(identifier) {
+  async getTeacherBookings(identifier, statusFilter, page = 1, limit = 4) {
     const profile = await prisma.tutorProfile.findFirst({
       where: {
         OR: [
@@ -1270,44 +1425,56 @@ var BookingService = {
     });
     if (!profile) {
       console.log(`[Service] No TutorProfile found for: ${identifier}`);
-      return { bookings: [], totalEarnings: 0 };
+      return { bookings: [], totalEarnings: 0, meta: { total: 0, page, limit, lastPage: 1 } };
     }
-    const bookings = await prisma.booking.findMany({
-      where: {
-        tutorId: profile.id
-      },
+    const whereClause = { tutorId: profile.id };
+    if (statusFilter === "upcoming") {
+      whereClause.status = { in: ["PENDING", "CONFIRMED"] };
+    } else if (statusFilter === "completed") {
+      whereClause.status = "COMPLETED";
+    }
+    const queryOptions = {
+      where: whereClause,
       include: {
         student: {
-          select: {
-            name: true,
-            image: true,
-            email: true
-          }
+          select: { name: true, image: true, email: true }
         },
         availability: {
-          select: {
-            startTime: true,
-            endTime: true
-          }
+          select: { startTime: true, endTime: true }
         },
-        // CHANGED: Include the entire payment record without specifying fields
         payment: true
       },
       orderBy: {
-        availability: {
-          startTime: "asc"
-        }
+        availability: { startTime: "asc" }
       }
+    };
+    if (limit > 0) {
+      queryOptions.take = limit;
+      queryOptions.skip = (page - 1) * limit;
+    }
+    const allCompletedBookings = await prisma.booking.findMany({
+      where: { tutorId: profile.id, status: "COMPLETED" },
+      include: { payment: true }
     });
-    const totalEarnings = bookings.reduce((sum, booking) => {
+    const totalEarnings = allCompletedBookings.reduce((sum, booking) => {
       if (booking.payment && (booking.payment.status === "COMPLETED" || booking.payment.status === "PAID")) {
         return sum + (booking.payment.amount || 0);
       }
       return sum;
     }, 0);
+    const [bookings, totalCount] = await Promise.all([
+      prisma.booking.findMany(queryOptions),
+      prisma.booking.count({ where: whereClause })
+    ]);
     return {
       bookings,
-      totalEarnings
+      totalEarnings,
+      meta: {
+        total: totalCount,
+        page,
+        limit,
+        lastPage: limit > 0 ? Math.ceil(totalCount / limit) : 1
+      }
     };
   },
   /**
@@ -1448,11 +1615,13 @@ var studentBookingController = {
   // GET: Fetch sessions where the logged-in user is the student
   async getStudentBookings(req, res, next) {
     try {
-      const { userId } = req.query;
+      const { userId, status } = req.query;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 4;
       if (!userId || typeof userId !== "string") {
         return res.status(400).json({ message: "Valid Student User ID is required" });
       }
-      const bookings = await studentBookingService.fetchStudentSchedule(userId);
+      const bookings = await studentBookingService.fetchStudentSchedule(userId, status, page, limit);
       return res.status(200).json(bookings);
     } catch (error) {
       next(error);
@@ -1479,11 +1648,13 @@ var studentBookingController = {
 var BookingController = {
   async getMyBookings(req, res, next) {
     try {
-      const { userId } = req.query;
+      const { userId, status } = req.query;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 4;
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
-      const bookings = await BookingService.getTeacherBookings(String(userId));
+      const bookings = await BookingService.getTeacherBookings(String(userId), status, page, limit);
       return res.status(200).json(bookings);
     } catch (error) {
       next(error);
@@ -1655,15 +1826,17 @@ var getReviewById = async (tutorId) => {
   }
 };
 var ReviewServicee = {
-  async getTutorReviewStats(tutorId) {
+  async getTutorReviewStats(tutorId, page = 1, limit = 2) {
     const stats = await prisma.review.aggregate({
       where: { tutorId },
       _avg: { rating: true },
       _count: { id: true }
     });
+    const skip = (page - 1) * limit;
     const latestReviews = await prisma.review.findMany({
       where: { tutorId },
-      take: 2,
+      take: limit,
+      skip,
       orderBy: { createdAt: "desc" },
       include: {
         student: {
@@ -1671,10 +1844,18 @@ var ReviewServicee = {
         }
       }
     });
+    const totalReviews = stats._count.id;
+    const lastPage = Math.ceil(totalReviews / limit);
     return {
       averageRating: stats._avg.rating?.toFixed(1) || "0.0",
-      totalReviews: stats._count.id,
-      latestReviews
+      totalReviews,
+      latestReviews,
+      meta: {
+        total: totalReviews,
+        page,
+        limit,
+        lastPage: lastPage > 0 ? lastPage : 1
+      }
     };
   }
 };
@@ -1709,7 +1890,9 @@ var reviewService = {
 var getReviewStats = async (req, res, next) => {
   try {
     const { tutorId } = req.params;
-    const data = await ReviewServicee.getTutorReviewStats(tutorId);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 2;
+    const data = await ReviewServicee.getTutorReviewStats(tutorId, page, limit);
     res.json(data);
   } catch (error) {
     next(error);
@@ -1811,11 +1994,19 @@ var getUserById = async (id) => {
   });
   return user;
 };
-var getAllUsers = async (page, limit) => {
+var getAllUsers = async (page, limit, role) => {
   const queryOptions = {
-    include: {
+    where: role ? { role } : {},
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
       sessions: true,
-      accounts: true,
       tutorProfile: true,
       bookingsAsStudent: true,
       reviews: true
@@ -1830,7 +2021,7 @@ var getAllUsers = async (page, limit) => {
   }
   const [data, totalCount] = await Promise.all([
     prisma.user.findMany(queryOptions),
-    prisma.user.count()
+    prisma.user.count({ where: role ? { role } : {} })
   ]);
   return {
     data,
@@ -1931,8 +2122,10 @@ var updateUser2 = async (req, res, next) => {
 };
 var getAllUsersController = async (req, res, next) => {
   try {
-    const limit = Number(req.query.limit) || 0;
-    const result = await userService.getAllUsers(1, limit);
+    const limit = req.query.limit !== void 0 ? Number(req.query.limit) : 8;
+    const page = Number(req.query.page) || 1;
+    const role = req.query.role;
+    const result = await userService.getAllUsers(page, limit, role);
     res.status(200).json({
       success: true,
       ...result
@@ -2035,6 +2228,150 @@ router4.post(
 );
 var webhook_routes_default = router4;
 
+// src/routes/sessionResource.route.ts
+import { Router as Router8 } from "express";
+
+// src/lib/gemini.ts
+import { GoogleGenerativeAI as GoogleGenerativeAI2 } from "@google/generative-ai";
+var apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error("GEMINI_API_KEY is not defined in environment variables");
+}
+var genAI2 = new GoogleGenerativeAI2(apiKey);
+var model = genAI2.getGenerativeModel({
+  model: "gemini-2.5-flash-lite"
+});
+var generateQuizFromTranscript = async (transcript) => {
+  const prompt = `Generate a 5-question multiple-choice quiz based on the following transcript. 
+  Return the output in a clean JSON format for UI rendering. 
+  
+  Transcript:
+  "${transcript}"
+
+  Structure:
+  {
+    "questions": [
+      {
+        "question": "string",
+        "options": ["string", "string", "string", "string"],
+        "answer": 0 // index of the correct option (0-3)
+      }
+    ]
+  }`;
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to generate valid JSON from Gemini");
+  }
+  return JSON.parse(jsonMatch[0]);
+};
+var generateSummaryFromTranscript = async (transcript) => {
+  const prompt = `Generate a structured summary and study notes based on the following transcript. 
+  Organize the content into logical sections with clear, descriptive "Note Topic" headings. 
+  Under each heading, provide a list of key points and detailed notes.
+  Return the output in a clean JSON format for UI rendering. 
+  
+  Transcript:
+  "${transcript}"
+
+  Structure:
+  {
+    "topics": [
+      {
+        "heading": "string",
+        "notes": ["string", "string", "string"]
+      }
+    ]
+  }`;
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to generate valid JSON summary from Gemini");
+  }
+  return JSON.parse(jsonMatch[0]);
+};
+
+// src/routes/sessionResource.route.ts
+var router5 = Router8();
+router5.get("/:bookingId", async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const resource = await prisma.sessionResource.findUnique({
+      where: { bookingId }
+    });
+    if (!resource) {
+      return res.status(404).json({ message: "No resources found for this session." });
+    }
+    res.json(resource);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+router5.post("/transcript", async (req, res) => {
+  try {
+    const { bookingId, transcriptText } = req.body;
+    if (!bookingId || !transcriptText) {
+      return res.status(400).json({ message: "Booking ID and transcript text are required." });
+    }
+    const resource = await prisma.sessionResource.upsert({
+      where: { bookingId },
+      update: { transcriptText },
+      create: { bookingId, transcriptText }
+    });
+    res.json(resource);
+  } catch (error) {
+    console.error("Transcript upload error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+router5.post("/generate-quiz", async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    if (!bookingId) {
+      return res.status(400).json({ message: "Booking ID is required." });
+    }
+    const resource = await prisma.sessionResource.findUnique({
+      where: { bookingId }
+    });
+    if (!resource || !resource.transcriptText) {
+      return res.status(404).json({ message: "Transcript not found. Please upload a transcript first." });
+    }
+    const quizData = await generateQuizFromTranscript(resource.transcriptText);
+    const updatedResource = await prisma.sessionResource.update({
+      where: { bookingId },
+      data: { quizData }
+    });
+    res.json(updatedResource);
+  } catch (error) {
+    console.error("Quiz generation error:", error);
+    res.status(500).json({ error: "Failed to generate quiz. " + error.message });
+  }
+});
+router5.post("/generate-summary", async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    if (!bookingId) {
+      return res.status(400).json({ message: "Booking ID is required." });
+    }
+    const resource = await prisma.sessionResource.findUnique({
+      where: { bookingId }
+    });
+    if (!resource || !resource.transcriptText) {
+      return res.status(404).json({ message: "Transcript not found. Please upload a transcript first." });
+    }
+    const summaryData = await generateSummaryFromTranscript(resource.transcriptText);
+    res.json(summaryData);
+  } catch (error) {
+    console.error("Summary generation error:", error);
+    res.status(500).json({ error: "Failed to generate summary. " + error.message });
+  }
+});
+var sessionResource_route_default = router5;
+
 // src/app.ts
 dotenv.config();
 var app = express3();
@@ -2074,6 +2411,7 @@ app.use("/api/availability", availability_routes_default);
 app.use("/api/bookings", bookings_routes_default);
 app.use("/api/reviews", reviews_routes_default);
 app.use("/api/users", users_routes_default);
+app.use("/api/session-resources", sessionResource_route_default);
 app.use(notFound);
 app.use(globalErrorHandler_default);
 var app_default = app;
